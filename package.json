@@ -1,0 +1,8 @@
+{
+  "name": "easyqa",
+  "private": true,
+  "workspaces": [
+    "contracts",
+    "frontend"
+  ]
+}
