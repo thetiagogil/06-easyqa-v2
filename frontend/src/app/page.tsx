@@ -1,7 +1,8 @@
-import { MainContainer } from "@/components/shared/main-container";
-import "@/styles/globals.css";
+"use client";
+
 import { Box, Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
 import { useState } from "react";
+import { MainContainer } from "../components/shared/main-container";
 
 export default function HomePage() {
   const [index, setIndex] = useState(0);

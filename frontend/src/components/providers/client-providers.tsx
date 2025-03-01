@@ -1,12 +1,17 @@
-import { ENV_VARS } from "@/lib/constants";
-import { theme } from "@/styles/theme";
+"use client";
+
 import { CssBaseline, CssVarsProvider } from "@mui/joy";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppProps } from "next/app";
+import { ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 import { anvil, sepolia } from "wagmi/chains";
+import { ENV_VARS } from "../../lib/constants";
+import { theme } from "../../styles/theme";
+
+type ClientProvidersProps = {
+  children: ReactNode;
+};
 
 const config = getDefaultConfig({
   appName: "easyqa",
@@ -17,15 +22,15 @@ const config = getDefaultConfig({
 
 const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function ClientProviders({ children }: ClientProvidersProps) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <CssVarsProvider defaultMode="light" theme={theme}>
             <CssBaseline />
-            <Component {...pageProps} />
-          </CssVarsProvider>{" "}
+            {children}
+          </CssVarsProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
