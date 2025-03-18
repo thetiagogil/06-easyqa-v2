@@ -21,4 +21,34 @@ export const theme = extendTheme({
       },
     },
   },
+  components: {
+    JoyLink: {
+      styleOverrides: {
+        root: () => ({
+          transition: "0.3s",
+        }),
+      },
+    },
+    JoyButton: {
+      styleOverrides: {
+        root: () => ({
+          transition: "0.3s",
+        }),
+      },
+    },
+    JoySelect: {
+      styleOverrides: {
+        root: () => ({
+          transition: "0.3s",
+        }),
+      },
+    },
+    JoyIconButton: {
+      styleOverrides: {
+        root: () => ({
+          transition: "0.3s",
+        }),
+      },
+    },
+  },
 });
