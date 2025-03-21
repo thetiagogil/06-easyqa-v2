@@ -12,15 +12,19 @@ export const MainContainer = ({ children }: MainContainerProps) => {
   const { isConnected } = useAccount();
   return (
     <Stack
-      position="relative"
+      position="sticky"
+      top={0}
       minHeight="100vh"
-      width={{ xs: "100%", sm: 500 }}
-      justifySelf="center"
-      border="solid 1px"
+      maxWidth={{ xs: "100%", sm: 500 }}
+      borderRight="1px solid"
+      borderLeft="1px solid"
       borderColor="neutral.200"
+      margin="auto"
     >
       <Navbar />
-      <Stack flex={1}>{children}</Stack>
+      <Stack component="main" flex={1}>
+        {children}
+      </Stack>
       {isConnected && <Footer />}
     </Stack>
   );

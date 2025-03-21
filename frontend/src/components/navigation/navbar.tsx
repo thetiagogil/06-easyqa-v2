@@ -4,20 +4,23 @@ import { useAccount, useDisconnect } from "wagmi";
 
 export const Navbar = () => {
   const { openConnectModal } = useConnectModal();
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   return (
     <Stack
-      bgcolor="background.body"
-      width="100%"
+      component="nav"
       position="sticky"
       top={0}
+      bgcolor="background.body"
+      height={56}
       direction="row"
       justifyContent="space-between"
       alignItems="center"
-      p={2}
+      borderTop="solid 1px"
       borderBottom="solid 1px"
       borderColor="neutral.200"
+      py={1}
+      px={2}
       zIndex={10}
     >
       <Avatar />

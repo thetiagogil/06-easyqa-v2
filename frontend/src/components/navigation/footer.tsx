@@ -1,7 +1,7 @@
 import Add from "@mui/icons-material/Add";
 import { Button, Link, Stack } from "@mui/joy";
 import NextLink from "next/link";
-import { GoBell, GoHome, GoSearch } from "react-icons/go";
+import { GoBell, GoHome, GoKey, GoSearch } from "react-icons/go";
 
 const size = 24;
 const footerItems = [
@@ -31,22 +31,22 @@ const footerItems = [
       </Button>
     ),
   },
+  { label: "mint", path: "/mint", icon: <GoKey size={size} /> },
   {
     label: "notifications",
     path: "/notifications",
     icon: <GoBell size={size} />,
   },
-  { label: "mint", path: "/mint", icon: <GoHome size={size} /> },
 ];
 
 export const Footer = () => {
   return (
     <Stack
-      bgcolor="background.body"
-      width="100%"
       position="sticky"
       bottom={0}
+      bgcolor="background.body"
       borderTop="solid 1px"
+      borderBottom="solid 1px"
       borderColor="neutral.200"
       zIndex={10}
     >
