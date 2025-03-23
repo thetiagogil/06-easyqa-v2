@@ -23,7 +23,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
   const [mounted, setMounted] = useState<boolean>(false);
   useEffect(() => setMounted(true), []);
   return (
-    <CssVarsProvider defaultMode="light" theme={theme}>
+    <CssVarsProvider defaultMode="dark" theme={theme}>
       <CssBaseline />
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>

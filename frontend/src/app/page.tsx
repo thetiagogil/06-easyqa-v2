@@ -1,9 +1,37 @@
 "use client";
+import { QuestionEntry } from "@/components/shared/question-entry";
+import { useGetQuestions } from "@/hooks/use-question-api";
 import { Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
 import { useState } from "react";
 
 export default function HomePage() {
   const [index, setIndex] = useState(0);
+  const { data: questions } = useGetQuestions();
+
+  const tabs = [
+    {
+      label: "new",
+      value: 0,
+      content: (
+        <>
+          {questions?.length &&
+            questions.map((question: QuestionModel) => (
+              <QuestionEntry key={question.id} question={question} />
+            ))}
+        </>
+      ),
+    },
+    {
+      label: "top",
+      value: 1,
+      content: <></>,
+    },
+    {
+      label: "trending",
+      value: 2,
+      content: <></>,
+    },
+  ];
 
   return (
     <Tabs
@@ -28,14 +56,18 @@ export default function HomePage() {
           },
         }}
       >
-        <Tab>new</Tab>
-        <Tab>top</Tab>
-        <Tab>trending</Tab>
+        {tabs.map((tab) => (
+          <Tab key={tab.value} value={tab.value}>
+            {tab.label}
+          </Tab>
+        ))}
       </TabList>
 
-      <TabPanel value={0}>new</TabPanel>
-      <TabPanel value={1}>top</TabPanel>
-      <TabPanel value={2}>trending</TabPanel>
+      {tabs.map((tab) => (
+        <TabPanel key={tab.value} value={tab.value} sx={{ p: 0 }}>
+          {tab.content}
+        </TabPanel>
+      ))}
     </Tabs>
   );
 }

@@ -18,11 +18,10 @@ export const MainContainer = ({ children }: MainContainerProps) => {
       maxWidth={{ xs: "100%", sm: 500 }}
       borderRight="1px solid"
       borderLeft="1px solid"
-      borderColor="neutral.200"
       margin="auto"
     >
       <Navbar />
-      <Stack component="main" flex={1}>
+      <Stack component="main" flexGrow={1}>
         {children}
       </Stack>
       {isConnected && <Footer />}

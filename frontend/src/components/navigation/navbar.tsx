@@ -18,7 +18,6 @@ export const Navbar = () => {
       alignItems="center"
       borderTop="solid 1px"
       borderBottom="solid 1px"
-      borderColor="neutral.200"
       py={1}
       px={2}
       zIndex={10}
@@ -30,7 +29,7 @@ export const Navbar = () => {
           <Button
             onClick={() => disconnect()}
             variant="solid"
-            color="danger"
+            color="neutral"
             size="sm"
           >
             Disconnect
