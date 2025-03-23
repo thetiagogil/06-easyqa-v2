@@ -1,5 +1,12 @@
 import { differenceInMinutes } from "date-fns";
 
+export const shortAddress = (address?: string) => {
+  if (!address) return "";
+  return `${address.toLowerCase().slice(0, 6)}...${address
+    .toLowerCase()
+    .slice(-4)}`;
+};
+
 export const getTime = (date?: Date | string) => {
   if (!date) return "";
   const targetDate = typeof date === "string" ? new Date(date) : date;

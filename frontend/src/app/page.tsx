@@ -1,12 +1,18 @@
 "use client";
 import { QuestionEntry } from "@/components/shared/question-entry";
-import { useGetQuestions } from "@/hooks/use-question-api";
+import {
+  useGetHotQuestions,
+  useGetNewQuestions,
+  useGetTopQuestions,
+} from "@/hooks/use-question-api";
 import { Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
 import { useState } from "react";
 
 export default function HomePage() {
   const [index, setIndex] = useState(0);
-  const { data: questions } = useGetQuestions();
+  const { data: newQuestions } = useGetNewQuestions();
+  const { data: topQuestions } = useGetTopQuestions();
+  const { data: hotQuestions } = useGetHotQuestions();
 
   const tabs = [
     {
@@ -14,8 +20,8 @@ export default function HomePage() {
       value: 0,
       content: (
         <>
-          {questions?.length &&
-            questions.map((question: QuestionModel) => (
+          {newQuestions?.length &&
+            newQuestions.map((question: QuestionModel) => (
               <QuestionEntry key={question.id} question={question} />
             ))}
         </>
@@ -24,12 +30,26 @@ export default function HomePage() {
     {
       label: "top",
       value: 1,
-      content: <></>,
+      content: (
+        <>
+          {topQuestions?.length &&
+            topQuestions.map((question: QuestionModel) => (
+              <QuestionEntry key={question.id} question={question} />
+            ))}
+        </>
+      ),
     },
     {
-      label: "trending",
+      label: "hot",
       value: 2,
-      content: <></>,
+      content: (
+        <>
+          {hotQuestions?.length &&
+            hotQuestions.map((question: QuestionModel) => (
+              <QuestionEntry key={question.id} question={question} />
+            ))}
+        </>
+      ),
     },
   ];
 

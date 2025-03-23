@@ -1,4 +1,4 @@
-import { getTime } from "@/lib/utils";
+import { getTime, shortAddress } from "@/lib/utils";
 import { Avatar, Chip, IconButton, Stack, Typography } from "@mui/joy";
 import { useMemo } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -18,7 +18,11 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
     <Stack borderBottom="1px solid" p={2}>
       <Stack direction="row" gap={1}>
         <Stack>
-          <Avatar sx={{ height: sharedHeight, width: sharedHeight }} />
+          <Avatar
+            src=""
+            alt={question.user?.name}
+            sx={{ height: sharedHeight, width: sharedHeight }}
+          />
         </Stack>
 
         <Stack flexBasis="100%" gap={1}>
@@ -29,7 +33,10 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             gap={1}
           >
             <Typography level="body-sm">
-              {question.user_id} asked a question
+              {question.user?.name
+                ? question.user?.name
+                : shortAddress(question.user?.wallet)}{" "}
+              asked a question
             </Typography>
             <Typography level="body-sm" fontSize={10}>
               •

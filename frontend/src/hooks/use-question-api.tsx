@@ -1,14 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetQuestions = () => {
+export const useGetNewQuestions = () => {
   return useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
-      const res = await fetch("/api/questions");
-      if (!res.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return res.json();
+      return (await fetch("/api/questions/new")).json();
+    },
+  });
+};
+
+export const useGetTopQuestions = () => {
+  return useQuery({
+    queryKey: ["questions"],
+    queryFn: async () => {
+      return (await fetch("/api/questions/top")).json();
+    },
+  });
+};
+
+export const useGetHotQuestions = () => {
+  return useQuery({
+    queryKey: ["questions"],
+    queryFn: async () => {
+      return (await fetch("/api/questions/hot")).json();
     },
   });
 };
