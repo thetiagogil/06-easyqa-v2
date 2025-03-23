@@ -1,6 +1,7 @@
 import Add from "@mui/icons-material/Add";
 import { Button, Link, Stack } from "@mui/joy";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import { GoBell, GoHome, GoKey, GoSearch } from "react-icons/go";
 
 const size = 24;
@@ -40,6 +41,8 @@ const footerItems = [
 ];
 
 export const Footer = () => {
+  const pathname = usePathname();
+
   return (
     <Stack
       position="sticky"
@@ -57,12 +60,12 @@ export const Footer = () => {
               component={NextLink}
               href={item.path}
               sx={{
-                color: "neutral.300",
+                color: pathname === item.path ? "primary.500" : "neutral.400",
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
                 "&:hover": {
-                  color: "primary.500",
+                  color: "primary.700",
                 },
               }}
             >

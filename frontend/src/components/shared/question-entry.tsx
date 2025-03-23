@@ -33,9 +33,11 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             gap={1}
           >
             <Typography level="body-sm">
-              {question.user?.name
-                ? question.user?.name
-                : shortAddress(question.user?.wallet)}{" "}
+              <strong>
+                {question.user?.name
+                  ? question.user?.name
+                  : shortAddress(question.user?.wallet)}{" "}
+              </strong>
               asked a question
             </Typography>
             <Typography level="body-sm" fontSize={10}>
@@ -51,11 +53,11 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack direction="row" alignItems="center" gap={1}>
               <IconButton size="sm">
                 <IoIosArrowUp />
               </IconButton>
-              <Typography level="body-md">0</Typography>
+              <Typography level="body-sm">0</Typography>
               <IconButton size="sm">
                 <IoIosArrowDown />
               </IconButton>
