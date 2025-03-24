@@ -1,4 +1,5 @@
 "use client";
+import { SnackbarProvider } from "@/contexts/snackbar.context";
 import { AuthContextProvider } from "@/contexts/user.context";
 import { ENV_VARS } from "@/lib/constants";
 import { theme } from "@/styles/theme";
@@ -29,7 +30,9 @@ export const Providers = ({ children }: { children: ReactNode }) => {
         <QueryClientProvider client={queryClient}>
           {mounted && (
             <RainbowKitProvider>
-              <AuthContextProvider>{children}</AuthContextProvider>
+              <SnackbarProvider>
+                <AuthContextProvider>{children}</AuthContextProvider>
+              </SnackbarProvider>
             </RainbowKitProvider>
           )}
         </QueryClientProvider>

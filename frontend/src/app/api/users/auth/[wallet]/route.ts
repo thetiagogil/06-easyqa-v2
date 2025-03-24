@@ -17,7 +17,7 @@ export async function POST(
     return NextResponse.json({ error: getError.message }, { status: 500 });
   }
   if (getUser) {
-    return NextResponse.json({ data: getUser });
+    return NextResponse.json(getUser);
   }
 
   const { data: createUser, error: createError } = await supabase
@@ -30,5 +30,5 @@ export async function POST(
     return NextResponse.json({ error: createError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ data: createUser });
+  return NextResponse.json(createUser);
 }

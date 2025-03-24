@@ -1,20 +1,11 @@
 "use client";
-
 import { useCreateUserByWallet } from "@/hooks/use-user-api";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
-type AuthContextProps = {
-  user?: UserModel;
-};
+export const AuthContext = createContext({} as { user?: UserModel });
 
-type AuthContextProviderProps = {
-  children: ReactNode;
-};
-
-export const AuthContext = createContext({} as AuthContextProps);
-
-export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
+export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const { address: wallet, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const [user, setUser] = useState<UserModel | undefined>(undefined);
@@ -35,6 +26,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           },
         }
       );
+    } else {
+      setUser(undefined);
     }
   }, [isConnected, wallet, createUser, disconnect]);
 

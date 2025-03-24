@@ -1,7 +1,7 @@
 import { getTime, shortAddress } from "@/lib/utils";
-import { Avatar, Chip, IconButton, Stack, Typography } from "@mui/joy";
+import { Avatar, Chip, Stack, Typography } from "@mui/joy";
 import { useMemo } from "react";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { VoteEntry } from "./vote-entry";
 
 type QuestionEntryProps = {
   question: QuestionModel;
@@ -53,15 +53,7 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Stack direction="row" alignItems="center" gap={1}>
-              <IconButton size="sm">
-                <IoIosArrowUp />
-              </IconButton>
-              <Typography level="body-sm">0</Typography>
-              <IconButton size="sm">
-                <IoIosArrowDown />
-              </IconButton>
-            </Stack>
+            <VoteEntry questionId={question.id} />
 
             <Chip
               variant="outlined"
