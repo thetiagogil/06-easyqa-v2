@@ -5,7 +5,7 @@ export async function GET(
   _req: Request,
   { params }: { params: { questionId: string } }
 ) {
-  const { questionId } = params;
+  const { questionId } = await params;
 
   const { data, error } = await supabase
     .from("votes")

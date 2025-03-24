@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetNewQuestions = () => {
   return useQuery({
-    queryKey: ["questions"],
+    queryKey: ["questions", "new"],
     queryFn: async () => {
       return (await fetch("/api/questions/new")).json();
     },
@@ -11,7 +11,7 @@ export const useGetNewQuestions = () => {
 
 export const useGetTopQuestions = () => {
   return useQuery({
-    queryKey: ["questions"],
+    queryKey: ["questions", "top"],
     queryFn: async () => {
       return (await fetch("/api/questions/top")).json();
     },
@@ -20,7 +20,7 @@ export const useGetTopQuestions = () => {
 
 export const useGetHotQuestions = () => {
   return useQuery({
-    queryKey: ["questions"],
+    queryKey: ["questions", "hot"],
     queryFn: async () => {
       return (await fetch("/api/questions/hot")).json();
     },

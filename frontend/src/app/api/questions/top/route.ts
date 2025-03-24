@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(_req: Request) {
   const { data, error } = await supabase
-    .from("questions")
+    .from("questions_with_vote")
     .select("*, user:user_id(*)")
-    .order("created_at", { ascending: false });
+    .order("vote_score", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
