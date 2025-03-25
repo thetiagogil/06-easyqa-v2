@@ -3,14 +3,13 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { questionId: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { questionId } = await params;
-
+  const { id } = await params;
   const { data, error } = await supabase
     .from("votes")
     .select("*")
-    .eq("target_id", questionId)
+    .eq("target_id", id)
     .eq("target_type", "question");
 
   if (error) {

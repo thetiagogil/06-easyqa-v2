@@ -1,5 +1,6 @@
 import { getTime, shortAddress } from "@/lib/utils";
-import { Avatar, Chip, Stack, Typography } from "@mui/joy";
+import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
+import NextLink from "next/link";
 import { useMemo } from "react";
 import { VoteEntry } from "./vote-entry";
 
@@ -46,7 +47,13 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             <Typography level="body-sm">{askedAt}</Typography>
           </Stack>
 
-          <Typography level="body-md">{question.title}</Typography>
+          <Link
+            component={NextLink}
+            href={`/question/${question.id}`}
+            underline="none"
+          >
+            <Typography level="body-md">{question.title}</Typography>
+          </Link>
 
           <Stack
             direction="row"

@@ -3,20 +3,21 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { wallet: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { wallet } = await params;
+  const { id } = await params;
   const { data, error } = await supabase
-    .from("users")
-    .select()
-    .eq("wallet", wallet)
-    .single();
+    .from("questions")
+    .select("*, user:user_id(*)")
+    .eq("id", id)
+    .maybeSingle();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
   if (!data) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
 
   return NextResponse.json(data);

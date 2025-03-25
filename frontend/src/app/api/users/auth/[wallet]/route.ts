@@ -6,7 +6,6 @@ export async function POST(
   { params }: { params: { wallet: string } }
 ) {
   const { wallet } = await params;
-
   const { data: getUser, error: getError } = await supabase
     .from("users")
     .select()

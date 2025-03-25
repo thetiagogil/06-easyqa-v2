@@ -26,3 +26,13 @@ export const useGetHotQuestions = () => {
     },
   });
 };
+
+export const useGetQuestionById = (questionId: QuestionModel["id"]) => {
+  return useQuery({
+    queryKey: ["question"],
+    queryFn: async () => {
+      return (await fetch(`/api/questions/${questionId}`)).json();
+    },
+    enabled: !!questionId,
+  });
+};
