@@ -1,3 +1,4 @@
+"use client";
 import { Stack } from "@mui/joy";
 import { ReactNode } from "react";
 import { useAccount } from "wagmi";
@@ -6,9 +7,13 @@ import { Navbar } from "../navigation/navbar";
 
 type MainContainerProps = {
   children: ReactNode;
+  navbarProps?: {};
 };
 
-export const MainContainer = ({ children }: MainContainerProps) => {
+export const MainContainer = ({
+  children,
+  navbarProps,
+}: MainContainerProps) => {
   const { isConnected } = useAccount();
   return (
     <Stack
@@ -20,7 +25,7 @@ export const MainContainer = ({ children }: MainContainerProps) => {
       borderLeft="1px solid"
       margin="auto"
     >
-      <Navbar />
+      <Navbar {...navbarProps} />
       <Stack component="main" flexGrow={1}>
         {children}
       </Stack>

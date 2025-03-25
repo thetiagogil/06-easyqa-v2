@@ -1,5 +1,9 @@
-import { Stack } from "@mui/joy";
+import { MainContainer } from "@/components/shared/main-container";
 
 export default function AddQuestionPage() {
-  return <Stack p={2}>Add Question</Stack>;
+  return (
+    <MainContainer navbarProps={{ title: "add", hasBackButton: true }}>
+      Add Question
+    </MainContainer>
+  );
 }

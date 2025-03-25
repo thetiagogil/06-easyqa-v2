@@ -1,45 +1,89 @@
-import { Avatar, Button, Stack } from "@mui/joy";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount, useDisconnect } from "wagmi";
+import { Avatar, IconButton, Stack, Typography } from "@mui/joy";
+import { usePathname, useRouter } from "next/navigation";
+import { ReactNode } from "react";
+import { IoIosArrowBack } from "react-icons/io";
 
-export const Navbar = () => {
-  const { openConnectModal } = useConnectModal();
-  const { isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
+export type NavbarProps = {
+  title?: string;
+  hasBackButton?: boolean;
+  startItem?: ReactNode;
+  centerItem?: ReactNode;
+  endItem?: ReactNode;
+  fullItem?: ReactNode;
+};
+
+const NavbarContainer = ({ children }: { children: ReactNode }) => (
+  <Stack
+    component="nav"
+    position="sticky"
+    top={0}
+    bgcolor="background.body"
+    height={56}
+    direction="row"
+    justifyContent="space-between"
+    alignItems="center"
+    borderTop="solid 1px"
+    borderBottom="solid 1px"
+    py={1}
+    px={2}
+    zIndex={10}
+  >
+    {children}
+  </Stack>
+);
+
+const BackButton = () => {
+  const router = useRouter();
   return (
-    <Stack
-      component="nav"
-      position="sticky"
-      top={0}
-      bgcolor="background.body"
-      height={56}
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      borderTop="solid 1px"
-      borderBottom="solid 1px"
-      py={1}
-      px={2}
-      zIndex={10}
-    >
-      <Avatar />
+    <IconButton onClick={() => router.push("/")}>
+      <IoIosArrowBack />
+    </IconButton>
+  );
+};
 
-      {isConnected ? (
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <Button
-            onClick={() => disconnect()}
-            variant="solid"
-            color="neutral"
-            size="sm"
-          >
-            Disconnect
-          </Button>
-        </Stack>
-      ) : (
-        <Button onClick={openConnectModal} variant="solid" size="sm">
-          Connect Wallet
-        </Button>
-      )}
-    </Stack>
+export const Navbar = ({
+  title,
+  startItem,
+  centerItem,
+  endItem,
+  fullItem,
+  hasBackButton,
+}: NavbarProps) => {
+  const pathname = usePathname();
+
+  if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
+  return (
+    <NavbarContainer>
+      <Stack
+        flexDirection="row"
+        justifyContent="start"
+        alignItems="center"
+        flexBasis="100%"
+      >
+        {startItem ? startItem : hasBackButton ? <BackButton /> : <Avatar />}
+      </Stack>
+
+      <Stack
+        flexDirection="row"
+        justifyContent="center"
+        alignItems="center"
+        flexBasis="100%"
+      >
+        {centerItem ? (
+          centerItem
+        ) : (
+          <Typography level="body-md">{title}</Typography>
+        )}
+      </Stack>
+
+      <Stack
+        flexDirection="row"
+        justifyContent="end"
+        alignItems="center"
+        flexBasis="100%"
+      >
+        {endItem ? endItem : <></>}
+      </Stack>
+    </NavbarContainer>
   );
 };

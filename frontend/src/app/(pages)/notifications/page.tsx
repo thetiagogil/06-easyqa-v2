@@ -1,6 +1,12 @@
 "use client";
-import { Stack } from "@mui/joy";
+import { MainContainer } from "@/components/shared/main-container";
 
 export default function NotificationsPage() {
-  return <Stack p={2}>Notifications</Stack>;
+  return (
+    <MainContainer
+      navbarProps={{ title: "notifications", hasBackButton: true }}
+    >
+      Notifications
+    </MainContainer>
+  );
 }

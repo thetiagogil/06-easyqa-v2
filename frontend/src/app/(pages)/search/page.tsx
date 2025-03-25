@@ -1,6 +1,10 @@
 "use client";
-import { Stack } from "@mui/joy";
+import { MainContainer } from "@/components/shared/main-container";
 
 export default function SearchPage() {
-  return <Stack p={2}>Search</Stack>;
+  return (
+    <MainContainer navbarProps={{ title: "search", hasBackButton: true }}>
+      Search
+    </MainContainer>
+  );
 }
