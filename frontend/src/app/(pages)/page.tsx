@@ -9,26 +9,18 @@ import {
 import { Button, Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useState } from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount } from "wagmi";
 
 export const ConnectButton = () => {
   const { openConnectModal } = useConnectModal();
   const { isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
 
-  return isConnected ? (
-    <Button
-      onClick={() => disconnect()}
-      variant="solid"
-      color="neutral"
-      size="sm"
-    >
-      Disconnect
-    </Button>
-  ) : (
-    <Button onClick={openConnectModal} variant="solid" size="sm">
-      Connect Wallet
-    </Button>
+  return (
+    !isConnected && (
+      <Button onClick={openConnectModal} variant="solid" size="sm">
+        Connect Wallet
+      </Button>
+    )
   );
 };
 

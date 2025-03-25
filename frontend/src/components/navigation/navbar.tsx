@@ -1,7 +1,8 @@
 import { Avatar, IconButton, Stack, Typography } from "@mui/joy";
-import { usePathname, useRouter } from "next/navigation";
-import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ReactNode, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import { Sidebar } from "./sidebar";
 
 export type NavbarProps = {
   title?: string;
@@ -49,18 +50,25 @@ export const Navbar = ({
   fullItem,
   hasBackButton,
 }: NavbarProps) => {
-  const pathname = usePathname();
+  const [open, setOpen] = useState<boolean>(false);
 
   if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
   return (
     <NavbarContainer>
+      <Sidebar open={open} setOpen={setOpen} />
       <Stack
         flexDirection="row"
         justifyContent="start"
         alignItems="center"
         flexBasis="100%"
       >
-        {startItem ? startItem : hasBackButton ? <BackButton /> : <Avatar />}
+        {startItem ? (
+          startItem
+        ) : hasBackButton ? (
+          <BackButton />
+        ) : (
+          <Avatar onClick={() => setOpen(true)} sx={{ cursor: "pointer" }} />
+        )}
       </Stack>
 
       <Stack
