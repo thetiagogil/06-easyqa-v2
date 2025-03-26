@@ -13,21 +13,24 @@ type VoteEntryProps = {
 };
 
 export const VoteEntry = ({ questionId }: VoteEntryProps) => {
-  const { user } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const { showSnackbar } = useSnackbar();
   const { data: votes } = useGetVotesByQuestionId(questionId);
   const { mutate: vote } = useCreateAndUpdateVote();
 
   const userVote = useMemo(() => {
-    return user && votes?.find((vote: any) => vote.user_id === user?.id);
-  }, [votes, user]);
+    return (
+      currentUser &&
+      votes?.find((vote: any) => vote.user_id === currentUser?.id)
+    );
+  }, [votes, currentUser]);
 
   const handleVote = async (type: "upvote" | "downvote") => {
-    if (!user) {
+    if (!currentUser) {
       showSnackbar("You must be logged in to vote.");
     } else {
       vote({
-        user_id: user?.id || 0,
+        user_id: currentUser?.id || 0,
         target_id: questionId,
         target_type: "question",
         type,

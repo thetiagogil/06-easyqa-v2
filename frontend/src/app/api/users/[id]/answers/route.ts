@@ -8,18 +8,15 @@ export async function GET(
   const { id } = await params;
 
   const { data, error } = await supabase
-    .from("questions")
-    .select("*, user:user_id(*)")
-    .eq("id", id)
-    .maybeSingle();
+    .from("answers")
+    .select("question:question_id(*, user:user_id(*))")
+    .eq("user_id", id)
+    .order("created_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  if (!data) {
-    return NextResponse.json({ error: "Question not found" }, { status: 404 });
-  }
-
-  return NextResponse.json(data);
+  const questions = data.map((item) => item.question);
+  return NextResponse.json(questions ?? []);
 }

@@ -1,7 +1,7 @@
 type UserModel = {
   id: number;
   name: string;
-  wallet: string;
+  wallet: `0x${string}`;
   bio: string | null;
   avatar: string | null;
   created_at: Date;

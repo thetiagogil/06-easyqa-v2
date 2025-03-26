@@ -25,7 +25,7 @@ export const ConnectButton = () => {
 };
 
 export default function HomePage() {
-  const [index, setIndex] = useState(0);
+  const [tabIndex, tabSetIndex] = useState<number>(0);
   const { data: newQuestions } = useGetNewQuestions();
   const { data: topQuestions } = useGetTopQuestions();
   const { data: hotQuestions } = useGetHotQuestions();
@@ -34,46 +34,31 @@ export default function HomePage() {
     {
       label: "new",
       value: 0,
-      content: (
-        <>
-          {newQuestions?.length &&
-            newQuestions.map((question: QuestionModel) => (
-              <QuestionEntry key={question.id} question={question} />
-            ))}
-        </>
-      ),
+      content: newQuestions?.map((question: QuestionModel) => (
+        <QuestionEntry key={question.id} question={question} />
+      )),
     },
     {
       label: "top",
       value: 1,
-      content: (
-        <>
-          {topQuestions?.length &&
-            topQuestions.map((question: QuestionModel) => (
-              <QuestionEntry key={question.id} question={question} />
-            ))}
-        </>
-      ),
+      content: topQuestions?.map((question: QuestionModel) => (
+        <QuestionEntry key={question.id} question={question} />
+      )),
     },
     {
       label: "hot",
       value: 2,
-      content: (
-        <>
-          {hotQuestions?.length &&
-            hotQuestions.map((question: QuestionModel) => (
-              <QuestionEntry key={question.id} question={question} />
-            ))}
-        </>
-      ),
+      content: hotQuestions?.map((question: QuestionModel) => (
+        <QuestionEntry key={question.id} question={question} />
+      )),
     },
   ];
 
   return (
     <MainContainer navbarProps={{ title: "home", endItem: <ConnectButton /> }}>
       <Tabs
-        value={index}
-        onChange={(_event, value) => setIndex(value as number)}
+        value={tabIndex}
+        onChange={(_event, value) => tabSetIndex(value as number)}
         sx={{ bgcolor: "transparent" }}
       >
         <TabList

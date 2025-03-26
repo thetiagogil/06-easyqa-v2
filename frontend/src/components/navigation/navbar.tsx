@@ -1,6 +1,8 @@
+import { AuthContext } from "@/contexts/user.context";
+import { userAvatar, userName } from "@/lib/utils";
 import { Avatar, IconButton, Stack, Typography } from "@mui/joy";
 import { useRouter } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { Sidebar } from "./sidebar";
 
@@ -50,6 +52,7 @@ export const Navbar = ({
   fullItem,
   hasBackButton,
 }: NavbarProps) => {
+  const { currentUser } = useContext(AuthContext);
   const [open, setOpen] = useState<boolean>(false);
 
   if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
@@ -67,7 +70,12 @@ export const Navbar = ({
         ) : hasBackButton ? (
           <BackButton />
         ) : (
-          <Avatar onClick={() => setOpen(true)} sx={{ cursor: "pointer" }} />
+          <Avatar
+            src={userAvatar(currentUser)}
+            alt={userName(currentUser)}
+            onClick={() => setOpen(true)}
+            sx={{ cursor: "pointer" }}
+          />
         )}
       </Stack>
 

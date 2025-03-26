@@ -29,7 +29,7 @@ export const useGetHotQuestions = () => {
 
 export const useGetQuestionById = (questionId: QuestionModel["id"]) => {
   return useQuery({
-    queryKey: ["question"],
+    queryKey: ["question", questionId],
     queryFn: async () => {
       return (await fetch(`/api/questions/${questionId}`)).json();
     },

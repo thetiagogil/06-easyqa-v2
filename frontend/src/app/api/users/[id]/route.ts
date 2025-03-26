@@ -3,13 +3,13 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { wallet: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { wallet } = await params;
+  const { id } = await params;
   const { data, error } = await supabase
     .from("users")
     .select()
-    .eq("wallet", wallet)
+    .eq("id", id)
     .single();
 
   if (error) {

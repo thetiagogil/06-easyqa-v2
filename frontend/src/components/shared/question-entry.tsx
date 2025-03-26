@@ -1,4 +1,4 @@
-import { getTime, shortAddress } from "@/lib/utils";
+import { getTime, userAvatar, userName } from "@/lib/utils";
 import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
 import NextLink from "next/link";
 import { useMemo } from "react";
@@ -20,8 +20,8 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
       <Stack direction="row" gap={1}>
         <Stack>
           <Avatar
-            src=""
-            alt={question.user?.name}
+            src={userAvatar(question.user)}
+            alt={userName(question.user)}
             sx={{ height: sharedHeight, width: sharedHeight }}
           />
         </Stack>
@@ -34,11 +34,14 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             gap={1}
           >
             <Typography level="body-sm">
-              <strong>
-                {question.user?.name
-                  ? question.user?.name
-                  : shortAddress(question.user?.wallet)}{" "}
-              </strong>
+              <Link
+                component={NextLink}
+                href={`/profile/${question.user?.id}`}
+                color="primary"
+                fontWeight="bold"
+              >
+                {userName(question.user)}
+              </Link>{" "}
               asked a question
             </Typography>
             <Typography level="body-sm" fontSize={10}>

@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useGetUserByWallet = (wallet: `0x${string}` | undefined) => {
+export const useGetUserById = (id: UserModel["id"]) => {
   return useQuery({
-    queryKey: ["user", wallet],
+    queryKey: ["user", id],
     queryFn: async () => {
-      return (await fetch(`/api/users/${wallet}`)).json();
+      return (await fetch(`/api/users/${id}`)).json();
     },
-    enabled: !!wallet,
+    enabled: !!id,
   });
 };
 
@@ -23,5 +23,27 @@ export const useCreateUserByWallet = () => {
     onSuccess: (data, wallet) => {
       queryClient.setQueryData(["user", wallet], data);
     },
+  });
+};
+
+export const useGetUserQuestions = (userId: QuestionModel["user_id"]) => {
+  return useQuery({
+    queryKey: ["user-questions", userId],
+    queryFn: async () => {
+      return (await fetch(`/api/users/${userId}/questions`)).json();
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useGetUserAnsweredQuestions = (
+  userId: QuestionModel["user_id"]
+) => {
+  return useQuery({
+    queryKey: ["user-answered-questions", userId],
+    queryFn: async () => {
+      return (await fetch(`/api/users/${userId}/answers`)).json();
+    },
+    enabled: !!userId,
   });
 };

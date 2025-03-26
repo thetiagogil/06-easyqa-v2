@@ -1,4 +1,5 @@
 import { AuthContext } from "@/contexts/user.context";
+import { userAvatar, userName } from "@/lib/utils";
 import {
   Avatar,
   Divider,
@@ -28,17 +29,17 @@ type SidebarProps = {
 };
 
 export const Sidebar = ({ open, setOpen }: SidebarProps) => {
-  const { user } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const { disconnect } = useDisconnect();
   const router = useRouter();
-  const wallet = user?.wallet;
+  const wallet = currentUser?.wallet;
 
   const items = useMemo(
     () => [
       {
         label: "Profile",
         icon: <IoPersonOutline />,
-        path: `/profile/${user?.id}`,
+        path: `/profile/${currentUser?.id}`,
       },
       { label: "Wallet", icon: <IoWalletOutline />, path: "/wallet" },
       { label: "Settings", icon: <IoSettingsOutline />, path: "/settings" },
@@ -49,21 +50,21 @@ export const Sidebar = ({ open, setOpen }: SidebarProps) => {
         onClick: () => disconnect(),
       },
     ],
-    [user]
+    [currentUser]
   );
 
   return (
-    <Drawer open={open} onClose={() => setOpen(false)}>
+    <Drawer open={open} onClose={() => setOpen(false)} size="sm">
       <Stack gap={2} p={2}>
-        <Avatar src={user?.name} />
+        <Avatar src={userAvatar(currentUser)} alt={userName(currentUser)} />
         <Stack>
-          {user?.name ? (
-            <Typography level="h3">{user?.name}</Typography>
+          {currentUser?.name ? (
+            <Typography level="h3">{currentUser?.name}</Typography>
           ) : (
             <WalletAddress address={wallet!} level="h3" />
           )}
-          {user?.name && (
-            <WalletAddress address={user?.wallet} level="body-sm" />
+          {currentUser?.name && (
+            <WalletAddress address={currentUser?.wallet} level="body-sm" />
           )}
         </Stack>
       </Stack>
@@ -80,7 +81,7 @@ export const Sidebar = ({ open, setOpen }: SidebarProps) => {
                   } else if (item.path) {
                     router.push(item.path);
                   }
-                  setOpen(false); // Close drawer in both cases
+                  setOpen(false);
                 }}
               >
                 <ListItemDecorator>{item.icon}</ListItemDecorator>

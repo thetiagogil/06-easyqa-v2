@@ -22,3 +22,11 @@ export const getTime = (date?: Date | string) => {
   const years = Math.floor(months / 12);
   return `${years}y`;
 };
+
+export const userName = (user: UserModel | undefined) => {
+  return user?.name ? user?.name : shortAddress(user?.wallet);
+};
+
+export const userAvatar = (user: UserModel | undefined) => {
+  return user?.avatar ? user?.avatar : "";
+};
