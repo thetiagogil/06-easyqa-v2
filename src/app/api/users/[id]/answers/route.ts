@@ -1,11 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = await params;
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
 
   const { data, error } = await supabase
     .from("answers")
@@ -17,6 +15,5 @@ export async function GET(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const questions = data.map((item) => item.question);
-  return NextResponse.json(questions ?? []);
+  return NextResponse.json(data ?? []);
 }

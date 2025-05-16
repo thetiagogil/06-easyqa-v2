@@ -3,7 +3,11 @@ import { useCreateUserByWallet } from "@/hooks/use-user-api";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
-export const AuthContext = createContext({} as { currentUser?: UserModel });
+type AuthContextType = {
+  currentUser?: UserModel;
+};
+
+export const AuthContext = createContext({} as AuthContextType);
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const { address: wallet, isConnected } = useAccount();

@@ -50,7 +50,7 @@ export const Sidebar = ({ open, setOpen }: SidebarProps) => {
         onClick: () => disconnect(),
       },
     ],
-    [currentUser]
+    [currentUser, disconnect]
   );
 
   return (

@@ -7,7 +7,7 @@ import { Navbar } from "../navigation/navbar";
 
 type MainContainerProps = {
   children: ReactNode;
-  navbarProps?: {};
+  navbarProps?: object;
 };
 
 export const MainContainer = ({

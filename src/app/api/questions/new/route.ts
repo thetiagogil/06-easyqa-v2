@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(_req: Request) {
+export async function GET(_req: NextRequest) {
   const { data, error } = await supabase
     .from("questions")
     .select("*, user:user_id(*)")

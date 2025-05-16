@@ -1,4 +1,5 @@
 "use client";
+import { ConnectButton } from "@/components/shared/connect-button";
 import { MainContainer } from "@/components/shared/main-container";
 import { QuestionEntry } from "@/components/shared/question-entry";
 import {
@@ -6,23 +7,8 @@ import {
   useGetNewQuestions,
   useGetTopQuestions,
 } from "@/hooks/use-question-api";
-import { Button, Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
 import { useState } from "react";
-import { useAccount } from "wagmi";
-
-export const ConnectButton = () => {
-  const { openConnectModal } = useConnectModal();
-  const { isConnected } = useAccount();
-
-  return (
-    !isConnected && (
-      <Button onClick={openConnectModal} variant="solid" size="sm">
-        Connect Wallet
-      </Button>
-    )
-  );
-};
 
 export default function HomePage() {
   const [tabIndex, tabSetIndex] = useState<number>(0);

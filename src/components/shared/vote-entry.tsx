@@ -21,7 +21,7 @@ export const VoteEntry = ({ questionId }: VoteEntryProps) => {
   const userVote = useMemo(() => {
     return (
       currentUser &&
-      votes?.find((vote: any) => vote.user_id === currentUser?.id)
+      votes?.find((vote: VotesModel) => vote.user_id === currentUser?.id)
     );
   }, [votes, currentUser]);
 
@@ -40,7 +40,8 @@ export const VoteEntry = ({ questionId }: VoteEntryProps) => {
 
   const score =
     votes?.reduce(
-      (acc: number, v: any) => acc + (v.type === "upvote" ? 1 : -1),
+      (acc: number, vote: VotesModel) =>
+        acc + (vote.target_type === "upvote" ? 1 : -1),
       0
     ) ?? 0;
 

@@ -1,11 +1,10 @@
 import { supabase } from "@/lib/supabase";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
-  _req: Request,
-  { params }: { params: { wallet: string } }
-) {
-  const { wallet } = await params;
+export async function POST(req: NextRequest) {
+  const url = new URL(req.url);
+  const wallet = url.pathname.split("/").pop();
+
   const { data: getUser, error: getError } = await supabase
     .from("users")
     .select()

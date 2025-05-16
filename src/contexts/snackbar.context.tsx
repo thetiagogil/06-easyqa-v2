@@ -3,9 +3,11 @@ import { IconButton, Snackbar } from "@mui/joy";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { IoIosClose } from "react-icons/io";
 
-const SnackbarContext = createContext({
-  showSnackbar: (_message: string) => {},
-});
+type SnackbarContextType = {
+  showSnackbar: (msg: string) => void;
+};
+
+const SnackbarContext = createContext({} as SnackbarContextType);
 
 export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState("");
