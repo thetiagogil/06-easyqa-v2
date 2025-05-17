@@ -1,12 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const useGetVotesByQuestionId = (questionId: QuestionModel["id"]) => {
+export const useGetVotesByTargetId = (
+  targetId: QuestionModel["id"] | AnswerModel["id"]
+) => {
   return useQuery({
-    queryKey: ["questionVotes", questionId],
+    queryKey: ["votes", targetId],
     queryFn: async () => {
-      return (await fetch(`/api/votes/${questionId}`)).json();
+      return (await fetch(`/api/votes/${targetId}`)).json();
     },
-    enabled: !!questionId,
+    enabled: !!targetId,
     staleTime: 1000 * 10,
   });
 };
@@ -18,21 +20,13 @@ export const useCreateAndUpdateVote = () => {
     target_type: "question" | "answer";
     type: "upvote" | "downvote";
   };
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (vote: VotePayload) => {
-      return (
-        await fetch("/api/votes", {
-          method: "POST",
-          body: JSON.stringify(vote),
-          headers: { "Content-Type": "application/json" },
-        })
-      ).json();
-    },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["questionVotes", variables.target_id],
-      });
+      return await fetch("/api/votes", {
+        method: "POST",
+        body: JSON.stringify(vote),
+        headers: { "Content-Type": "application/json" },
+      }).then((res) => res.json());
     },
   });
 };

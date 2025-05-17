@@ -2,48 +2,79 @@ import { useSnackbar } from "@/contexts/snackbar.context";
 import { AuthContext } from "@/contexts/user.context";
 import {
   useCreateAndUpdateVote,
-  useGetVotesByQuestionId,
+  useGetVotesByTargetId,
 } from "@/hooks/use-vote-api";
 import { IconButton, Stack, Typography } from "@mui/joy";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 type VoteEntryProps = {
-  questionId: QuestionModel["id"];
+  target: QuestionModel | AnswerModel;
+  target_type: "question" | "answer";
 };
 
-export const VoteEntry = ({ questionId }: VoteEntryProps) => {
+export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
   const { currentUser } = useContext(AuthContext);
   const { showSnackbar } = useSnackbar();
-  const { data: votes } = useGetVotesByQuestionId(questionId);
+  const { data: votes } = useGetVotesByTargetId(target.id);
   const { mutate: vote } = useCreateAndUpdateVote();
 
-  const userVote = useMemo(() => {
-    return (
-      currentUser &&
-      votes?.find((vote: VotesModel) => vote.user_id === currentUser?.id)
-    );
+  const [localScore, setLocalScore] = useState(target.vote_score);
+  const [localUserVote, setLocalUserVote] = useState<
+    "upvote" | "downvote" | null
+  >(
+    () =>
+      votes?.find((v: VotesModel) => v.user_id === currentUser?.id)?.type ??
+      null
+  );
+
+  useEffect(() => {
+    if (votes) {
+      setLocalUserVote(
+        votes.find((v: VotesModel) => v.user_id === currentUser?.id)?.type ??
+          null
+      );
+    }
   }, [votes, currentUser]);
 
-  const handleVote = async (type: "upvote" | "downvote") => {
+  const handleVote = (clickedType: "upvote" | "downvote") => {
     if (!currentUser) {
       showSnackbar("You must be logged in to vote.");
-    } else {
-      vote({
-        user_id: currentUser?.id || 0,
-        target_id: questionId,
-        target_type: "question",
-        type,
-      });
+      return;
     }
-  };
 
-  const score =
-    votes?.reduce(
-      (acc: number, vote: VotesModel) =>
-        acc + (vote.target_type === "upvote" ? 1 : -1),
-      0
-    ) ?? 0;
+    const prevType = localUserVote;
+    let delta = 0;
+
+    if (prevType === clickedType) {
+      delta = clickedType === "upvote" ? -1 : +1;
+      setLocalUserVote(null);
+    } else if (prevType === null) {
+      delta = clickedType === "upvote" ? +1 : -1;
+      setLocalUserVote(clickedType);
+    } else {
+      delta = clickedType === "upvote" ? +2 : -2;
+      setLocalUserVote(clickedType);
+    }
+
+    setLocalScore((s) => s + delta);
+
+    vote(
+      {
+        user_id: currentUser.id,
+        target_id: target.id,
+        target_type,
+        type: clickedType,
+      },
+      {
+        onError: () => {
+          setLocalScore((s) => s - delta);
+          setLocalUserVote(prevType);
+          showSnackbar("Something went wrong. Please try again.");
+        },
+      }
+    );
+  };
 
   return (
     <Stack direction="row" alignItems="center" gap={1}>
@@ -51,28 +82,30 @@ export const VoteEntry = ({ questionId }: VoteEntryProps) => {
         size="sm"
         variant="outlined"
         onClick={() => handleVote("upvote")}
-        color={userVote?.type === "upvote" ? "success" : "neutral"}
+        color={localUserVote === "upvote" ? "success" : "neutral"}
       >
         <IoIosArrowUp />
       </IconButton>
+
       <Typography
         level="body-sm"
         color={
-          userVote?.type === "upvote"
+          localUserVote === "upvote"
             ? "success"
-            : userVote?.type === "downvote"
+            : localUserVote === "downvote"
             ? "danger"
             : "neutral"
         }
         sx={{ width: 20, textAlign: "center" }}
       >
-        {score}
+        {localScore}
       </Typography>
+
       <IconButton
         size="sm"
         variant="outlined"
         onClick={() => handleVote("downvote")}
-        color={userVote?.type === "downvote" ? "danger" : "neutral"}
+        color={localUserVote === "downvote" ? "danger" : "neutral"}
       >
         <IoIosArrowDown />
       </IconButton>

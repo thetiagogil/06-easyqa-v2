@@ -63,7 +63,7 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <VoteEntry questionId={question.id} />
+            <VoteEntry target={question} target_type="question" />
 
             <Chip
               variant="outlined"

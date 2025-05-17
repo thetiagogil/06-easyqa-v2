@@ -4,7 +4,8 @@ export const useGetNewQuestions = () => {
   return useQuery({
     queryKey: ["questions", "new"],
     queryFn: async () => {
-      return (await fetch("/api/questions/new")).json();
+      const res = await fetch("/api/questions?sort=new");
+      return res.json();
     },
   });
 };
@@ -13,7 +14,8 @@ export const useGetTopQuestions = () => {
   return useQuery({
     queryKey: ["questions", "top"],
     queryFn: async () => {
-      return (await fetch("/api/questions/top")).json();
+      const res = await fetch("/api/questions?sort=top");
+      return res.json();
     },
   });
 };
@@ -22,16 +24,17 @@ export const useGetHotQuestions = () => {
   return useQuery({
     queryKey: ["questions", "hot"],
     queryFn: async () => {
-      return (await fetch("/api/questions/hot")).json();
+      const res = await fetch("/api/questions?sort=hot");
+      return res.json();
     },
   });
 };
-
-export const useGetQuestionById = (questionId: QuestionModel["id"]) => {
+export const useGetQuestionById = (questionId: string) => {
   return useQuery({
     queryKey: ["question", questionId],
     queryFn: async () => {
-      return (await fetch(`/api/questions/${questionId}`)).json();
+      const res = await fetch(`/api/questions?id=${questionId}`);
+      return res.json();
     },
     enabled: !!questionId,
   });

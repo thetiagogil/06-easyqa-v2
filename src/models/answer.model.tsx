@@ -8,4 +8,5 @@ interface AnswerModel {
   accepted: boolean;
   created_at: Date;
   updated_at: Date;
+  vote_score: number;
 }

@@ -9,4 +9,5 @@ interface QuestionModel {
   status: "open" | "closed" | "answered";
   created_at: Date;
   updated_at: Date;
+  vote_score: number;
 }
