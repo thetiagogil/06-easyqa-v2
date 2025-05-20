@@ -1,15 +1,16 @@
+import { handleError, jsonResponse, notFound } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(_req: NextRequest) {
-  const { data, error } = await supabase.from("users").select("*");
+  try {
+    const { data, error } = await supabase.from("users").select("*");
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  if (!data) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
+    if (error) throw error;
+    if (!data || data.length === 0) return notFound("No users found");
 
-  return NextResponse.json(data);
+    return jsonResponse(data);
+  } catch (error) {
+    return handleError(error);
+  }
 }

@@ -1,48 +1,43 @@
+import { handleError, jsonResponse, notFound } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
-  const sort = url.searchParams.get("sort");
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+    const sort = url.searchParams.get("sort");
 
-  if (id) {
+    if (id) {
+      const { data, error } = await supabase
+        .from("questions_with_vote")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return notFound("Question not found");
+
+      return jsonResponse(data);
+    }
+
+    const sortMap: Record<string, string> = {
+      top: "vote_score",
+      hot: "updated_at",
+      new: "created_at",
+    };
+
+    const sortBy = sortMap[sort ?? "new"];
+
     const { data, error } = await supabase
-      .from("questions_with_vote")
+      .from("questions_with_votes")
       .select("*")
-      .eq("id", id)
-      .maybeSingle();
+      .order(sortBy, { ascending: false });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    if (error) throw error;
 
-    if (!data) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(data, { status: 200 });
+    return jsonResponse(data ?? []);
+  } catch (error) {
+    return handleError(error);
   }
-
-  const sortMap: Record<string, string> = {
-    top: "vote_score",
-    hot: "updated_at",
-    new: "created_at",
-  };
-
-  const sortBy = sortMap[sort ?? "new"];
-
-  const { data, error } = await supabase
-    .from("questions_with_votes")
-    .select("*")
-    .order(sortBy, { ascending: false });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json(data ?? [], { status: 200 });
 }

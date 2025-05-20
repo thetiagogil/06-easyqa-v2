@@ -1,49 +1,39 @@
+import {
+  createUserByWallet,
+  fetchUserAnsweredQuestions,
+  fetchUserById,
+  fetchUserQuestions,
+} from "@/lib/api/users";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useGetUserById = (id: UserModel["id"]) => {
-  return useQuery({
+export const useGetUserById = (id: string) =>
+  useQuery({
     queryKey: ["user", id],
-    queryFn: async () => {
-      return (await fetch(`/api/users/${id}`)).json();
-    },
+    queryFn: () => fetchUserById(id),
     enabled: !!id,
   });
-};
+
+export const useGetUserQuestions = (userId: string) =>
+  useQuery({
+    queryKey: ["user-questions", userId],
+    queryFn: () => fetchUserQuestions(userId),
+    enabled: !!userId,
+  });
+
+export const useGetUserAnsweredQuestions = (userId: string) =>
+  useQuery({
+    queryKey: ["user-answered-questions", userId],
+    queryFn: () => fetchUserAnsweredQuestions(userId),
+    enabled: !!userId,
+  });
 
 export const useCreateUserByWallet = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ wallet }: { wallet: `0x${string}` }) => {
-      return (
-        await fetch(`/api/users/auth/${wallet}`, {
-          method: "POST",
-        })
-      ).json();
-    },
-    onSuccess: (data, wallet) => {
+    mutationFn: ({ wallet }: { wallet: `0x${string}` }) =>
+      createUserByWallet(wallet),
+    onSuccess: (data, { wallet }) => {
       queryClient.setQueryData(["user", wallet], data);
     },
-  });
-};
-
-export const useGetUserQuestions = (userId: QuestionModel["user_id"]) => {
-  return useQuery({
-    queryKey: ["user-questions", userId],
-    queryFn: async () => {
-      return (await fetch(`/api/users/${userId}/questions`)).json();
-    },
-    enabled: !!userId,
-  });
-};
-
-export const useGetUserAnsweredQuestions = (
-  userId: QuestionModel["user_id"]
-) => {
-  return useQuery({
-    queryKey: ["user-answered-questions", userId],
-    queryFn: async () => {
-      return (await fetch(`/api/users/${userId}/answers`)).json();
-    },
-    enabled: !!userId,
   });
 };

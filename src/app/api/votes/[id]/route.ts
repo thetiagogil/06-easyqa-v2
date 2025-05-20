@@ -1,19 +1,26 @@
+import { handleError, jsonResponse } from "@/lib/api-helpers";
+import { extractParamFromUrl } from "@/lib/api-req";
 import { supabase } from "@/lib/supabase";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const id = url.pathname.split("/").pop();
+  try {
+    const id = extractParamFromUrl(req);
 
-  const { data, error } = await supabase
-    .from("votes")
-    .select("*")
-    .eq("target_id", id)
-    .eq("target_type", "question");
+    if (!id) {
+      return jsonResponse({ error: "Target ID is required" }, 400);
+    }
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const { data, error } = await supabase
+      .from("votes")
+      .select("*")
+      .eq("target_id", id)
+      .eq("target_type", "question");
+
+    if (error) throw error;
+
+    return jsonResponse(data ?? []);
+  } catch (error) {
+    return handleError(error);
   }
-
-  return NextResponse.json(data ?? []);
 }

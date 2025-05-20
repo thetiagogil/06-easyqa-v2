@@ -1,41 +1,27 @@
+import { fetchQuestionById, fetchQuestions } from "@/lib/api/questions";
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetNewQuestions = () => {
-  return useQuery({
+export const useGetNewQuestions = () =>
+  useQuery({
     queryKey: ["questions", "new"],
-    queryFn: async () => {
-      const res = await fetch("/api/questions?sort=new");
-      return res.json();
-    },
+    queryFn: () => fetchQuestions("new"),
   });
-};
 
-export const useGetTopQuestions = () => {
-  return useQuery({
+export const useGetTopQuestions = () =>
+  useQuery({
     queryKey: ["questions", "top"],
-    queryFn: async () => {
-      const res = await fetch("/api/questions?sort=top");
-      return res.json();
-    },
+    queryFn: () => fetchQuestions("top"),
   });
-};
 
-export const useGetHotQuestions = () => {
-  return useQuery({
+export const useGetHotQuestions = () =>
+  useQuery({
     queryKey: ["questions", "hot"],
-    queryFn: async () => {
-      const res = await fetch("/api/questions?sort=hot");
-      return res.json();
-    },
+    queryFn: () => fetchQuestions("hot"),
   });
-};
-export const useGetQuestionById = (questionId: string) => {
-  return useQuery({
+
+export const useGetQuestionById = (questionId: string) =>
+  useQuery({
     queryKey: ["question", questionId],
-    queryFn: async () => {
-      const res = await fetch(`/api/questions?id=${questionId}`);
-      return res.json();
-    },
+    queryFn: () => fetchQuestionById(questionId),
     enabled: !!questionId,
   });
-};

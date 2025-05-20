@@ -1,4 +1,4 @@
-import { AuthContext } from "@/contexts/user.context";
+import { useAuthContext } from "@/contexts/user.context";
 import { userAvatar, userName } from "@/lib/utils";
 import {
   Avatar,
@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/joy";
 import { useRouter } from "next/navigation";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import {
   IoLogOutOutline,
   IoPersonOutline,
@@ -29,7 +29,7 @@ type SidebarProps = {
 };
 
 export const Sidebar = ({ open, setOpen }: SidebarProps) => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useAuthContext();
   const { disconnect } = useDisconnect();
   const router = useRouter();
   const wallet = currentUser?.wallet;

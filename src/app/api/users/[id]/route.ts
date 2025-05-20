@@ -1,22 +1,27 @@
+import { handleError, jsonResponse, notFound } from "@/lib/api-helpers";
+import { extractParamFromUrl } from "@/lib/api-req";
 import { supabase } from "@/lib/supabase";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const id = url.pathname.split("/").pop();
+  try {
+    const id = extractParamFromUrl(req);
 
-  const { data, error } = await supabase
-    .from("users")
-    .select()
-    .eq("id", id)
-    .single();
+    if (!id) {
+      return jsonResponse({ error: "User ID is required" }, 400);
+    }
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const { data, error } = await supabase
+      .from("users")
+      .select()
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+    if (!data) return notFound("User not found");
+
+    return jsonResponse(data);
+  } catch (error) {
+    return handleError(error);
   }
-  if (!data) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
-  return NextResponse.json(data);
 }

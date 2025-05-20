@@ -1,11 +1,11 @@
-import { useSnackbar } from "@/contexts/snackbar.context";
-import { AuthContext } from "@/contexts/user.context";
+import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { useAuthContext } from "@/contexts/user.context";
 import {
   useCreateAndUpdateVote,
   useGetVotesByTargetId,
 } from "@/hooks/use-vote-api";
 import { IconButton, Stack, Typography } from "@mui/joy";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 type VoteEntryProps = {
@@ -14,8 +14,8 @@ type VoteEntryProps = {
 };
 
 export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
-  const { currentUser } = useContext(AuthContext);
-  const { showSnackbar } = useSnackbar();
+  const { currentUser } = useAuthContext();
+  const { showSnackbar } = useSnackbarContext();
   const { data: votes } = useGetVotesByTargetId(target.id);
   const { mutate: vote } = useCreateAndUpdateVote();
 
