@@ -1,16 +1,16 @@
-export async function fetchUserById(id: string) {
+export async function fetchUserById(id: number) {
   const res = await fetch(`/api/users/${id}`);
   if (!res.ok) throw new Error("Failed to fetch user");
   return res.json();
 }
 
-export async function fetchUserQuestions(userId: string) {
+export async function fetchUserQuestions(userId: number) {
   const res = await fetch(`/api/users/${userId}/questions`);
   if (!res.ok) throw new Error("Failed to fetch user questions");
   return res.json();
 }
 
-export async function fetchUserAnsweredQuestions(userId: string) {
+export async function fetchUserAnsweredQuestions(userId: number) {
   const res = await fetch(`/api/users/${userId}/answers`);
   if (!res.ok) throw new Error("Failed to fetch user answered questions");
   return res.json();

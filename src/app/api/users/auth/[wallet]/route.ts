@@ -1,11 +1,11 @@
 import { handleError, jsonResponse } from "@/lib/api-helpers";
-import { extractParamFromUrl } from "@/lib/api-req";
+import { extractParamsFromUrl } from "@/lib/api-req";
 import { supabase } from "@/lib/supabase";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const wallet = extractParamFromUrl(req);
+    const { auth: wallet } = extractParamsFromUrl(req, ["auth"]);
 
     if (!wallet) {
       return jsonResponse({ error: "Wallet address is required" }, 400);

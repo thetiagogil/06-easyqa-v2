@@ -6,25 +6,36 @@ import {
 } from "@/lib/api/users";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useGetUserById = (id: string) =>
+type QueryOptions = { enabled?: boolean };
+
+export const useGetUserById = (id: number, options: QueryOptions = {}) =>
   useQuery({
     queryKey: ["user", id],
     queryFn: () => fetchUserById(id),
     enabled: !!id,
+    ...options,
   });
 
-export const useGetUserQuestions = (userId: string) =>
+export const useGetUserQuestions = (
+  userId: number,
+  options: QueryOptions = {}
+) =>
   useQuery({
     queryKey: ["user-questions", userId],
     queryFn: () => fetchUserQuestions(userId),
     enabled: !!userId,
+    ...options,
   });
 
-export const useGetUserAnsweredQuestions = (userId: string) =>
+export const useGetUserAnsweredQuestions = (
+  userId: number,
+  options: QueryOptions = {}
+) =>
   useQuery({
     queryKey: ["user-answered-questions", userId],
     queryFn: () => fetchUserAnsweredQuestions(userId),
     enabled: !!userId,
+    ...options,
   });
 
 export const useCreateUserByWallet = () => {

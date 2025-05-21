@@ -1,5 +1,5 @@
 import { createVote, fetchVotesByTargetId } from "@/lib/api/votes";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useGetVotesByTargetId = (targetId: string) =>
   useQuery({
@@ -9,7 +9,15 @@ export const useGetVotesByTargetId = (targetId: string) =>
     staleTime: 10000,
   });
 
-export const useCreateAndUpdateVote = () =>
-  useMutation({
+export const useCreateAndUpdateVote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: createVote,
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["votes", variables.target_id],
+      });
+    },
   });
+};

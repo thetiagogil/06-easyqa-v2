@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     if (id) {
       const { data, error } = await supabase
         .from("questions_with_vote")
-        .select("*")
+        .select("*, user:user_id(*)")
         .eq("id", id)
         .maybeSingle();
 
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabase
       .from("questions_with_votes")
-      .select("*")
+      .select("*, user:user_id(*)")
       .order(sortBy, { ascending: false });
 
     if (error) throw error;

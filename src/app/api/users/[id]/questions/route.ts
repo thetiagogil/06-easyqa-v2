@@ -1,20 +1,20 @@
 import { handleError, jsonResponse } from "@/lib/api-helpers";
-import { extractParamFromUrl } from "@/lib/api-req";
+import { extractParamsFromUrl } from "@/lib/api-req";
 import { supabase } from "@/lib/supabase";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const id = extractParamFromUrl(req);
+    const { users: userId } = extractParamsFromUrl(req, ["users"]);
 
-    if (!id) {
+    if (!userId) {
       return jsonResponse({ error: "User ID is required" }, 400);
     }
 
     const { data, error } = await supabase
       .from("questions")
       .select("*, user:user_id(*)")
-      .eq("user_id", id)
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
     if (error) throw error;

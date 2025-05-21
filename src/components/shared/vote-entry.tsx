@@ -1,3 +1,4 @@
+"use client";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useAuthContext } from "@/contexts/user.context";
 import {
@@ -5,7 +6,7 @@ import {
   useGetVotesByTargetId,
 } from "@/hooks/use-vote-api";
 import { IconButton, Stack, Typography } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 type VoteEntryProps = {
@@ -14,6 +15,7 @@ type VoteEntryProps = {
 };
 
 export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
+  // STATES
   const { currentUser } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
   const { data: votes } = useGetVotesByTargetId(target.id);
@@ -22,21 +24,9 @@ export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
   const [localScore, setLocalScore] = useState(target.vote_score);
   const [localUserVote, setLocalUserVote] = useState<
     "upvote" | "downvote" | null
-  >(
-    () =>
-      votes?.find((v: VotesModel) => v.user_id === currentUser?.id)?.type ??
-      null
-  );
+  >(null);
 
-  useEffect(() => {
-    if (votes) {
-      setLocalUserVote(
-        votes.find((v: VotesModel) => v.user_id === currentUser?.id)?.type ??
-          null
-      );
-    }
-  }, [votes, currentUser]);
-
+  // FUNCTIONS
   const handleVote = (clickedType: "upvote" | "downvote") => {
     if (!currentUser) {
       showSnackbar("You must be logged in to vote.");
@@ -76,6 +66,36 @@ export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
     );
   };
 
+  // MEMOIZED
+  const { upvoteCount, downvoteCount, userVoteType } = useMemo(() => {
+    if (!votes || !currentUser) {
+      return { upvoteCount: 0, downvoteCount: 0, userVoteType: null };
+    }
+
+    const upvoteCount = votes.filter(
+      (vote: VotesModel) => vote.type === "upvote"
+    ).length;
+    const downvoteCount = votes.filter(
+      (vote: VotesModel) => vote.type === "downvote"
+    ).length;
+    const userVote =
+      votes.find((vote: VotesModel) => vote.user_id === currentUser.id)?.type ??
+      null;
+
+    return {
+      upvoteCount,
+      downvoteCount,
+      userVoteType: userVote as "upvote" | "downvote" | null,
+    };
+  }, [votes, currentUser]);
+
+  // EFFECTS
+  useEffect(() => {
+    setLocalScore(upvoteCount - downvoteCount);
+    setLocalUserVote(userVoteType);
+  }, [upvoteCount, downvoteCount, userVoteType]);
+
+  // RENDER
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       <IconButton
