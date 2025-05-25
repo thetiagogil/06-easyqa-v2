@@ -1,4 +1,4 @@
-import { handleError, jsonResponse } from "@/lib/api-helpers";
+import { badRequest, handleError, jsonResponse } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest } from "next/server";
 
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { user_id, target_id, target_type, type } = body;
 
     if (!user_id || !target_id || !target_type || !type) {
-      return jsonResponse({ error: "Missing fields" }, 400);
+      return badRequest("Missing fields");
     }
 
     const { data: existingVote, error: fetchError } = await supabase

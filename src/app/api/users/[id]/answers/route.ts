@@ -1,14 +1,16 @@
-import { handleError, jsonResponse } from "@/lib/api-helpers";
-import { extractParamsFromUrl } from "@/lib/api-req";
+import { badRequest, handleError, jsonResponse } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { users: userId } = extractParamsFromUrl(req, ["users"]);
+    const { id: userId } = await Promise.resolve(params);
 
     if (!userId) {
-      return jsonResponse({ error: "User ID is required" }, 400);
+      return badRequest("User ID is required");
     }
 
     const { data, error } = await supabase

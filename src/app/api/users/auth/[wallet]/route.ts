@@ -1,14 +1,16 @@
-import { handleError, jsonResponse } from "@/lib/api-helpers";
-import { extractParamsFromUrl } from "@/lib/api-req";
+import { badRequest, handleError, jsonResponse } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { wallet: string } }
+) {
   try {
-    const { auth: wallet } = extractParamsFromUrl(req, ["auth"]);
+    const { wallet } = await Promise.resolve(params);
 
     if (!wallet) {
-      return jsonResponse({ error: "Wallet address is required" }, 400);
+      return badRequest("User ID is required");
     }
 
     const { data: getUser, error: getError } = await supabase

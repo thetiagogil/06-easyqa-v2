@@ -1,14 +1,16 @@
-import { handleError, jsonResponse } from "@/lib/api-helpers";
-import { extractParamsFromUrl } from "@/lib/api-req";
+import { badRequest, handleError, jsonResponse } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { votes: targetId } = extractParamsFromUrl(req, ["votes"]);
+    const { id: targetId } = await Promise.resolve(params);
 
     if (!targetId) {
-      return jsonResponse({ error: "Target ID is required" }, 400);
+      return badRequest("Target ID is required");
     }
 
     const { data, error } = await supabase
