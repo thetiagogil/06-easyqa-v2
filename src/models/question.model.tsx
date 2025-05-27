@@ -10,4 +10,5 @@ interface QuestionModel {
   created_at: Date;
   updated_at: Date;
   vote_score: number;
+  current_user_vote: "upvote" | "downvote";
 }

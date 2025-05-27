@@ -4,10 +4,10 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { wallet: string } }
+  { params }: { params: Promise<{ wallet: string }> }
 ) {
   try {
-    const { wallet } = await Promise.resolve(params);
+    const { wallet } = await params;
 
     if (!wallet) {
       return badRequest("User ID is required");

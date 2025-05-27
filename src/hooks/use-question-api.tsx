@@ -1,32 +1,23 @@
-import { fetchQuestionById, fetchQuestions } from "@/lib/api/questions";
+import { useAuthContext } from "@/contexts/user.context";
+import { getQuestionById, getQuestions } from "@/lib/api/questions";
 import { useQuery } from "@tanstack/react-query";
 
-type QueryOptions = { enabled?: boolean };
+export function useGetQuestions(sort: "new" | "top" | "hot", enabled: boolean) {
+  const { currentUser, authReady } = useAuthContext();
 
-export const useGetNewQuestions = (options: QueryOptions = {}) =>
-  useQuery({
-    queryKey: ["questions", "new"],
-    queryFn: () => fetchQuestions("new"),
-    ...options,
+  return useQuery({
+    queryKey: ["questions", sort, currentUser?.id],
+    queryFn: () => getQuestions(sort, currentUser?.id),
+    enabled: enabled && authReady,
+    staleTime: 30_000,
   });
+}
 
-export const useGetTopQuestions = (options: QueryOptions = {}) =>
-  useQuery({
-    queryKey: ["questions", "top"],
-    queryFn: () => fetchQuestions("top"),
-    ...options,
-  });
-
-export const useGetHotQuestions = (options: QueryOptions = {}) =>
-  useQuery({
-    queryKey: ["questions", "hot"],
-    queryFn: () => fetchQuestions("hot"),
-    ...options,
-  });
-
-export const useGetQuestionById = (questionId: string) =>
-  useQuery({
+export function useGetQuestionById(questionId: string, enabled = true) {
+  return useQuery({
     queryKey: ["question", questionId],
-    queryFn: () => fetchQuestionById(questionId),
-    enabled: !!questionId,
+    queryFn: () => getQuestionById(questionId),
+    enabled: enabled && Boolean(questionId),
+    staleTime: 30_000,
   });
+}

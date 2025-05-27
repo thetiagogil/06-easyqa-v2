@@ -1,20 +1,20 @@
-export async function fetchVotesByTargetId(targetId: string) {
-  const res = await fetch(`/api/votes/${targetId}`);
-  if (!res.ok) throw new Error("Failed to fetch votes");
-  return res.json();
-}
-
-export async function createVote(vote: {
-  user_id: number;
-  target_id: string;
-  target_type: "question" | "answer";
-  type: "upvote" | "downvote";
-}) {
+export async function submitVote(
+  userId: number,
+  targetId: string,
+  targetType: "question" | "answer",
+  voteType: "upvote" | "downvote"
+) {
   const res = await fetch("/api/votes", {
     method: "POST",
-    body: JSON.stringify(vote),
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: userId,
+      target_id: targetId,
+      target_type: targetType,
+      type: voteType,
+    }),
   });
+
   if (!res.ok) throw new Error("Failed to submit vote");
   return res.json();
 }

@@ -1,114 +1,80 @@
 "use client";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useAuthContext } from "@/contexts/user.context";
-import {
-  useCreateAndUpdateVote,
-  useGetVotesByTargetId,
-} from "@/hooks/use-vote-api";
+import { useSubmitVote } from "@/hooks/use-vote-api";
 import { IconButton, Stack, Typography } from "@mui/joy";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 type VoteEntryProps = {
-  target: QuestionModel | AnswerModel;
-  target_type: "question" | "answer";
+  targetType: "question" | "answer";
+  target: {
+    id: string;
+    vote_score: number;
+    current_user_vote: "upvote" | "downvote" | null;
+  };
 };
 
-export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
-  // STATES
+export function VoteEntry({ targetType, target }: VoteEntryProps) {
   const { currentUser } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
-  const { data: votes } = useGetVotesByTargetId(target.id);
-  const { mutate: vote } = useCreateAndUpdateVote();
+  const { mutate: submit } = useSubmitVote();
 
-  const [localScore, setLocalScore] = useState(target.vote_score);
+  const [localScore, setLocalScore] = useState<number>(target.vote_score);
   const [localUserVote, setLocalUserVote] = useState<
     "upvote" | "downvote" | null
-  >(null);
+  >(target.current_user_vote);
 
-  // FUNCTIONS
-  const handleVote = (clickedType: "upvote" | "downvote") => {
+  const handleVoteClick = (selectedType: "upvote" | "downvote") => {
     if (!currentUser) {
-      showSnackbar("You must be logged in to vote.");
+      showSnackbar("You must be logged in to vote.", "warning");
       return;
     }
 
-    const prevType = localUserVote;
     let delta = 0;
-
-    if (prevType === clickedType) {
-      delta = clickedType === "upvote" ? -1 : +1;
+    if (localUserVote === selectedType) {
+      delta = selectedType === "upvote" ? -1 : +1;
       setLocalUserVote(null);
-    } else if (prevType === null) {
-      delta = clickedType === "upvote" ? +1 : -1;
-      setLocalUserVote(clickedType);
+    } else if (localUserVote === null) {
+      delta = selectedType === "upvote" ? +1 : -1;
+      setLocalUserVote(selectedType);
     } else {
-      delta = clickedType === "upvote" ? +2 : -2;
-      setLocalUserVote(clickedType);
+      delta = selectedType === "upvote" ? +2 : -2;
+      setLocalUserVote(selectedType);
     }
+    setLocalScore((prev) => prev + delta);
 
-    setLocalScore((s) => s + delta);
-
-    vote(
+    submit(
       {
-        user_id: currentUser.id,
-        target_id: target.id,
-        target_type,
-        type: clickedType,
+        userId: currentUser.id,
+        targetId: target.id,
+        targetType,
+        voteType: selectedType,
       },
       {
         onError: () => {
-          setLocalScore((s) => s - delta);
-          setLocalUserVote(prevType);
-          showSnackbar("Something went wrong. Please try again.");
+          setLocalScore((prev) => prev - delta);
+          setLocalUserVote(target.current_user_vote);
+          showSnackbar("Something went wrong. Please try again.", "danger");
         },
       }
     );
   };
 
-  // MEMOIZED
-  const { upvoteCount, downvoteCount, userVoteType } = useMemo(() => {
-    if (!votes || !currentUser) {
-      return { upvoteCount: 0, downvoteCount: 0, userVoteType: null };
-    }
-
-    const upvoteCount = votes.filter(
-      (vote: VotesModel) => vote.type === "upvote"
-    ).length;
-    const downvoteCount = votes.filter(
-      (vote: VotesModel) => vote.type === "downvote"
-    ).length;
-    const userVote =
-      votes.find((vote: VotesModel) => vote.user_id === currentUser.id)?.type ??
-      null;
-
-    return {
-      upvoteCount,
-      downvoteCount,
-      userVoteType: userVote as "upvote" | "downvote" | null,
-    };
-  }, [votes, currentUser]);
-
-  // EFFECTS
-  useEffect(() => {
-    setLocalScore(upvoteCount - downvoteCount);
-    setLocalUserVote(userVoteType);
-  }, [upvoteCount, downvoteCount, userVoteType]);
-
-  // RENDER
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       <IconButton
         size="sm"
         variant="outlined"
-        onClick={() => handleVote("upvote")}
         color={localUserVote === "upvote" ? "success" : "neutral"}
+        onClick={() => handleVoteClick("upvote")}
       >
         <IoIosArrowUp />
       </IconButton>
 
       <Typography
         level="body-sm"
+        sx={{ width: 20, textAlign: "center" }}
         color={
           localUserVote === "upvote"
             ? "success"
@@ -116,7 +82,6 @@ export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
             ? "danger"
             : "neutral"
         }
-        sx={{ width: 20, textAlign: "center" }}
       >
         {localScore}
       </Typography>
@@ -124,11 +89,11 @@ export const VoteEntry = ({ target, target_type }: VoteEntryProps) => {
       <IconButton
         size="sm"
         variant="outlined"
-        onClick={() => handleVote("downvote")}
         color={localUserVote === "downvote" ? "danger" : "neutral"}
+        onClick={() => handleVoteClick("downvote")}
       >
         <IoIosArrowDown />
       </IconButton>
     </Stack>
   );
-};
+}

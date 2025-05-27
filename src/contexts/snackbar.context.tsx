@@ -46,7 +46,11 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
         onClose={() => setOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         endDecorator={
-          <IconButton variant="plain" onClick={() => setOpen(false)}>
+          <IconButton
+            variant="plain"
+            color={status}
+            onClick={() => setOpen(false)}
+          >
             <IoIosClose fontSize={20} />
           </IconButton>
         }

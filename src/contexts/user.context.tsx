@@ -1,4 +1,5 @@
 "use client";
+import { Loading } from "@/components/shared/loading";
 import { useCreateUserByWallet } from "@/hooks/use-user-api";
 import {
   createContext,
@@ -10,52 +11,55 @@ import {
 import { useAccount, useDisconnect } from "wagmi";
 
 type AuthContextType = {
-  currentUser?: UserModel;
-  isLoading: boolean;
+  currentUser: UserModel | null;
+  authReady: boolean;
   disconnect: () => void;
 };
 
 const AuthContext = createContext({} as AuthContextType);
 
-export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
+export function AuthContextProvider({ children }: { children: ReactNode }) {
   const { address: wallet, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
-  const [currentUser, setCurrentUser] = useState<UserModel | undefined>(
+  const [currentUser, setCurrentUser] = useState<UserModel | null | undefined>(
     undefined
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { mutate: createUser } = useCreateUserByWallet();
 
   useEffect(() => {
     if (isConnected && wallet) {
-      setIsLoading(true);
       createUser(
         { wallet },
         {
           onSuccess: (data) => {
             setCurrentUser(data.user || data);
-            setIsLoading(false);
           },
-          onError: (createError) => {
-            console.error("Error creating user:", createError);
+          onError: () => {
+            console.error("Error creating user");
             disconnect();
-            setIsLoading(false);
+            setCurrentUser(null);
           },
         }
       );
     } else {
-      setCurrentUser(undefined);
-      setIsLoading(false);
+      setCurrentUser(null);
     }
   }, [isConnected, wallet, createUser, disconnect]);
 
+  const authReady = isConnected || currentUser !== undefined;
+
   return (
-    <AuthContext.Provider value={{ currentUser, isLoading, disconnect }}>
-      {children}
-    </AuthContext.Provider>
+    <>
+      {!authReady && <Loading variant="overlay" />}
+      <AuthContext.Provider
+        value={{ currentUser: currentUser ?? null, authReady, disconnect }}
+      >
+        {children}
+      </AuthContext.Provider>
+    </>
   );
-};
+}
 
 export const useAuthContext = () => useContext(AuthContext);

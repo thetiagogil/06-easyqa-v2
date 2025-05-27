@@ -1,52 +1,65 @@
 import { badRequest, handleError, jsonResponse } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json();
-    const { user_id, target_id, target_type, type } = body;
+    const requestBody = await request.json();
+    const {
+      user_id: userId,
+      target_id: targetId,
+      target_type: targetType,
+      type: voteType,
+    } = requestBody;
 
-    if (!user_id || !target_id || !target_type || !type) {
-      return badRequest("Missing fields");
+    if (!userId || !targetId || !targetType || !voteType) {
+      return badRequest(
+        "Missing required fields: user_id, target_id, target_type, or type."
+      );
     }
 
-    const { data: existingVote, error: fetchError } = await supabase
-      .from("votes")
-      .select("*")
-      .eq("user_id", user_id)
-      .eq("target_id", target_id)
-      .eq("target_type", target_type)
-      .maybeSingle();
+    if (!["question", "answer"].includes(targetType)) {
+      return badRequest("target_type must be 'question' or 'answer'.");
+    }
 
-    if (fetchError) throw fetchError;
+    const { data: existingVote, error: findError } = await supabase
+      .from("votes")
+      .select("id, type")
+      .eq("user_id", userId)
+      .eq("target_id", targetId)
+      .eq("target_type", targetType)
+      .maybeSingle();
+    if (findError) throw findError;
 
     if (existingVote) {
-      if (existingVote.type === type) {
+      if (existingVote.type === voteType) {
+        // Delete
         const { error: deleteError } = await supabase
           .from("votes")
           .delete()
           .eq("id", existingVote.id);
         if (deleteError) throw deleteError;
       } else {
+        // Update
         const { error: updateError } = await supabase
           .from("votes")
-          .update({ type })
+          .update({ type: voteType })
           .eq("id", existingVote.id);
         if (updateError) throw updateError;
       }
     } else {
+      // Create
       const { error: insertError } = await supabase.from("votes").insert({
-        user_id,
-        target_id,
-        target_type,
-        type,
+        user_id: userId,
+        target_id: targetId,
+        target_type: targetType,
+        type: voteType,
       });
       if (insertError) throw insertError;
     }
 
     return jsonResponse({ success: true });
-  } catch (error) {
-    return handleError(error);
+  } catch (caughtError) {
+    return handleError(caughtError);
   }
 }

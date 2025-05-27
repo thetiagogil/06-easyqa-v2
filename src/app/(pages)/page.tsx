@@ -3,59 +3,55 @@ import { ConnectButton } from "@/components/shared/connect-button";
 import { Loading } from "@/components/shared/loading";
 import { MainContainer } from "@/components/shared/main-container";
 import { QuestionEntry } from "@/components/shared/question-entry";
-import {
-  useGetHotQuestions,
-  useGetNewQuestions,
-  useGetTopQuestions,
-} from "@/hooks/use-question-api";
+import { useAuthContext } from "@/contexts/user.context";
+import { useGetQuestions } from "@/hooks/use-question-api";
 import { Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function HomePage() {
-  const [tabIndex, setTabIndex] = useState<number>(0);
+  const { authReady } = useAuthContext();
+  const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
   const [visitedTabs, setVisitedTabs] = useState<Set<number>>(new Set([0]));
-  const { data: newQuestions, isLoading: isNewLoading } = useGetNewQuestions({
-    enabled: visitedTabs.has(0),
-  });
-  const { data: topQuestions, isLoading: isTopLoading } = useGetTopQuestions({
-    enabled: visitedTabs.has(1),
-  });
-  const { data: hotQuestions, isLoading: isHotLoading } = useGetHotQuestions({
-    enabled: visitedTabs.has(2),
-  });
 
-  const tabs = [
-    {
-      label: "new",
-      data: newQuestions,
-      isLoading: isNewLoading,
-    },
-    {
-      label: "top",
-      data: topQuestions,
-      isLoading: isTopLoading,
-    },
-    {
-      label: "hot",
-      data: hotQuestions,
-      isLoading: isHotLoading,
-    },
-  ];
+  const hasTabBeenVisited = (index: number) => visitedTabs.has(index);
 
-  const handleTabChange = (_: any, value: string | number | null) => {
-    if (typeof value === "number") {
-      setTabIndex(value);
-      setVisitedTabs((prev) => new Set(prev).add(value));
-    }
-  };
+  const { data: newQuestions, isLoading: isLoadingNew } = useGetQuestions(
+    "new",
+    hasTabBeenVisited(0)
+  );
+  const { data: topQuestions, isLoading: isLoadingTop } = useGetQuestions(
+    "top",
+    hasTabBeenVisited(1)
+  );
+  const { data: hotQuestions, isLoading: isLoadingHot } = useGetQuestions(
+    "hot",
+    hasTabBeenVisited(2)
+  );
+
+  const tabs = useMemo(
+    () => [
+      { label: "new", data: newQuestions, isLoading: isLoadingNew },
+      { label: "top", data: topQuestions, isLoading: isLoadingTop },
+      { label: "hot", data: hotQuestions, isLoading: isLoadingHot },
+    ],
+    [newQuestions, topQuestions, hotQuestions]
+  );
+
+  if (!authReady) {
+    return (
+      <MainContainer navbarProps={{ title: "home" }}>
+        <Loading minHeight={240} />
+      </MainContainer>
+    );
+  }
 
   return (
     <MainContainer navbarProps={{ title: "home", endItem: <ConnectButton /> }}>
       <Tabs
-        value={tabIndex}
-        onChange={(_, value) => {
+        value={currentTabIndex}
+        onChange={(_e, value) => {
           if (typeof value === "number") {
-            setTabIndex(value);
+            setCurrentTabIndex(value);
             setVisitedTabs((prev) => new Set(prev).add(value));
           }
         }}
@@ -70,9 +66,7 @@ export default function HomePage() {
               flex: 1,
               bgcolor: "transparent",
               "&:hover": { bgcolor: "transparent" },
-              [`&.${tabClasses.selected}`]: {
-                color: "primary.plainColor",
-              },
+              [`&.${tabClasses.selected}`]: { color: "primary.plainColor" },
             },
           }}
         >

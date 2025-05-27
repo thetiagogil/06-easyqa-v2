@@ -1,43 +1,49 @@
-import { handleError, jsonResponse, notFound } from "@/lib/api-helpers";
+import { handleError, jsonResponse } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id");
-    const sort = url.searchParams.get("sort");
+    const { searchParams } = request.nextUrl;
 
-    if (id) {
-      const { data, error } = await supabase
-        .from("questions_with_vote")
-        .select("*, user:user_id(*)")
-        .eq("id", id)
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data) return notFound("Question not found");
-
-      return jsonResponse(data);
-    }
-
+    const sortKey = searchParams.get("sort") ?? "new";
+    const userId = searchParams.get("user_id") ?? null;
     const sortMap: Record<string, string> = {
+      new: "created_at",
       top: "vote_score",
       hot: "updated_at",
-      new: "created_at",
     };
+    const orderByColumn = sortMap[sortKey] ?? "created_at";
 
-    const sortBy = sortMap[sort ?? "new"];
-
-    const { data, error } = await supabase
+    // 1 - Get a page of questions with vote_score
+    const { data: questionRows, error: listError } = await supabase
       .from("questions_with_votes")
       .select("*, user:user_id(*)")
-      .order(sortBy, { ascending: false });
+      .order(orderByColumn, { ascending: false });
+    if (listError) throw listError;
 
-    if (error) throw error;
+    // 2 - If the caller is authenticated, get their votes in a single query
+    let viewerVotes: { target_id: string; type: string }[] = [];
+    if (userId && questionRows?.length) {
+      const questionIds = questionRows.map((q) => q.id);
+      const { data: voteRows, error: voteFetchError } = await supabase
+        .from("votes")
+        .select("target_id, type")
+        .eq("user_id", userId)
+        .in("target_id", questionIds);
+      if (voteFetchError) throw voteFetchError;
+      viewerVotes = voteRows;
+    }
 
-    return jsonResponse(data ?? []);
-  } catch (error) {
-    return handleError(error);
+    // 3 - Merge in current_user_vote for each question
+    const responseData = (questionRows ?? []).map((q) => ({
+      ...q,
+      current_user_vote:
+        viewerVotes.find((v) => v.target_id === q.id)?.type ?? null,
+    }));
+
+    return jsonResponse(responseData);
+  } catch (caughtError) {
+    return handleError(caughtError);
   }
 }

@@ -1,8 +1,8 @@
-import Add from "@mui/icons-material/Add";
 import { Button, Link, Stack } from "@mui/joy";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { GoBell, GoHome, GoKey, GoSearch } from "react-icons/go";
+import { IoAdd } from "react-icons/io5";
 
 const size = 24;
 const footerItems = [
@@ -28,7 +28,7 @@ const footerItems = [
           boxShadow: "0px 0px 16px 0px #7ADC9E",
         }}
       >
-        <Add />
+        <IoAdd />
       </Button>
     ),
   },
