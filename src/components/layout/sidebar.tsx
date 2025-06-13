@@ -13,6 +13,7 @@ import {
   ListItemDecorator,
   Stack,
 } from "@mui/joy";
+import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 
 type SidebarProps = {
@@ -21,6 +22,7 @@ type SidebarProps = {
 };
 
 export const Sidebar = ({ open, setOpen }: SidebarProps) => {
+  const { logout } = usePrivy();
   const router = useRouter();
 
   const items = [
@@ -35,6 +37,7 @@ export const Sidebar = ({ open, setOpen }: SidebarProps) => {
     {
       label: "Log out",
       icon: <LogoutIcon />,
+      onClick: logout,
     },
   ];
 
@@ -50,7 +53,16 @@ export const Sidebar = ({ open, setOpen }: SidebarProps) => {
             <Divider key={item.label} sx={{ my: 1 }} />
           ) : (
             <ListItem key={item.label} variant="plain">
-              <ListItemButton>
+              <ListItemButton
+                onClick={() => {
+                  if (item.onClick) {
+                    item.onClick();
+                  } else if (item.path) {
+                    router.push(item.path);
+                  }
+                  setOpen(false);
+                }}
+              >
                 <ListItemDecorator>{item.icon}</ListItemDecorator>
                 <ListItemContent>{item.label}</ListItemContent>
               </ListItemButton>

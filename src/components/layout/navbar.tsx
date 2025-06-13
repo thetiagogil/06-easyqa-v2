@@ -1,5 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Avatar, IconButton, Stack, Typography } from "@mui/joy";
+import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { Sidebar } from "./sidebar";
@@ -50,10 +51,10 @@ export const Navbar = ({
   fullItem,
   hasBackButton,
 }: NavbarProps) => {
+  const { authenticated } = usePrivy();
   const [open, setOpen] = useState<boolean>(false);
 
   if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
-
   return (
     <NavbarContainer>
       <Sidebar open={open} setOpen={setOpen} />
@@ -63,7 +64,7 @@ export const Navbar = ({
         ) : hasBackButton ? (
           <BackButton />
         ) : (
-          <Avatar onClick={() => setOpen(true)} sx={{ cursor: "pointer" }} />
+          authenticated && <Avatar onClick={() => setOpen(true)} sx={{ cursor: "pointer" }} />
         )}
       </Stack>
 

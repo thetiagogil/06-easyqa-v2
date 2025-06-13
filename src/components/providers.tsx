@@ -1,4 +1,5 @@
 "use client";
+import { AuthContextProvider } from "@/contexts/auth.context";
 import { ENV_VARS } from "@/lib/constants";
 import { theme } from "@/styles/theme";
 import type { WithChildren } from "@/types";
@@ -25,7 +26,7 @@ export function Providers({ children }: WithChildren) {
       <QueryClientProvider client={queryClient}>
         <CssVarsProvider defaultMode="dark" theme={theme}>
           <CssBaseline />
-          {children}
+          <AuthContextProvider>{children}</AuthContextProvider>
         </CssVarsProvider>
       </QueryClientProvider>
     </PrivyProvider>

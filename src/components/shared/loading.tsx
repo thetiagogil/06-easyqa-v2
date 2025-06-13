@@ -1,4 +1,3 @@
-"use client";
 import { Stack } from "@mui/joy";
 import CircularProgress from "@mui/joy/CircularProgress";
 

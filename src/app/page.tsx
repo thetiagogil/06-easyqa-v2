@@ -1,15 +1,28 @@
 "use client";
 import { MainContainer } from "@/components/shared/main-container";
-import { Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
+import { useAuthContext } from "@/contexts/auth.context";
+import { Button, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
+import { usePrivy } from "@privy-io/react-auth";
 import { useState } from "react";
 
 export default function HomePage() {
+  const { authenticated, login } = usePrivy();
+  const { currentUser } = useAuthContext();
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
   const tabs = [{ label: "new" }, { label: "top" }, { label: "hot" }];
 
   return (
-    <MainContainer navbarProps={{ title: "home" }}>
+    <MainContainer
+      navbarProps={{
+        title: "home",
+        endItem: !authenticated && (
+          <Button size="sm" onClick={login}>
+            Login
+          </Button>
+        ),
+      }}
+    >
       <Tabs
         value={currentTabIndex}
         onChange={(_e, value) => {

@@ -4,6 +4,7 @@ import KeyIcon from "@mui/icons-material/Key";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import { Button, Link, Stack } from "@mui/joy";
+import { usePrivy } from "@privy-io/react-auth";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -50,36 +51,41 @@ const footerItems = [
 
 export const Footer = () => {
   const pathname = usePathname();
+  const { authenticated } = usePrivy();
 
   return (
-    <Stack
-      position="sticky"
-      bottom={0}
-      bgcolor="background.body"
-      borderTop="solid 1px"
-      borderBottom="solid 1px"
-      zIndex={10}
-    >
-      <Stack component="nav" direction="row" py={1}>
-        {footerItems.map((item, index) => (
-          <Link
-            key={index}
-            component={NextLink}
-            href={item.path}
-            sx={{
-              color: pathname === item.path ? "primary.500" : "neutral.400",
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              "&:hover": {
-                color: "primary.700",
-              },
-            }}
-          >
-            {item.icon}
-          </Link>
-        ))}
-      </Stack>
-    </Stack>
+    <>
+      {authenticated && (
+        <Stack
+          position="sticky"
+          bottom={0}
+          bgcolor="background.body"
+          borderTop="solid 1px"
+          borderBottom="solid 1px"
+          zIndex={10}
+        >
+          <Stack component="nav" direction="row" py={1}>
+            {footerItems.map((item, index) => (
+              <Link
+                key={index}
+                component={NextLink}
+                href={item.path}
+                sx={{
+                  color: pathname === item.path ? "primary.500" : "neutral.400",
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  "&:hover": {
+                    color: "primary.700",
+                  },
+                }}
+              >
+                {item.icon}
+              </Link>
+            ))}
+          </Stack>
+        </Stack>
+      )}
+    </>
   );
 };
