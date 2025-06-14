@@ -7,9 +7,10 @@ import { Navbar } from "../layout/navbar";
 type MainContainerProps = {
   children: ReactNode;
   navbarProps?: object;
+  hasTabs?: boolean;
 };
 
-export const MainContainer = ({ children, navbarProps }: MainContainerProps) => {
+export const MainContainer = ({ children, navbarProps, hasTabs }: MainContainerProps) => {
   return (
     <Stack
       position="sticky"
@@ -21,7 +22,7 @@ export const MainContainer = ({ children, navbarProps }: MainContainerProps) => 
       margin="auto"
     >
       <Navbar {...navbarProps} />
-      <Stack component="main" flexGrow={1}>
+      <Stack component="main" flexGrow={1} p={hasTabs ? 0 : 2}>
         {children}
       </Stack>
       <Footer />

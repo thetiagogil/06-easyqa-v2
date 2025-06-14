@@ -7,6 +7,7 @@ import { CssBaseline, CssVarsProvider } from "@mui/joy";
 import type { PrivyClientConfig } from "@privy-io/react-auth";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 export const queryClient = new QueryClient();
 
@@ -21,6 +22,13 @@ const privy: { appId: string; config: PrivyClientConfig } = {
 };
 
 export function Providers({ children }: WithChildren) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
   return (
     <PrivyProvider appId={privy.appId} config={privy.config}>
       <QueryClientProvider client={queryClient}>

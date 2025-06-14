@@ -1,7 +1,7 @@
-'use client';
-import { extendTheme, PaletteRange } from '@mui/joy';
+"use client";
+import { extendTheme, PaletteRange } from "@mui/joy";
 
-declare module '@mui/joy/styles' {
+declare module "@mui/joy/styles" {
   interface Palette {
     secondary: PaletteRange;
   }
@@ -12,40 +12,40 @@ export const theme = extendTheme({
     dark: {
       palette: {
         primary: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
+          50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
+          400: "#34d399",
+          500: "#10b981",
+          600: "#059669",
+          700: "#047857",
+          800: "#065f46",
+          900: "#064e3b",
         },
         secondary: {
-          50: '#ffffff',
-          100: '#e7e6fa',
-          200: '#d1d0f0',
-          300: '#a09ed3',
-          400: '#635b9c',
-          500: '#443c7c',
-          600: '#342a5e',
-          700: '#2c244e',
-          800: '#25203d',
-          900: '#1e1b2e',
+          50: "#ffffff",
+          100: "#e7e6fa",
+          200: "#d1d0f0",
+          300: "#a09ed3",
+          400: "#635b9c",
+          500: "#443c7c",
+          600: "#342a5e",
+          700: "#2c244e",
+          800: "#25203d",
+          900: "#1e1b2e",
         },
         background: {
-          body: 'rgb(9, 8, 24)',
+          body: "rgb(9, 8, 24)",
         },
         success: {
-          500: '#22c55e',
+          500: "#22c55e",
         },
         danger: {
-          500: '#ef4444',
+          500: "#ef4444",
         },
         warning: {
-          500: '#f59e0b',
+          500: "#f59e0b",
         },
       },
     },
@@ -55,21 +55,21 @@ export const theme = extendTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           color: theme.palette.secondary[600],
-          transition: '0.3s',
+          transition: "0.3s",
         }),
       },
     },
     JoyLink: {
       styleOverrides: {
         root: () => ({
-          transition: '0.3s',
+          transition: "0.3s",
         }),
       },
     },
     JoyButton: {
       styleOverrides: {
         root: () => ({
-          transition: '0.3s',
+          transition: "0.3s",
           fontWeight: 600,
           borderRadius: 12,
         }),
@@ -78,7 +78,7 @@ export const theme = extendTheme({
     JoySelect: {
       styleOverrides: {
         root: () => ({
-          transition: '0.3s',
+          transition: "0.3s",
           borderRadius: 12,
         }),
       },
@@ -86,8 +86,8 @@ export const theme = extendTheme({
     JoyIconButton: {
       styleOverrides: {
         root: () => ({
-          transition: '0.3s',
-          borderRadius: '50%',
+          transition: "0.3s",
+          borderRadius: "50%",
         }),
       },
     },
