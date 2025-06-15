@@ -9,11 +9,13 @@ import { createContext, useContext, useMemo } from "react";
 type AuthContextType = {
   currentUser: UserType | null;
   loading: boolean;
+  isUserReady: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   loading: true,
+  isUserReady: false,
 });
 
 export function AuthContextProvider({ children }: WithChildren) {
@@ -31,10 +33,12 @@ export function AuthContextProvider({ children }: WithChildren) {
             wallet: privyUser.wallet?.address,
           }
         : null;
+    const isUserReady = !!privyUser && !!userData && !!userData.name;
 
     return {
       currentUser: mergedUser,
       loading,
+      isUserReady,
     };
   }, [userData, privyUser, loading]);
 

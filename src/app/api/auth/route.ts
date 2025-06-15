@@ -45,8 +45,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(newUser);
-  } catch (err) {
-    console.error("Privy token verification failed", err);
+  } catch (error) {
+    console.error("Privy token verification failed", error);
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 }

@@ -1,12 +1,22 @@
 "use client";
 import { MainContainer } from "@/components/shared/main-container";
+import { useAuthContext } from "@/contexts/auth.context";
 import { Button, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const { authenticated, login } = usePrivy();
+  const { isUserReady, loading } = useAuthContext();
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && authenticated && !isUserReady) {
+      router.replace("/setup");
+    }
+  }, [loading, authenticated, isUserReady, router]);
 
   const tabs = [{ label: "new" }, { label: "top" }, { label: "hot" }];
 
