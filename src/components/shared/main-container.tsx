@@ -4,11 +4,11 @@ import { ReactNode } from "react";
 import { Footer } from "../layout/footer";
 import { Navbar } from "../layout/navbar";
 
-type MainContainerProps = {
+interface MainContainerProps {
   children: ReactNode;
   navbarProps?: object;
   hasTabs?: boolean;
-};
+}
 
 export const MainContainer = ({ children, navbarProps, hasTabs }: MainContainerProps) => {
   return (

@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { Sidebar } from "./sidebar";
 
-export type NavbarProps = {
+interface NavbarProps {
   title?: string;
   hasBackButton?: boolean;
   startItem?: ReactNode;
   centerItem?: ReactNode;
   endItem?: ReactNode;
   fullItem?: ReactNode;
-};
+}
 
 const NavbarContainer = ({ children }: { children: ReactNode }) => (
   <Stack

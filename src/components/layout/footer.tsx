@@ -1,8 +1,8 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import HomeIcon from "@mui/icons-material/Home";
-import KeyIcon from "@mui/icons-material/Key";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { Button, Link, Stack } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
 import NextLink from "next/link";
@@ -38,14 +38,14 @@ const footerItems = [
     ),
   },
   {
-    label: "mint",
-    path: "/mint",
-    icon: <KeyIcon sx={{ fontSize: size }} />,
-  },
-  {
     label: "notifications",
     path: "/notifications",
     icon: <NotificationsIcon sx={{ fontSize: size }} />,
+  },
+  {
+    label: "settings",
+    path: "/settings",
+    icon: <SettingsIcon sx={{ fontSize: size }} />,
   },
 ];
 

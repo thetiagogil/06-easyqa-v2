@@ -1,5 +1,6 @@
 "use client";
 import { AuthContextProvider } from "@/contexts/auth.context";
+import { SnackbarProvider, useSnackbarContext } from "@/contexts/snackbar.context";
 import { ENV_VARS } from "@/lib/constants";
 import { theme } from "@/styles/theme";
 import type { WithChildren } from "@/types";
@@ -7,12 +8,51 @@ import { CssBaseline, CssVarsProvider } from "@mui/joy";
 import type { PrivyClientConfig } from "@privy-io/react-auth";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Loading } from "./shared/loading";
 
 export const queryClient = new QueryClient();
 
+const validateEnvVars = () => {
+  const missing = Object.entries(ENV_VARS)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  return missing;
+};
+
+const EnvValidator = () => {
+  const { showSnackbar } = useSnackbarContext();
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
+
+    const missing = validateEnvVars();
+
+    if (missing.length > 0) {
+      showSnackbar(`Missing ENV vars: ${missing.join(", ")}`, "warning");
+    }
+  }, [showSnackbar]);
+
+  return null;
+};
+
+export const RouterLoader = () => {
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const timeout = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timeout);
+  }, [pathname]);
+
+  return <Loading isLoading={loading} variant="overlay" />;
+};
+
 const privy: { appId: string; config: PrivyClientConfig } = {
-  appId: ENV_VARS.PRIVY_APP_ID!,
+  appId: ENV_VARS.PRIVY_APP_ID,
   config: {
     loginMethods: ["wallet", "email", "google"],
     embeddedWallets: {
@@ -30,13 +70,19 @@ export function Providers({ children }: WithChildren) {
 
   if (!mounted) return null;
   return (
-    <PrivyProvider appId={privy.appId} config={privy.config}>
-      <QueryClientProvider client={queryClient}>
-        <CssVarsProvider defaultMode="dark" theme={theme}>
-          <CssBaseline />
-          <AuthContextProvider>{children}</AuthContextProvider>
-        </CssVarsProvider>
-      </QueryClientProvider>
-    </PrivyProvider>
+    <SnackbarProvider>
+      <PrivyProvider appId={privy.appId} config={privy.config}>
+        <QueryClientProvider client={queryClient}>
+          <CssVarsProvider defaultMode="dark" theme={theme}>
+            <CssBaseline />
+            <EnvValidator />
+            <AuthContextProvider>
+              <RouterLoader />
+              {children}
+            </AuthContextProvider>
+          </CssVarsProvider>
+        </QueryClientProvider>
+      </PrivyProvider>
+    </SnackbarProvider>
   );
 }

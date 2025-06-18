@@ -28,11 +28,19 @@ export const Sidebar = ({ open, setOpen }: SidebarProps) => {
   const items = [
     {
       label: "Profile",
-      icon: <PersonIcon />,
       path: `/profile`,
+      icon: <PersonIcon />,
     },
-    { label: "Wallet", icon: <AccountBalanceWalletIcon />, path: "/wallet" },
-    { label: "Settings", icon: <SettingsIcon />, path: "/settings" },
+    {
+      label: "Wallet",
+      path: "/wallet",
+      icon: <AccountBalanceWalletIcon />,
+    },
+    {
+      label: "Settings",
+      path: "/settings",
+      icon: <SettingsIcon />,
+    },
     { label: "divider" },
     {
       label: "Log out",

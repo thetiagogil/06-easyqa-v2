@@ -1,12 +1,14 @@
+import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-type SetupUserData = {
+interface SetupUserData {
   userId: string;
   name: string;
-};
+}
 
 export const useSetupUser = () => {
   const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarContext();
 
   return useMutation({
     mutationFn: async ({ userId, name }: SetupUserData) => {
@@ -18,12 +20,13 @@ export const useSetupUser = () => {
         body: JSON.stringify({ userId, name }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.error || "Failed to set up user");
+        const error = await res.json();
+        showSnackbar(error.message || "Failed to set up user", "danger");
+        return null;
       }
 
+      const data = await res.json();
       return data;
     },
     onSuccess: () => {

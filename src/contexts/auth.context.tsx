@@ -6,11 +6,11 @@ import type { UserType } from "@/types/user";
 import { usePrivy } from "@privy-io/react-auth";
 import { createContext, useContext, useMemo } from "react";
 
-type AuthContextType = {
+interface AuthContextType {
   currentUser: UserType | null;
   loading: boolean;
   isUserReady: boolean;
-};
+}
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
@@ -42,7 +42,7 @@ export function AuthContextProvider({ children }: WithChildren) {
     };
   }, [userData, privyUser, loading]);
 
-  if (loading) return <Loading minHeight="100vh" />;
+  if (loading) return <Loading variant="overlay" />;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

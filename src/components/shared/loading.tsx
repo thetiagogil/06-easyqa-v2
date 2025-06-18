@@ -1,11 +1,11 @@
 import { Stack } from "@mui/joy";
 import CircularProgress from "@mui/joy/CircularProgress";
 
-type LoadingProps = {
+interface LoadingProps {
   isLoading?: boolean;
   minHeight?: string | number;
   variant?: "overlay";
-};
+}
 
 export const Loading = ({ isLoading = true, minHeight = 80, variant }: LoadingProps) => {
   if (!isLoading) return null;

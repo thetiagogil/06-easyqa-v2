@@ -1,8 +1,10 @@
+import { useSnackbarContext } from "@/contexts/snackbar.context"; // ✅ import your context
 import { getAccessToken, usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuthUser = () => {
   const { ready, authenticated } = usePrivy();
+  const { showSnackbar } = useSnackbarContext();
 
   return useQuery({
     queryKey: ["user"],
@@ -16,11 +18,13 @@ export const useAuthUser = () => {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to authenticate user");
+        const error = await res.json();
+        showSnackbar(error.message || "Failed to authenticate user", "danger");
+        return null;
       }
 
-      return res.json();
+      const data = await res.json();
+      return data;
     },
     enabled: ready && authenticated,
     retry: false,

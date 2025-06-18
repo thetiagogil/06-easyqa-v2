@@ -12,41 +12,37 @@ export async function POST(req: NextRequest) {
   }
 
   const token = authHeader.replace("Bearer ", "");
-  try {
-    const claims = await privy.verifyAuthToken(token);
-    const { userId } = claims;
 
-    // Check if user exists
-    const { data: existingUser, error: fetchError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
+  const claims = await privy.verifyAuthToken(token);
+  const { userId } = claims;
 
-    if (fetchError && fetchError.code !== "PGRST116") {
-      console.error(fetchError);
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
+  // Check if user exists
+  const { data: existingUser, error: fetchError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", userId)
+    .single();
 
-    if (existingUser) {
-      return NextResponse.json(existingUser);
-    }
-
-    // Create user if not exists
-    const { data: newUser, error: createError } = await supabase
-      .from("users")
-      .insert({ id: userId })
-      .select()
-      .single();
-
-    if (createError) {
-      console.error(createError);
-      return NextResponse.json({ error: "Could not create user" }, { status: 500 });
-    }
-
-    return NextResponse.json(newUser);
-  } catch (error) {
-    console.error("Privy token verification failed", error);
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  if (fetchError && fetchError.code !== "PGRST116") {
+    console.error(fetchError);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
+
+  if (existingUser) {
+    return NextResponse.json(existingUser);
+  }
+
+  // Create user if not exists
+  const { data: newUser, error: createError } = await supabase
+    .from("users")
+    .insert({ id: userId })
+    .select()
+    .single();
+
+  if (createError) {
+    console.error(createError);
+    return NextResponse.json({ error: "Could not create user" }, { status: 500 });
+  }
+
+  return NextResponse.json(newUser);
 }
