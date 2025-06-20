@@ -8,9 +8,7 @@ import { CssBaseline, CssVarsProvider } from "@mui/joy";
 import type { PrivyClientConfig } from "@privy-io/react-auth";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loading } from "./shared/loading";
 
 export const queryClient = new QueryClient();
 
@@ -38,19 +36,6 @@ const EnvValidator = () => {
   return null;
 };
 
-export const RouterLoader = () => {
-  const pathname = usePathname();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timeout);
-  }, [pathname]);
-
-  return <Loading isLoading={loading} variant="overlay" />;
-};
-
 const privy: { appId: string; config: PrivyClientConfig } = {
   appId: ENV_VARS.PRIVY_APP_ID,
   config: {
@@ -76,10 +61,7 @@ export function Providers({ children }: WithChildren) {
           <CssVarsProvider defaultMode="dark" theme={theme}>
             <CssBaseline />
             <EnvValidator />
-            <AuthContextProvider>
-              <RouterLoader />
-              {children}
-            </AuthContextProvider>
+            <AuthContextProvider>{children}</AuthContextProvider>
           </CssVarsProvider>
         </QueryClientProvider>
       </PrivyProvider>

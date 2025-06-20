@@ -1,9 +1,9 @@
+import { useAuthContext } from "@/contexts/auth.context";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Avatar, IconButton, Stack, Typography } from "@mui/joy";
+import { Avatar, Link, Stack, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
-import { useRouter } from "next/navigation";
-import { ReactNode, useState } from "react";
-import { Sidebar } from "./sidebar";
+import NextLink from "next/link";
+import { ReactNode } from "react";
 
 interface NavbarProps {
   title?: string;
@@ -35,11 +35,19 @@ const NavbarContainer = ({ children }: { children: ReactNode }) => (
 );
 
 const BackButton = () => {
-  const router = useRouter();
   return (
-    <IconButton onClick={() => router.push("/")}>
+    <Link
+      color="neutral"
+      component={NextLink}
+      href="/"
+      sx={{
+        "&:hover": {
+          color: "primary.700",
+        },
+      }}
+    >
       <ArrowBackIcon />
-    </IconButton>
+    </Link>
   );
 };
 
@@ -52,19 +60,28 @@ export const Navbar = ({
   hasBackButton,
 }: NavbarProps) => {
   const { authenticated } = usePrivy();
-  const [open, setOpen] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
 
   if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
   return (
     <NavbarContainer>
-      <Sidebar open={open} setOpen={setOpen} />
       <Stack flexDirection="row" justifyContent="start" alignItems="center" flexBasis="100%">
         {startItem ? (
           startItem
         ) : hasBackButton ? (
           <BackButton />
         ) : (
-          authenticated && <Avatar onClick={() => setOpen(true)} sx={{ cursor: "pointer" }} />
+          authenticated && (
+            <Avatar
+              variant="outlined"
+              color="primary"
+              src=""
+              alt={currentUser?.name}
+              component={Link}
+              href="/profile"
+              underline="none"
+            />
+          )
         )}
       </Stack>
 

@@ -21,7 +21,7 @@ export const Loading = ({ isLoading = true, minHeight = 80, variant }: LoadingPr
         right={0}
         bottom={0}
         zIndex={1300}
-        bgcolor="rgba(0, 0, 0, 0.6)"
+        bgcolor="rgba(9, 8, 24, 0.6)"
       >
         <CircularProgress color="neutral" size="lg" role="status" aria-busy="true" />
       </Stack>
