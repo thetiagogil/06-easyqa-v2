@@ -1,7 +1,7 @@
 "use client";
 import { MainContainer } from "@/components/shared/main-container";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Button, List, ListDivider, ListItem, Stack, Typography } from "@mui/joy";
+import { List, ListDivider, ListItem, Stack, Switch, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
 
 export default function SettingsPage() {
@@ -37,36 +37,33 @@ export default function SettingsPage() {
 
   return (
     <MainContainer navbarProps={{ title: "settings", hasBackButton: true }}>
-      <Typography level="h4" mb={2}>
-        Linked accounts
-      </Typography>
-      <List variant="outlined" sx={{ borderRadius: "sm", flex: 0, bgcolor: "transparent" }}>
-        {accounts.map((account, index) => {
-          const { label, isLinked, link, unlink } = account;
-          return (
-            <Stack key={index}>
-              <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Stack flexDirection="row" alignItems="center" gap={1}>
-                  <Typography textColor={!isLinked ? "neutral.600" : ""}>
-                    {label.charAt(0).toUpperCase() + label.slice(1)}
-                  </Typography>
-                  {isLinked && <CheckCircleIcon color="success" />}
-                </Stack>
+      <Stack gap={2}>
+        <Typography level="h4">Connections</Typography>
+        <List variant="outlined" sx={{ borderRadius: "sm", flex: 0 }}>
+          {accounts.map((account, index) => {
+            const { label, isLinked, link, unlink } = account;
+            return (
+              <Stack key={index}>
+                <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Stack flexDirection="row" alignItems="center" gap={1}>
+                    <Typography textColor={!isLinked ? "neutral.600" : ""}>
+                      {label.charAt(0).toUpperCase() + label.slice(1)}
+                    </Typography>
+                    {isLinked && <CheckCircleIcon color="success" />}
+                  </Stack>
 
-                <Button
-                  variant="outlined"
-                  color={isLinked ? "neutral" : "primary"}
-                  onClick={() => (isLinked ? unlink() : link())}
-                  disabled={user?.linkedAccounts.length === 1 && isLinked}
-                >
-                  {isLinked ? "Unlink" : "Link"}
-                </Button>
-              </ListItem>
-              {index !== accounts.length - 1 && <ListDivider component="li" />}
-            </Stack>
-          );
-        })}
-      </List>
+                  <Switch
+                    checked={isLinked}
+                    onChange={() => (isLinked ? unlink() : link())}
+                    disabled={user?.linkedAccounts.length === 1 && isLinked}
+                  />
+                </ListItem>
+                {index !== accounts.length - 1 && <ListDivider component="li" />}
+              </Stack>
+            );
+          })}
+        </List>
+      </Stack>
     </MainContainer>
   );
 }

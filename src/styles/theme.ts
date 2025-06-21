@@ -1,11 +1,5 @@
 "use client";
-import { extendTheme, PaletteRange } from "@mui/joy";
-
-declare module "@mui/joy/styles" {
-  interface Palette {
-    secondary: PaletteRange;
-  }
-}
+import { extendTheme } from "@mui/joy";
 
 export const theme = extendTheme({
   colorSchemes: {
@@ -23,7 +17,7 @@ export const theme = extendTheme({
           800: "#065f46",
           900: "#064e3b",
         },
-        secondary: {
+        /* neutral: {
           50: "#ffffff",
           100: "#e7e6fa",
           200: "#d1d0f0",
@@ -34,7 +28,7 @@ export const theme = extendTheme({
           700: "#2c244e",
           800: "#25203d",
           900: "#1e1b2e",
-        },
+        }, */
         background: {
           body: "rgb(9, 8, 24)",
         },
@@ -54,9 +48,12 @@ export const theme = extendTheme({
     JoyStack: {
       styleOverrides: {
         root: ({ theme }) => ({
-          color: theme.palette.secondary[600],
+          color: theme.palette.neutral[700],
           transition: "0.3s",
         }),
+      },
+      defaultProps: {
+        color: "secondary",
       },
     },
     JoyLink: {

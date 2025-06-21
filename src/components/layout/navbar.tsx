@@ -42,7 +42,7 @@ const BackButton = () => {
       href="/"
       sx={{
         "&:hover": {
-          color: "primary.700",
+          color: "neutral.600",
         },
       }}
     >

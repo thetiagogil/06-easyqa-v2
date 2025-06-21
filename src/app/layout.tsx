@@ -1,12 +1,15 @@
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import "@/styles/globals.css";
 import type { WithChildren } from "@/types";
-import { Providers } from "../components/providers";
+import { MainProvider } from "../components/providers/main-provider";
 
 export default function RootLayout({ children }: WithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Providers>{children}</Providers>
+        <ThemeProvider>
+          <MainProvider>{children}</MainProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

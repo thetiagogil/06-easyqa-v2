@@ -2,9 +2,7 @@
 import { AuthContextProvider } from "@/contexts/auth.context";
 import { SnackbarProvider, useSnackbarContext } from "@/contexts/snackbar.context";
 import { ENV_VARS } from "@/lib/constants";
-import { theme } from "@/styles/theme";
 import type { WithChildren } from "@/types";
-import { CssBaseline, CssVarsProvider } from "@mui/joy";
 import type { PrivyClientConfig } from "@privy-io/react-auth";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -46,7 +44,7 @@ const privy: { appId: string; config: PrivyClientConfig } = {
   },
 };
 
-export function Providers({ children }: WithChildren) {
+export function MainProvider({ children }: WithChildren) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -54,15 +52,13 @@ export function Providers({ children }: WithChildren) {
   }, []);
 
   if (!mounted) return null;
+
   return (
     <SnackbarProvider>
       <PrivyProvider appId={privy.appId} config={privy.config}>
         <QueryClientProvider client={queryClient}>
-          <CssVarsProvider defaultMode="dark" theme={theme}>
-            <CssBaseline />
-            <EnvValidator />
-            <AuthContextProvider>{children}</AuthContextProvider>
-          </CssVarsProvider>
+          <EnvValidator />
+          <AuthContextProvider>{children}</AuthContextProvider>
         </QueryClientProvider>
       </PrivyProvider>
     </SnackbarProvider>
