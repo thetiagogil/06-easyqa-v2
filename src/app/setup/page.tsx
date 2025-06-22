@@ -1,6 +1,6 @@
 "use client";
 import { useAuthContext } from "@/contexts/auth.context";
-import { useSetupUser } from "@/hooks/useUser";
+import { useUpdateUser } from "@/hooks/useUser";
 import { Button, FormControl, FormHelperText, Input, Stack, Typography } from "@mui/joy";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -12,7 +12,7 @@ type FormData = {
 
 export default function SetupPage() {
   const { currentUser } = useAuthContext();
-  const { mutateAsync, isPending } = useSetupUser();
+  const { mutateAsync, isPending } = useUpdateUser();
   const router = useRouter();
 
   const {
@@ -27,10 +27,12 @@ export default function SetupPage() {
         userId: currentUser!.id,
         name: data.name,
       });
-
-      router.replace("/");
     } catch (error: any) {
       console.error("Setup failed:", error.message);
+    } finally {
+      if (currentUser?.name) {
+        router.replace("/");
+      }
     }
   };
 

@@ -14,16 +14,16 @@ export async function POST(req: NextRequest) {
   const token = authHeader.replace("Bearer ", "");
 
   const claims = await privy.verifyAuthToken(token);
-  const { userId } = claims;
+  const { userId: userPrivyId } = claims;
 
   // Check if user exists
   const { data: existingUser, error: fetchError } = await supabase
     .from("users")
     .select("*")
-    .eq("id", userId)
+    .eq("privy_id", userPrivyId)
     .single();
 
-  if (fetchError && fetchError.code !== "PGRST116") {
+  if (fetchError) {
     console.error(fetchError);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   // Create user if not exists
   const { data: newUser, error: createError } = await supabase
     .from("users")
-    .insert({ id: userId })
+    .insert({ privy_id: userPrivyId })
     .select()
     .single();
 

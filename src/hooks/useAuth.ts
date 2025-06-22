@@ -1,4 +1,4 @@
-import { useSnackbarContext } from "@/contexts/snackbar.context"; // ✅ import your context
+import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { getAccessToken, usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
 

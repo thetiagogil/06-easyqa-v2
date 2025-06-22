@@ -78,7 +78,7 @@ export const Navbar = ({
               src=""
               alt={currentUser?.name}
               component={Link}
-              href="/profile"
+              href={`/profile/${currentUser?.id}`}
               underline="none"
             />
           )
