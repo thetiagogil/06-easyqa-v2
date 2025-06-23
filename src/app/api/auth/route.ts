@@ -16,12 +16,12 @@ export async function POST(req: NextRequest) {
   const claims = await privy.verifyAuthToken(token);
   const { userId: userPrivyId } = claims;
 
-  // Check if user exists
+  // 1 - Check if user exists
   const { data: existingUser, error: fetchError } = await supabase
     .from("users")
     .select("*")
     .eq("privy_id", userPrivyId)
-    .single();
+    .maybeSingle();
 
   if (fetchError) {
     console.error(fetchError);
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(existingUser);
   }
 
-  // Create user if not exists
+  // 2 - Create user if not exists
   const { data: newUser, error: createError } = await supabase
     .from("users")
     .insert({ privy_id: userPrivyId })
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (createError) {
-    console.error(createError);
+    console.error("Create Error", createError.message, createError.details, createError.hint);
     return NextResponse.json({ error: "Could not create user" }, { status: 500 });
   }
 

@@ -1,9 +1,8 @@
 "use client";
 import { useAuthContext } from "@/contexts/auth.context";
-import { useUpdateUser } from "@/hooks/useUser";
+import { useUpdateUser } from "@/hooks/useUserApi";
 import { Button, FormControl, FormHelperText, Input, Stack, Typography } from "@mui/joy";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type FormData = {
@@ -12,7 +11,7 @@ type FormData = {
 
 export default function SetupPage() {
   const { currentUser } = useAuthContext();
-  const { mutateAsync, isPending } = useUpdateUser();
+  const { mutateAsync: updateUser, isPending } = useUpdateUser();
   const router = useRouter();
 
   const {
@@ -23,7 +22,7 @@ export default function SetupPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await mutateAsync({
+      await updateUser({
         userId: currentUser!.id,
         name: data.name,
       });
@@ -35,12 +34,6 @@ export default function SetupPage() {
       }
     }
   };
-
-  useEffect(() => {
-    if (!currentUser || currentUser?.name) {
-      router.replace("/");
-    }
-  }, [currentUser, router]);
 
   if (!currentUser) return null;
 

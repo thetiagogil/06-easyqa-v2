@@ -34,23 +34,6 @@ const NavbarContainer = ({ children }: { children: ReactNode }) => (
   </Stack>
 );
 
-const BackButton = () => {
-  return (
-    <Link
-      color="neutral"
-      component={NextLink}
-      href="/"
-      sx={{
-        "&:hover": {
-          color: "neutral.600",
-        },
-      }}
-    >
-      <ArrowBackIcon />
-    </Link>
-  );
-};
-
 export const Navbar = ({
   title,
   startItem,
@@ -69,7 +52,9 @@ export const Navbar = ({
         {startItem ? (
           startItem
         ) : hasBackButton ? (
-          <BackButton />
+          <Link color="neutral" component={NextLink} href="/">
+            <ArrowBackIcon />
+          </Link>
         ) : (
           authenticated && (
             <Avatar

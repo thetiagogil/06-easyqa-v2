@@ -3,7 +3,7 @@ import { getAccessToken, usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuthUser = () => {
-  const { ready, authenticated } = usePrivy();
+  const { ready, authenticated, logout } = usePrivy();
   const { showSnackbar } = useSnackbarContext();
 
   return useQuery({
@@ -20,6 +20,7 @@ export const useAuthUser = () => {
       if (!res.ok) {
         const error = await res.json();
         showSnackbar(error.message || "Failed to authenticate user", "danger");
+        await logout();
         return null;
       }
 

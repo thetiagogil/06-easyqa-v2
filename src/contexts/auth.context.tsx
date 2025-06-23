@@ -1,6 +1,6 @@
 "use client";
 import { Loading } from "@/components/shared/loading";
-import { useAuthUser } from "@/hooks/useAuth";
+import { useAuthUser } from "@/hooks/useAuthApi";
 import { WithChildren } from "@/types";
 import type { UserType } from "@/types/user";
 import { usePrivy } from "@privy-io/react-auth";
@@ -8,21 +8,17 @@ import { createContext, useContext, useMemo } from "react";
 
 interface AuthContextType {
   currentUser: UserType | null;
-  loading: boolean;
   isUserReady: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
-  loading: true,
   isUserReady: false,
 });
 
 export function AuthContextProvider({ children }: WithChildren) {
   const { ready, user: privyUser } = usePrivy();
-  const { data: userData, isLoading } = useAuthUser();
-
-  const loading = !ready || (isLoading && !!privyUser);
+  const { data: userData } = useAuthUser();
 
   const value = useMemo(() => {
     const mergedUser: UserType | null =
@@ -37,12 +33,11 @@ export function AuthContextProvider({ children }: WithChildren) {
 
     return {
       currentUser: mergedUser,
-      loading,
       isUserReady,
     };
-  }, [userData, privyUser, loading]);
+  }, [userData, privyUser]);
 
-  if (loading) return <Loading variant="overlay" />;
+  if (!ready) return <Loading variant="overlay" />;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
