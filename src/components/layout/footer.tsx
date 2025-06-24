@@ -1,3 +1,4 @@
+import { mainBorders } from "@/lib/constants";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -60,8 +61,8 @@ export const Footer = () => {
           position="sticky"
           bottom={0}
           bgcolor="background.body"
-          borderTop="solid 1px"
-          borderBottom="solid 1px"
+          borderTop={mainBorders}
+          borderBottom={{ xs: "", sm: mainBorders }}
           zIndex={10}
         >
           <Stack component="nav" direction="row" py={1}>

@@ -1,4 +1,5 @@
 "use client";
+import { mainBorders } from "@/lib/constants";
 import { Stack } from "@mui/joy";
 import { SxProps } from "@mui/joy/styles/types";
 import { ReactNode } from "react";
@@ -19,8 +20,8 @@ export const MainContainer = ({ children, navbarProps, hasTabs, sx }: MainContai
       top={0}
       minHeight="100vh"
       maxWidth={{ xs: "100%", sm: 500 }}
-      borderRight="1px solid"
-      borderLeft="1px solid"
+      borderRight={{ xs: "", sm: mainBorders }}
+      borderLeft={{ xs: "", sm: mainBorders }}
       margin="auto"
     >
       <Navbar {...navbarProps} />

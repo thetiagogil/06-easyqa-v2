@@ -8,3 +8,5 @@ export const ENV_VARS_SERVER = {
   SUPABASE_SECRET: process.env.SUPABASE_SERVICE_ROLE ?? "",
   PRIVY_APP_SECRET: process.env.PRIVY_APP_SECRET ?? "",
 };
+
+export const mainBorders = "1px solid";

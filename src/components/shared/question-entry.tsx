@@ -1,5 +1,6 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { mainBorders } from "@/lib/constants";
 import { getTime, userAvatar, userName } from "@/lib/utils";
 import { Question } from "@/types/question";
 import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
@@ -9,9 +10,10 @@ import { VoteEntry } from "./vote-entry";
 
 type QuestionEntryProps = {
   question: Question;
+  isLastQuestion: boolean;
 };
 
-export const QuestionEntry = ({ question }: QuestionEntryProps) => {
+export const QuestionEntry = ({ question, isLastQuestion }: QuestionEntryProps) => {
   const { isUserReady } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
 
@@ -27,7 +29,7 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
   };
 
   return (
-    <Stack borderBottom="1px solid" p={2}>
+    <Stack borderBottom={isLastQuestion ? "" : mainBorders} p={2}>
       <Stack direction="row" gap={1}>
         <Stack>
           <Avatar

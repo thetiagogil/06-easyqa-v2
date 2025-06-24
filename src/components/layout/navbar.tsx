@@ -1,4 +1,5 @@
 import { useAuthContext } from "@/contexts/auth.context";
+import { mainBorders } from "@/lib/constants";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Avatar, Link, Stack, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
@@ -24,8 +25,8 @@ const NavbarContainer = ({ children }: { children: ReactNode }) => (
     direction="row"
     justifyContent="space-between"
     alignItems="center"
-    borderTop="solid 1px"
-    borderBottom="solid 1px"
+    borderTop={{ xs: "", sm: mainBorders }}
+    borderBottom={mainBorders}
     py={1}
     px={2}
     zIndex={10}
