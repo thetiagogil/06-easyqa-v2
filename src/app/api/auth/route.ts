@@ -1,9 +1,9 @@
-import { ENV_VARS } from "@/lib/constants";
+import { ENV_VARS, ENV_VARS_SERVER } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 import { PrivyClient } from "@privy-io/server-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-const privy = new PrivyClient(ENV_VARS.PRIVY_APP_ID!, ENV_VARS.PRIVY_APP_SECRET!);
+const privy = new PrivyClient(ENV_VARS.PRIVY_APP_ID!, ENV_VARS_SERVER.PRIVY_APP_SECRET!);
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("Authorization");
