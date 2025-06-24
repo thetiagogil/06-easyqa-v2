@@ -21,12 +21,12 @@ export const useUpdateUser = () => {
 
       if (!res.ok) {
         const error = await res.json();
-        showSnackbar(error.message || "Failed to update user", "danger");
-        return null;
+        const message = error.message || "Failed to update user";
+        showSnackbar(message, "danger");
+        throw new Error(message);
       }
 
-      const data = await res.json();
-      return data;
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });

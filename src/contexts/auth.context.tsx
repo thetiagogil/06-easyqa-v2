@@ -18,28 +18,32 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthContextProvider({ children }: WithChildren) {
   const { ready, authenticated, user: privyUser } = usePrivy();
-  const { data: userData } = useAuthUser();
+  const { data: userData, isLoading: isLoadingUser } = useAuthUser(authenticated);
 
-  const value = useMemo(() => {
-    const mergedUser: User | null =
-      userData && privyUser
-        ? {
-            ...userData,
-            email: privyUser.email?.address,
-            wallet: privyUser.wallet?.address,
-          }
-        : null;
+  const mergedUser: User | null =
+    authenticated && userData && privyUser
+      ? {
+          ...userData,
+          email: privyUser.email?.address,
+          wallet: privyUser.wallet?.address,
+        }
+      : null;
 
-    const isUserReady = ready && (authenticated ? !!mergedUser?.name : true);
+  const isUserReady = useMemo(() => {
+    if (!ready) return false;
+    if (!authenticated) return true;
+    return !!mergedUser?.name;
+  }, [ready, authenticated, mergedUser]);
 
-    return {
-      currentUser: mergedUser,
-      isUserReady,
-    };
-  }, [ready, authenticated, userData, privyUser]);
+  if (!ready || (authenticated && isLoadingUser)) {
+    return <Loading variant="overlay" />;
+  }
 
-  if (!ready) return <Loading variant="overlay" />;
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ currentUser: mergedUser, isUserReady }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuthContext = () => useContext(AuthContext);

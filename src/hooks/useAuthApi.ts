@@ -1,14 +1,16 @@
 import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { User } from "@/types/user";
 import { getAccessToken, usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
 
-export const useAuthUser = () => {
-  const { ready, authenticated, logout } = usePrivy();
+export const useAuthUser = (enabled = true) => {
+  const { logout } = usePrivy();
   const { showSnackbar } = useSnackbarContext();
 
   return useQuery({
     queryKey: ["user"],
-    queryFn: async () => {
+    enabled,
+    queryFn: async (): Promise<User> => {
       const token = await getAccessToken();
       const res = await fetch("/api/auth", {
         method: "POST",
@@ -19,15 +21,14 @@ export const useAuthUser = () => {
 
       if (!res.ok) {
         const error = await res.json();
-        showSnackbar(error.message || "Failed to authenticate user", "danger");
+        const message = error.message || "Failed to authenticate user";
+        showSnackbar(message, "danger");
         await logout();
-        return null;
+        throw new Error(message);
       }
 
-      const data = await res.json();
-      return data;
+      return await res.json();
     },
-    enabled: ready && authenticated,
     retry: false,
   });
 };

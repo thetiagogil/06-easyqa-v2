@@ -49,8 +49,9 @@ const privy: { appId: string; config: PrivyClientConfig } = {
 };
 
 const AuthWrapper = () => {
-  const { ready, authenticated } = usePrivy();
   const { currentUser } = useAuthContext();
+  const { ready, authenticated } = usePrivy();
+  const { showSnackbar } = useSnackbarContext();
   const router = useRouter();
   const pathname = usePathname();
   const [redirecting, setRedirecting] = useState(true);
@@ -58,28 +59,24 @@ const AuthWrapper = () => {
   useEffect(() => {
     if (!ready) return;
 
-    // 1. Not logged in → redirect to homepage if not on "/"
     if (!authenticated && pathname !== "/") {
-      router.replace("/");
+      showSnackbar("You must be logged in to perform this action", "warning");
+      setTimeout(() => router.replace("/"), 50);
       return;
     }
 
-    // 2. Logged in but no user yet → wait
     if (authenticated && !currentUser) return;
 
-    // 3. Logged in, no name → must go to /setup
     if (authenticated && currentUser && !currentUser.name && pathname !== "/setup") {
-      router.replace("/setup");
+      setTimeout(() => router.replace("/setup"), 50);
       return;
     }
 
-    // 4. Logged in, has name, but on setup → redirect to home
     if (authenticated && currentUser?.name && pathname === "/setup") {
-      router.replace("/");
+      setTimeout(() => router.replace("/"), 50);
       return;
     }
 
-    // 5. Everything OK → stop redirecting
     setRedirecting(false);
   }, [ready, authenticated, currentUser, pathname, router]);
 

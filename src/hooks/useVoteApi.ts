@@ -30,8 +30,9 @@ export const useSubmitVote = () => {
 
       if (!res.ok) {
         const error = await res.json();
-        showSnackbar(error.message || "Failed to submit vote", "danger");
-        throw new Error(error.message);
+        const message = error.message || "Failed to submit vote";
+        showSnackbar(message, "danger");
+        throw new Error(message);
       }
 
       return { targetId, targetType, type };

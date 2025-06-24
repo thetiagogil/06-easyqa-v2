@@ -1,3 +1,5 @@
+import { useAuthContext } from "@/contexts/auth.context";
+import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { getTime, userAvatar, userName } from "@/lib/utils";
 import { Question } from "@/types/question";
 import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
@@ -10,8 +12,19 @@ type QuestionEntryProps = {
 };
 
 export const QuestionEntry = ({ question }: QuestionEntryProps) => {
+  const { isUserReady } = useAuthContext();
+  const { showSnackbar } = useSnackbarContext();
+
   const askedAt = useMemo(() => getTime(question.created_at), [question.created_at]);
   const sharedHeight = 24;
+
+  const handleVoteClick = (e: any) => {
+    if (!isUserReady) {
+      e.preventDefault();
+      showSnackbar("You must be logged in to perform this action", "warning");
+      return;
+    }
+  };
 
   return (
     <Stack borderBottom="1px solid" p={2}>
@@ -29,9 +42,10 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             <Typography level="body-sm">
               <Link
                 component={NextLink}
-                href={`/profile/${question.user?.id}`}
+                href={!isUserReady ? "#" : `/profile/${question.user?.id}`}
                 color="primary"
                 fontWeight="bold"
+                onClick={(e) => handleVoteClick(e)}
               >
                 {userName(question.user)}
               </Link>{" "}
@@ -43,7 +57,12 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             <Typography level="body-sm">{askedAt}</Typography>
           </Stack>
 
-          <Link component={NextLink} href={`/question/${question.id}`} underline="none">
+          <Link
+            component={NextLink}
+            href={`/question/${question.id}`}
+            underline="none"
+            onClick={(e) => handleVoteClick(e)}
+          >
             <Typography level="body-md">{question.title}</Typography>
           </Link>
 

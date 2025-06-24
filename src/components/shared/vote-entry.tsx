@@ -14,7 +14,7 @@ type VoteEntryProps = {
 };
 
 export function VoteEntry({ targetType, target }: VoteEntryProps) {
-  const { currentUser } = useAuthContext();
+  const { isUserReady } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
   const { mutate: submit } = useSubmitVote();
 
@@ -24,8 +24,8 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
   );
 
   const handleVoteClick = (selectedType: "upvote" | "downvote") => {
-    if (!currentUser) {
-      showSnackbar("You must be logged in to vote.", "warning");
+    if (!isUserReady) {
+      showSnackbar("You must be logged in to perform this action", "warning");
       return;
     }
 
