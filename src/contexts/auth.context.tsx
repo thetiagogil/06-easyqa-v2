@@ -31,7 +31,7 @@ export function AuthContextProvider({ children }: WithChildren) {
 
   const isUserReady = useMemo(() => {
     if (!ready) return false;
-    if (!authenticated) return true;
+    if (!authenticated) return false;
     return !!mergedUser?.name;
   }, [ready, authenticated, mergedUser]);
 

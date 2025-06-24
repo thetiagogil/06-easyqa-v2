@@ -12,6 +12,7 @@ export default function ProfilePage() {
       <Typography level="h4" mb={2}>
         Profile
       </Typography>
+
       <Box>
         <IconButton size="sm" color="danger" onClick={logout}>
           <LogoutIcon />

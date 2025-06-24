@@ -4,7 +4,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Button, Link, Stack } from "@mui/joy";
+import { Box, Button, Link, Stack } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
@@ -56,7 +56,7 @@ export const Footer = () => {
 
   return (
     <>
-      {authenticated && (
+      {authenticated ? (
         <Stack
           position="sticky"
           bottom={0}
@@ -86,6 +86,8 @@ export const Footer = () => {
             ))}
           </Stack>
         </Stack>
+      ) : (
+        <Box position="sticky" bottom={0} borderBottom={{ xs: "", sm: mainBorders }} zIndex={10} />
       )}
     </>
   );
