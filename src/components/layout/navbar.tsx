@@ -1,5 +1,5 @@
 import { useAuthContext } from "@/contexts/auth.context";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Avatar, Link, Stack, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
 import NextLink from "next/link";
@@ -53,7 +53,7 @@ export const Navbar = ({
           startItem
         ) : hasBackButton ? (
           <Link color="neutral" component={NextLink} href="/">
-            <ArrowBackIcon />
+            <ArrowBackIosIcon />
           </Link>
         ) : (
           authenticated && (

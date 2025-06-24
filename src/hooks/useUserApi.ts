@@ -1,17 +1,16 @@
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface UpdateUserData {
-  userId: string;
-  name: string;
-}
-
 export const useUpdateUser = () => {
+  type MutationProps = {
+    userId: number;
+    name: string;
+  };
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
 
   return useMutation({
-    mutationFn: async ({ userId, name }: UpdateUserData) => {
+    mutationFn: async ({ userId, name }: MutationProps) => {
       const res = await fetch(`/api/users/${userId}`, {
         method: "PATCH",
         headers: {

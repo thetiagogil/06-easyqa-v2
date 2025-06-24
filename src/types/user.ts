@@ -1,7 +1,7 @@
-export interface UserType {
-  id: string;
+export interface User {
+  id: number;
   privy_id: string;
   name?: string;
-  avatar_url?: string;
   bio?: string;
+  avatar_url?: string;
 }
