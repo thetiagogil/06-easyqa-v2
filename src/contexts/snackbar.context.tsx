@@ -1,19 +1,13 @@
 "use client";
-
+import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Snackbar } from "@mui/joy";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { IoIosClose } from "react-icons/io";
+import type { ColorPaletteProp } from "@mui/joy/styles";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
-type SnackbarStatus = "primary" | "success" | "danger" | "warning";
+type SnackbarStatus = ColorPaletteProp;
 
 type SnackbarContextType = {
-  showSnackbar: (msg: string, status?: SnackbarStatus) => void;
+  showSnackbar: (msg: string, status?: SnackbarStatus, duration?: number) => void;
 };
 
 const SnackbarContext = createContext({} as SnackbarContextType);
@@ -46,12 +40,8 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
         onClose={() => setOpen(false)}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         endDecorator={
-          <IconButton
-            variant="plain"
-            color={status}
-            onClick={() => setOpen(false)}
-          >
-            <IoIosClose fontSize={20} />
+          <IconButton variant="plain" color={status} onClick={() => setOpen(false)}>
+            <CloseIcon fontSize="small" />
           </IconButton>
         }
       >

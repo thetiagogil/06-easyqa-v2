@@ -1,19 +1,30 @@
+import { useAuthContext } from "@/contexts/auth.context";
+import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { getTime, userAvatar, userName } from "@/lib/utils";
+import { Question } from "@/types/question";
 import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
 import NextLink from "next/link";
 import { useMemo } from "react";
 import { VoteEntry } from "./vote-entry";
 
 type QuestionEntryProps = {
-  question: QuestionModel;
+  question: Question;
 };
 
 export const QuestionEntry = ({ question }: QuestionEntryProps) => {
-  const askedAt = useMemo(
-    () => getTime(question.created_at),
-    [question.created_at]
-  );
+  const { isUserReady } = useAuthContext();
+  const { showSnackbar } = useSnackbarContext();
+
+  const askedAt = useMemo(() => getTime(question.created_at), [question.created_at]);
   const sharedHeight = 24;
+
+  const handleVoteClick = (e: any) => {
+    if (!isUserReady) {
+      e.preventDefault();
+      showSnackbar("You must be logged in to perform this action", "warning");
+      return;
+    }
+  };
 
   return (
     <Stack borderBottom="1px solid" p={2}>
@@ -27,18 +38,14 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
         </Stack>
 
         <Stack flexBasis="100%" gap={1}>
-          <Stack
-            direction="row"
-            height={sharedHeight}
-            alignItems="center"
-            gap={1}
-          >
+          <Stack direction="row" height={sharedHeight} alignItems="center" gap={1}>
             <Typography level="body-sm">
               <Link
                 component={NextLink}
-                href={`/profile/${question.user?.id}`}
+                href={!isUserReady ? "#" : `/profile/${question.user?.id}`}
                 color="primary"
                 fontWeight="bold"
+                onClick={(e) => handleVoteClick(e)}
               >
                 {userName(question.user)}
               </Link>{" "}
@@ -54,21 +61,15 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
             component={NextLink}
             href={`/question/${question.id}`}
             underline="none"
+            onClick={(e) => handleVoteClick(e)}
           >
             <Typography level="body-md">{question.title}</Typography>
           </Link>
 
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
             <VoteEntry target={question} targetType="question" />
 
-            <Chip
-              variant="outlined"
-              color={question.status === "closed" ? "neutral" : "primary"}
-            >
+            <Chip variant="outlined" color={question.status === "closed" ? "neutral" : "primary"}>
               {question.status}
             </Chip>
           </Stack>

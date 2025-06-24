@@ -1,33 +1,31 @@
 "use client";
+import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
-import { useAuthContext } from "@/contexts/user.context";
-import { useSubmitVote } from "@/hooks/use-vote-api";
+import { useSubmitVote } from "@/hooks/useVoteApi";
+import { Question } from "@/types/question";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { IconButton, Stack, Typography } from "@mui/joy";
 import { useState } from "react";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 type VoteEntryProps = {
   targetType: "question" | "answer";
-  target: {
-    id: string;
-    vote_score: number;
-    current_user_vote: "upvote" | "downvote" | null;
-  };
+  target: Question;
 };
 
 export function VoteEntry({ targetType, target }: VoteEntryProps) {
-  const { currentUser } = useAuthContext();
+  const { isUserReady } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
   const { mutate: submit } = useSubmitVote();
 
   const [localScore, setLocalScore] = useState<number>(target.vote_score);
-  const [localUserVote, setLocalUserVote] = useState<
-    "upvote" | "downvote" | null
-  >(target.current_user_vote);
+  const [localUserVote, setLocalUserVote] = useState<"upvote" | "downvote" | null>(
+    target.current_user_vote === 1 ? "upvote" : target.current_user_vote === -1 ? "downvote" : null,
+  );
 
   const handleVoteClick = (selectedType: "upvote" | "downvote") => {
-    if (!currentUser) {
-      showSnackbar("You must be logged in to vote.", "warning");
+    if (!isUserReady) {
+      showSnackbar("You must be logged in to perform this action", "warning");
       return;
     }
 
@@ -46,18 +44,23 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
 
     submit(
       {
-        userId: currentUser.id,
         targetId: target.id,
         targetType,
-        voteType: selectedType,
+        type: selectedType,
       },
       {
         onError: () => {
           setLocalScore((prev) => prev - delta);
-          setLocalUserVote(target.current_user_vote);
+          setLocalUserVote(
+            target.current_user_vote === 1
+              ? "upvote"
+              : target.current_user_vote === -1
+                ? "downvote"
+                : null,
+          );
           showSnackbar("Something went wrong. Please try again.", "danger");
         },
-      }
+      },
     );
   };
 
@@ -69,7 +72,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
         color={localUserVote === "upvote" ? "success" : "neutral"}
         onClick={() => handleVoteClick("upvote")}
       >
-        <IoIosArrowUp />
+        <ArrowUpwardIcon />
       </IconButton>
 
       <Typography
@@ -79,8 +82,8 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
           localUserVote === "upvote"
             ? "success"
             : localUserVote === "downvote"
-            ? "danger"
-            : "neutral"
+              ? "danger"
+              : "neutral"
         }
       >
         {localScore}
@@ -92,7 +95,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
         color={localUserVote === "downvote" ? "danger" : "neutral"}
         onClick={() => handleVoteClick("downvote")}
       >
-        <IoIosArrowDown />
+        <ArrowDownwardIcon />
       </IconButton>
     </Stack>
   );

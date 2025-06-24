@@ -1,20 +1,18 @@
 "use client";
 import { Stack } from "@mui/joy";
+import { SxProps } from "@mui/joy/styles/types";
 import { ReactNode } from "react";
-import { useAccount } from "wagmi";
-import { Footer } from "../navigation/footer";
-import { Navbar } from "../navigation/navbar";
+import { Footer } from "../layout/footer";
+import { Navbar } from "../layout/navbar";
 
-type MainContainerProps = {
+interface MainContainerProps {
   children: ReactNode;
   navbarProps?: object;
-};
+  hasTabs?: boolean;
+  sx?: SxProps;
+}
 
-export const MainContainer = ({
-  children,
-  navbarProps,
-}: MainContainerProps) => {
-  const { isConnected } = useAccount();
+export const MainContainer = ({ children, navbarProps, hasTabs, sx }: MainContainerProps) => {
   return (
     <Stack
       position="sticky"
@@ -26,10 +24,10 @@ export const MainContainer = ({
       margin="auto"
     >
       <Navbar {...navbarProps} />
-      <Stack component="main" flexGrow={1}>
+      <Stack component="main" flexGrow={1} p={hasTabs ? 0 : 2} sx={sx}>
         {children}
       </Stack>
-      {isConnected && <Footer />}
+      <Footer />
     </Stack>
   );
 };

@@ -1,7 +1,8 @@
 import "@/styles/globals.css";
-import { ReactNode } from "react";
+import type { WithChildren } from "@/types";
 import { Providers } from "./providers";
-export default function RootLayout({ children }: { children: ReactNode }) {
+
+export default function RootLayout({ children }: WithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>

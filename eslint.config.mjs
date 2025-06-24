@@ -1,20 +1,24 @@
 import { FlatCompat } from "@eslint/eslintrc";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
+  baseDirectory: __dirname,
 });
 
 export default [
-  ...compat.config({
-    extends: ["next", "plugin:@typescript-eslint/recommended"],
-    plugins: ["@typescript-eslint"],
-    rules: {
-      "react/no-unescaped-entities": "off",
-      "@next/next/no-page-custom-font": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_" },
-      ],
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+
+  {
+    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+    plugins: {
+      "unused-imports": require("eslint-plugin-unused-imports"),
     },
-  }),
+    rules: {
+      "unused-imports/no-unused-imports": "error",
+    },
+  },
 ];
