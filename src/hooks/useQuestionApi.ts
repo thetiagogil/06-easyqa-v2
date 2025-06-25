@@ -14,9 +14,10 @@ export const useGetQuestions = (
   const { currentUser } = useAuthContext();
   const { ready } = usePrivy();
   const { showSnackbar } = useSnackbarContext();
+  const viewerId = currentUser?.id;
 
   return useQuery({
-    queryKey: ["questions", sort, page, currentUser?.id ?? null],
+    queryKey: ["questions", sort, page, viewerId ?? null],
     enabled: enabled && ready,
     queryFn: async (): Promise<Question[]> => {
       const params = new URLSearchParams();
@@ -24,8 +25,8 @@ export const useGetQuestions = (
       params.set("page", page.toString());
       params.set("pageSize", pageSize.toString());
 
-      if (currentUser?.id) {
-        params.set("user_id", String(currentUser.id));
+      if (viewerId) {
+        params.set("viewer_id", String(viewerId));
       }
 
       const res = await fetch(`/api/questions?${params.toString()}`);
@@ -46,13 +47,14 @@ export const useGetQuestionById = (id: number, enabled = true) => {
   const { currentUser } = useAuthContext();
   const { ready } = usePrivy();
   const { showSnackbar } = useSnackbarContext();
+  const viewerId = currentUser?.id;
 
   return useQuery({
-    queryKey: ["question", id, currentUser?.id ?? null],
+    queryKey: ["question", id, viewerId ?? null],
     enabled: enabled && ready && !!id,
     queryFn: async (): Promise<Question> => {
       const params = new URLSearchParams();
-      if (currentUser?.id) params.set("user_id", String(currentUser.id));
+      if (viewerId) params.set("viewer_id", String(viewerId));
 
       const res = await fetch(`/api/questions/${id}?${params.toString()}`);
 

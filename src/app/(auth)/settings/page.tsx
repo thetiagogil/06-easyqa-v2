@@ -1,12 +1,21 @@
 "use client";
 import { MainContainer } from "@/components/shared/main-container";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { List, ListDivider, ListItem, Stack, Switch, Typography } from "@mui/joy";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { Button, List, ListDivider, ListItem, Stack, Switch, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
 
 export default function SettingsPage() {
-  const { user, linkEmail, unlinkEmail, linkGoogle, unlinkGoogle, linkWallet, unlinkWallet } =
-    usePrivy();
+  const {
+    user,
+    logout,
+    linkEmail,
+    unlinkEmail,
+    linkGoogle,
+    unlinkGoogle,
+    linkWallet,
+    unlinkWallet,
+  } = usePrivy();
 
   const accounts = [
     {
@@ -36,10 +45,10 @@ export default function SettingsPage() {
   ];
 
   return (
-    <MainContainer navbarProps={{ title: "settings", hasBackButton: true }}>
+    <MainContainer navbarProps={{ title: "settings", hasBackButton: true }} sx={{ gap: 4 }}>
       <Stack gap={2}>
         <Typography level="h4">Connections</Typography>
-        <List variant="outlined" sx={{ borderRadius: "sm", flex: 0 }}>
+        <List variant="outlined" sx={{ borderRadius: "lg", flex: 0 }}>
           {accounts.map((account, index) => {
             const { label, isLinked, link, unlink } = account;
             return (
@@ -63,6 +72,19 @@ export default function SettingsPage() {
             );
           })}
         </List>
+      </Stack>
+
+      <Stack gap={2}>
+        <Typography level="h4">App</Typography>
+        <Button
+          variant="outlined"
+          color="neutral"
+          onClick={logout}
+          endDecorator={<LogoutIcon />}
+          sx={{ justifyContent: "space-between" }}
+        >
+          Log out
+        </Button>
       </Stack>
     </MainContainer>
   );
