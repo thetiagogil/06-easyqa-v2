@@ -1,9 +1,10 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { mainBorders } from "@/lib/constants";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { Avatar, Link, Stack, Typography } from "@mui/joy";
+import { userAvatar, userName } from "@/lib/utils";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Avatar, IconButton, Link, Stack, Typography } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
-import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 
 interface NavbarProps {
@@ -45,6 +46,7 @@ export const Navbar = ({
 }: NavbarProps) => {
   const { authenticated } = usePrivy();
   const { currentUser } = useAuthContext();
+  const router = useRouter();
 
   if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
   return (
@@ -53,16 +55,28 @@ export const Navbar = ({
         {startItem ? (
           startItem
         ) : hasBackButton ? (
-          <Link color="neutral" component={NextLink} href="/">
-            <ArrowBackIosIcon />
-          </Link>
+          <IconButton
+            color="neutral"
+            size="sm"
+            onClick={() => {
+              const internalReferrer = document.referrer.startsWith(window.location.origin);
+              if (internalReferrer) {
+                router.back();
+              } else {
+                router.push("/");
+              }
+            }}
+            sx={{ alignSelf: "center" }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
         ) : (
           authenticated && (
             <Avatar
               variant="outlined"
               color="primary"
-              src=""
-              alt={currentUser?.name}
+              src={userAvatar(currentUser)}
+              alt={userName(currentUser)}
               component={Link}
               href={`/profile/${currentUser?.id}`}
               underline="none"

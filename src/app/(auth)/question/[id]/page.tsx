@@ -13,7 +13,7 @@ export default function QuestionPage() {
       {question && (
         <Stack gap={2}>
           <Typography level="body-sm" color="neutral">
-            Asked by: {question.user.name}
+            Asked by: {question?.user?.name}
           </Typography>
           <Typography level="h4">{question.title}</Typography>
           <Typography level="body-md" textAlign="justify">

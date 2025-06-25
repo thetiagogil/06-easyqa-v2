@@ -24,7 +24,9 @@ export default function SetupPage() {
     try {
       await updateUser({
         userId: currentUser!.id,
-        name: data.name,
+        data: {
+          name: data.name,
+        },
       });
     } catch (error: any) {
       console.error("Setup failed:", error.message);
@@ -36,7 +38,6 @@ export default function SetupPage() {
   };
 
   if (!currentUser) return null;
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack minHeight="100vh" justifyContent="center" alignItems="center" p={2}>
@@ -49,7 +50,7 @@ export default function SetupPage() {
             <FormControl error={!!errors.name}>
               <Input
                 {...register("name", { required: "Name is required" })}
-                placeholder="name"
+                placeholder="Your name"
                 disabled={isSubmitting}
               />
               {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}

@@ -8,19 +8,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const useUpdateUser = () => {
   type MutationProps = {
     userId: number;
-    name: string;
+    data: Partial<User>;
   };
+
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
 
   return useMutation({
-    mutationFn: async ({ userId, name }: MutationProps) => {
+    mutationFn: async ({ userId, data }: MutationProps) => {
       const res = await fetch(`/api/users/${userId}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
 
       if (!res.ok) {
@@ -30,7 +29,7 @@ export const useUpdateUser = () => {
         throw new Error(message);
       }
 
-      return await res.json();
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });

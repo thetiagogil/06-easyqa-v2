@@ -2,6 +2,7 @@
 import { Loading } from "@/components/shared/loading";
 import { MainContainer } from "@/components/shared/main-container";
 import { QuestionEntry } from "@/components/shared/question-entry";
+import { useAuthContext } from "@/contexts/auth.context";
 import {
   useGetUserAnsweredQuestions,
   useGetUserById,
@@ -22,25 +23,39 @@ import {
   Tabs,
   Typography,
 } from "@mui/joy";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
-export const ProfileOverview = ({ user }: { user?: User }) => {
+const ProfileOverview = ({ user }: { user?: User }) => {
+  const { currentUser } = useAuthContext();
+  const router = useRouter();
+
   return (
     <Stack p={2} gap={2}>
       <Stack direction="row" justifyContent="space-between">
         <Avatar
-          size="lg"
+          variant="outlined"
+          color="primary"
           src={userAvatar(user)}
           alt={userName(user)}
-          sx={{ height: 80, width: 80 }}
+          sx={{ height: 80, width: 80, fontSize: 32 }}
         />
 
-        <Stack>
-          <IconButton variant="outlined" size="sm">
-            <EditIcon />
-          </IconButton>
-        </Stack>
+        {user?.id === currentUser?.id && (
+          <Stack>
+            <IconButton
+              variant="outlined"
+              size="sm"
+              onClick={() => {
+                if (user?.id) {
+                  router.push(`/profile/${user.id}/edit`);
+                }
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          </Stack>
+        )}
       </Stack>
 
       <Typography level="h2">{userName(user)}</Typography>
@@ -58,7 +73,7 @@ export default function ProfilePage() {
   const isQuestionsTab = currentTabIndex === 0;
   const isAnswersTab = currentTabIndex === 1;
 
-  const { data: user } = useGetUserById(userId);
+  const { data: user, isPending: isPendingUser } = useGetUserById(userId);
   const { data: questions, isLoading: isQuestionsLoading } = useGetUserQuestions(
     userId,
     isQuestionsTab,
@@ -66,10 +81,11 @@ export default function ProfilePage() {
   const { data: answeredQuestions, isLoading: isAnsweredQuestionsLoading } =
     useGetUserAnsweredQuestions(userId, isAnswersTab);
 
+  if (isPendingUser) return <Loading variant="overlay" />;
   return (
     <MainContainer
       navbarProps={{
-        title: userName(user),
+        title: "profile",
         hasBackButton: true,
       }}
       hasTabs

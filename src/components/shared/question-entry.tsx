@@ -35,7 +35,7 @@ export const QuestionEntry = ({ question, isLastQuestion }: QuestionEntryProps) 
           <Avatar
             src={userAvatar(question.user)}
             alt={userName(question.user)}
-            sx={{ height: sharedHeight, width: sharedHeight }}
+            sx={{ height: sharedHeight, width: sharedHeight, fontSize: 12 }}
           />
         </Stack>
 

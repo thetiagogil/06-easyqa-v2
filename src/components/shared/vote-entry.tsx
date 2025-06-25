@@ -68,7 +68,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
     <Stack direction="row" alignItems="center" gap={1}>
       <IconButton
         size="sm"
-        variant="outlined"
+        variant="plain"
         color={localUserVote === "upvote" ? "success" : "neutral"}
         onClick={() => handleVoteClick("upvote")}
       >
@@ -91,7 +91,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
 
       <IconButton
         size="sm"
-        variant="outlined"
+        variant="plain"
         color={localUserVote === "downvote" ? "danger" : "neutral"}
         onClick={() => handleVoteClick("downvote")}
       >

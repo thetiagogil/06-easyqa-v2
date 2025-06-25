@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
   }
 
   let votes: Vote[] = [];
+
   if (viewerId && questions?.length) {
     const ids = questions.map((q) => q.id);
     const { data: voteRows, error: voteError } = await supabase
@@ -46,9 +47,9 @@ export async function GET(req: NextRequest) {
     votes = voteRows as unknown as Vote[];
   }
 
-  const response = questions.map((q) => ({
-    ...q,
-    current_user_vote: votes.find((v) => v.target_id === q.id)?.value ?? null,
+  const response = questions.map((question) => ({
+    ...question,
+    current_user_vote: votes.find((vote) => vote.target_id === question.id)?.value ?? null,
   }));
 
   return NextResponse.json(response);

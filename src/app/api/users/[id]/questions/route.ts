@@ -37,9 +37,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     viewerVotes = voteRows;
   }
 
-  const result = questions.map((q) => ({
-    ...q,
-    current_user_vote: viewerVotes.find((v) => v.target_id === q.id)?.value ?? null,
+  const result = questions.map((question) => ({
+    ...question,
+    current_user_vote: viewerVotes.find((vote) => vote.target_id === question.id)?.value ?? null,
   }));
 
   return NextResponse.json(result);

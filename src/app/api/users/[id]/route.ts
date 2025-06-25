@@ -23,17 +23,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { name } = await req.json();
+  const body = await req.json();
 
-  if (!name) {
-    return NextResponse.json({ error: "Missing name." }, { status: 400 });
+  if (!id || !body || typeof body !== "object") {
+    return NextResponse.json({ error: "Missing user ID or data." }, { status: 400 });
   }
 
-  const { error } = await supabase.from("users").update({ name }).eq("id", id);
+  const { error } = await supabase.from("users").update(body).eq("id", id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ message: "Name updated successfully." });
+  return NextResponse.json({ message: "User updated successfully." });
 }

@@ -65,26 +65,26 @@ export const theme = extendTheme({
     },
     JoyButton: {
       styleOverrides: {
-        root: () => ({
+        root: ({ theme }) => ({
           transition: "0.3s",
-          fontWeight: 600,
-          borderRadius: 12,
+          fontWeight: theme.fontWeight.lg,
+          borderRadius: theme.radius.md,
         }),
       },
     },
     JoySelect: {
       styleOverrides: {
-        root: () => ({
+        root: ({ theme }) => ({
           transition: "0.3s",
-          borderRadius: 12,
+          borderRadius: theme.radius.md,
         }),
       },
     },
     JoyIconButton: {
       styleOverrides: {
-        root: () => ({
+        root: ({ theme }) => ({
           transition: "0.3s",
-          borderRadius: "50%",
+          borderRadius: theme.radius.md,
         }),
       },
     },

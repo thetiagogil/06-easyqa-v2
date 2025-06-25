@@ -48,7 +48,7 @@ export default function SettingsPage() {
     <MainContainer navbarProps={{ title: "settings", hasBackButton: true }} sx={{ gap: 4 }}>
       <Stack gap={2}>
         <Typography level="h4">Connections</Typography>
-        <List variant="outlined" sx={{ borderRadius: "lg", flex: 0 }}>
+        <List variant="outlined" sx={{ borderRadius: "md", flex: 0 }}>
           {accounts.map((account, index) => {
             const { label, isLinked, link, unlink } = account;
             return (
