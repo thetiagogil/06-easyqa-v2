@@ -7,6 +7,7 @@ const privy = new PrivyClient(ENV_VARS.PRIVY_APP_ID!, ENV_VARS_SERVER.PRIVY_APP_
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("Authorization");
+
   if (!authHeader) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

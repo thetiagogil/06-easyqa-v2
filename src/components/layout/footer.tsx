@@ -30,7 +30,7 @@ const footerItems = [
         sx={{
           height: 48,
           width: 48,
-          borderRadius: 24,
+          borderRadius: "50%",
           boxShadow: "0px 0px 16px 0px #7ADC9E",
         }}
       >

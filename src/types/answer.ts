@@ -1,14 +1,16 @@
+import { Question } from "./question";
 import { User } from "./user";
 
-export interface Question {
+export interface Answer {
   id: number;
   user_id: number;
-  title: string;
-  content?: string;
-  status: "open" | "closed" | "answered";
+  question_id: number;
+  content: string;
+  accepted: boolean;
   vote_score: number;
   created_at: string;
   updated_at: string;
   user?: User;
+  question?: Question;
   current_user_vote?: 1 | -1;
 }

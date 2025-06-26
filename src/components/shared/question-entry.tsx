@@ -35,7 +35,7 @@ export const QuestionEntry = ({ question, isLastQuestion }: QuestionEntryProps) 
           <Avatar
             src={userAvatar(question.user)}
             alt={userName(question.user)}
-            sx={{ height: sharedHeight, width: sharedHeight }}
+            sx={{ height: sharedHeight, width: sharedHeight, fontSize: 12 }}
           />
         </Stack>
 
@@ -71,7 +71,11 @@ export const QuestionEntry = ({ question, isLastQuestion }: QuestionEntryProps) 
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <VoteEntry target={question} targetType="question" />
 
-            <Chip variant="outlined" color={question.status === "closed" ? "neutral" : "primary"}>
+            <Chip
+              variant="outlined"
+              color={question.status === "open" ? "primary" : "neutral"}
+              disabled={question.status === "closed"}
+            >
               {question.status}
             </Chip>
           </Stack>
