@@ -1,3 +1,4 @@
+import { Answer } from "./answer";
 import { User } from "./user";
 
 export interface Question {
@@ -10,5 +11,7 @@ export interface Question {
   created_at: string;
   updated_at: string;
   user?: User;
-  current_user_vote?: 1 | -1;
+  viewer_vote_value?: 1 | -1;
+  answer_count?: number;
+  answers?: Answer[];
 }

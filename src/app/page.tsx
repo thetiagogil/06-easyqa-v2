@@ -1,7 +1,7 @@
 "use client";
 import { Loading } from "@/components/shared/loading";
 import { MainContainer } from "@/components/shared/main-container";
-import { QuestionEntry } from "@/components/shared/question-entry";
+import { TargetEntry } from "@/components/shared/target-entry";
 import { useGetQuestions } from "@/hooks/useQuestionApi";
 import { Question } from "@/types/question";
 import { Button, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
@@ -35,7 +35,7 @@ export default function HomePage() {
           </Button>
         ),
       }}
-      hasTabs
+      noPad
     >
       <Tabs
         value={currentTabIndex}
@@ -72,10 +72,11 @@ export default function HomePage() {
               <Loading minHeight={160} />
             ) : tab.data && tab.data.length > 0 ? (
               tab.data.map((question: Question, questionIndex) => (
-                <QuestionEntry
+                <TargetEntry
                   key={question.id}
-                  question={question}
-                  isLastQuestion={questionIndex === tab.data!.length - 1}
+                  targetType="question"
+                  target={question}
+                  isLastTarget={questionIndex === (tab.data && tab.data.length - 1)}
                 />
               ))
             ) : (

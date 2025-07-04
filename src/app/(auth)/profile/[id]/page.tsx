@@ -1,7 +1,7 @@
 "use client";
 import { Loading } from "@/components/shared/loading";
 import { MainContainer } from "@/components/shared/main-container";
-import { QuestionEntry } from "@/components/shared/question-entry";
+import { TargetEntry } from "@/components/shared/target-entry";
 import { useAuthContext } from "@/contexts/auth.context";
 import {
   useGetUserAnsweredQuestions,
@@ -88,7 +88,7 @@ export default function ProfilePage() {
         title: "profile",
         hasBackButton: true,
       }}
-      hasTabs
+      noPad
     >
       <ProfileOverview user={user} />
 
@@ -125,10 +125,11 @@ export default function ProfilePage() {
             <Loading />
           ) : questions?.length ? (
             questions.map((question: Question, questionIndex) => (
-              <QuestionEntry
+              <TargetEntry
                 key={question.id}
-                question={question}
-                isLastQuestion={questionIndex === questions!.length - 1}
+                targetType="question"
+                target={question}
+                isLastTarget={questionIndex === (answeredQuestions && answeredQuestions.length - 1)}
               />
             ))
           ) : (
@@ -143,10 +144,11 @@ export default function ProfilePage() {
             <Loading />
           ) : answeredQuestions?.length ? (
             answeredQuestions.map((question: Question, questionIndex) => (
-              <QuestionEntry
+              <TargetEntry
                 key={question.id}
-                question={question}
-                isLastQuestion={questionIndex === answeredQuestions!.length - 1}
+                targetType="question"
+                target={question}
+                isLastTarget={questionIndex === answeredQuestions.length - 1}
               />
             ))
           ) : (

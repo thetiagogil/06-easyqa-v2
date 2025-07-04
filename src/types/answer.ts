@@ -12,5 +12,5 @@ export interface Answer {
   updated_at: string;
   user?: User;
   question?: Question;
-  current_user_vote?: 1 | -1;
+  viewer_vote_value?: 1 | -1;
 }
