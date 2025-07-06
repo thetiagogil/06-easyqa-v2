@@ -2,6 +2,7 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useSubmitVote } from "@/hooks/useVoteApi";
+import { Answer } from "@/types/answer";
 import { Question } from "@/types/question";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -10,7 +11,7 @@ import { useState } from "react";
 
 type VoteEntryProps = {
   targetType: "question" | "answer";
-  target: Question;
+  target: Question | Answer;
 };
 
 export function VoteEntry({ targetType, target }: VoteEntryProps) {
@@ -20,7 +21,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
 
   const [localScore, setLocalScore] = useState<number>(target.vote_score);
   const [localUserVote, setLocalUserVote] = useState<"upvote" | "downvote" | null>(
-    target.current_user_vote === 1 ? "upvote" : target.current_user_vote === -1 ? "downvote" : null,
+    target.viewer_vote_value === 1 ? "upvote" : target.viewer_vote_value === -1 ? "downvote" : null,
   );
 
   const handleVoteClick = (selectedType: "upvote" | "downvote") => {
@@ -52,9 +53,9 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
         onError: () => {
           setLocalScore((prev) => prev - delta);
           setLocalUserVote(
-            target.current_user_vote === 1
+            target.viewer_vote_value === 1
               ? "upvote"
-              : target.current_user_vote === -1
+              : target.viewer_vote_value === -1
                 ? "downvote"
                 : null,
           );

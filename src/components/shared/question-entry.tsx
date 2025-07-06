@@ -1,8 +1,6 @@
-import { useAuthContext } from "@/contexts/auth.context";
-import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { mainBorders } from "@/lib/constants";
 import { getTime, userAvatar, userName } from "@/lib/utils";
-import { Question } from "@/types/question";
+import { Question } from "@/types";
 import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
 import NextLink from "next/link";
 import { useMemo } from "react";
@@ -10,76 +8,60 @@ import { VoteEntry } from "./vote-entry";
 
 type QuestionEntryProps = {
   question: Question;
-  isLastQuestion: boolean;
 };
 
-export const QuestionEntry = ({ question, isLastQuestion }: QuestionEntryProps) => {
-  const { isUserReady } = useAuthContext();
-  const { showSnackbar } = useSnackbarContext();
-
+export const QuestionEntry = ({ question }: QuestionEntryProps) => {
   const askedAt = useMemo(() => getTime(question.created_at), [question.created_at]);
-  const sharedHeight = 24;
-
-  const handleVoteClick = (e: any) => {
-    if (!isUserReady) {
-      e.preventDefault();
-      showSnackbar("You must be logged in to perform this action", "warning");
-      return;
-    }
-  };
 
   return (
-    <Stack borderBottom={isLastQuestion ? "" : mainBorders} p={2}>
-      <Stack direction="row" gap={1}>
-        <Stack>
-          <Avatar
-            src={userAvatar(question.user)}
-            alt={userName(question.user)}
-            sx={{ height: sharedHeight, width: sharedHeight, fontSize: 12 }}
-          />
-        </Stack>
-
-        <Stack flexBasis="100%" gap={1}>
-          <Stack direction="row" height={sharedHeight} alignItems="center" gap={1}>
-            <Typography level="body-sm">
-              <Link
-                component={NextLink}
-                href={!isUserReady ? "#" : `/profile/${question.user?.id}`}
-                color="primary"
-                fontWeight="bold"
-                onClick={(e) => handleVoteClick(e)}
-              >
-                {userName(question.user)}
-              </Link>{" "}
-              asked a question
-            </Typography>
-            <Typography level="body-sm" fontSize={10}>
-              •
-            </Typography>
-            <Typography level="body-sm">{askedAt}</Typography>
-          </Stack>
-
+    <Stack borderBottom={mainBorders} p={2} gap={1}>
+      <Stack direction="row" flexBasis="100%" alignItems="center" gap={1}>
+        <Avatar
+          src={userAvatar(question.user)}
+          alt={userName(question.user)}
+          sx={{ width: 32, height: 32, fontSize: 12 }}
+        />
+        <Typography level="body-sm">
           <Link
             component={NextLink}
-            href={`/question/${question.id}`}
-            underline="none"
-            onClick={(e) => handleVoteClick(e)}
+            href={`/profile/${question.user?.id}`}
+            color="primary"
+            fontWeight="bold"
+            marginRight={1}
           >
-            <Typography level="body-md">{question.title}</Typography>
+            {userName(question.user)}
           </Link>
+          {question ? "asked a question" : "answered"}
+        </Typography>
+        <Typography level="body-sm" fontSize={10}>
+          •
+        </Typography>
+        <Typography level="body-sm">{askedAt}</Typography>
+      </Stack>
 
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <VoteEntry target={question} targetType="question" />
+      <Stack gap={1}>
+        {question && <Typography level="title-sm">{question.title}</Typography>}
+        <Typography level="body-sm" textAlign="justify" whiteSpace="pre-line">
+          {question.content}
+        </Typography>
+      </Stack>
 
-            <Chip
-              variant="outlined"
-              color={question.status === "open" ? "primary" : "neutral"}
-              disabled={question.status === "closed"}
-            >
-              {question.status}
-            </Chip>
-          </Stack>
-        </Stack>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <VoteEntry target={question} targetType="question" />
+
+        <Chip
+          variant="outlined"
+          color={
+            question.status === "open"
+              ? "neutral"
+              : question.status === "answered"
+                ? "success"
+                : "neutral"
+          }
+          disabled={question.status === "closed"}
+        >
+          {question.status}
+        </Chip>
       </Stack>
     </Stack>
   );

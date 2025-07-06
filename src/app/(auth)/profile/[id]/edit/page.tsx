@@ -83,7 +83,7 @@ export default function ProfileEditPage() {
           </Button>
         ),
       }}
-      hasTabs
+      noPad
     >
       <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)}>
         <Stack p={2} gap={3}>

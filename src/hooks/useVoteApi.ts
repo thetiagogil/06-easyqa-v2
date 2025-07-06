@@ -43,13 +43,17 @@ export const useSubmitVote = () => {
       queryClient.setQueriesData<Question[]>({ queryKey: ["questions"] }, (oldData) => {
         if (!oldData) return oldData;
 
-        return oldData.map((q) => {
-          if (q.id !== targetId) return q;
+        return oldData.map((question) => {
+          if (question.id !== targetId) return question;
 
           const prevVote =
-            q.current_user_vote === 1 ? "upvote" : q.current_user_vote === -1 ? "downvote" : null;
+            question.viewer_vote_value === 1
+              ? "upvote"
+              : question.viewer_vote_value === -1
+                ? "downvote"
+                : null;
 
-          let newScore = q.vote_score;
+          let newScore = question.vote_score;
           let newVote: 1 | -1 | undefined = undefined;
 
           if (prevVote === type) {
@@ -64,9 +68,9 @@ export const useSubmitVote = () => {
           }
 
           return {
-            ...q,
+            ...question,
             vote_score: newScore,
-            current_user_vote: newVote,
+            viewer_vote_value: newVote,
           };
         });
       });

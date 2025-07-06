@@ -9,11 +9,11 @@ import { Navbar } from "../layout/navbar";
 interface MainContainerProps {
   children: ReactNode;
   navbarProps?: object;
-  hasTabs?: boolean;
+  noPad?: boolean;
   sx?: SxProps;
 }
 
-export const MainContainer = ({ children, navbarProps, hasTabs, sx }: MainContainerProps) => {
+export const MainContainer = ({ children, navbarProps, noPad, sx }: MainContainerProps) => {
   return (
     <Stack
       position="sticky"
@@ -25,7 +25,7 @@ export const MainContainer = ({ children, navbarProps, hasTabs, sx }: MainContai
       margin="auto"
     >
       <Navbar {...navbarProps} />
-      <Stack component="main" flexGrow={1} p={hasTabs ? 0 : 2} sx={sx}>
+      <Stack component="main" flexGrow={1} p={noPad ? 0 : 2} sx={sx}>
         {children}
       </Stack>
       <Footer />

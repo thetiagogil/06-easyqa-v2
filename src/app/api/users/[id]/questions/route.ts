@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   let viewerVotes: { target_id: number; value: number }[] = [];
 
   if (viewerId && questions?.length) {
-    const ids = questions.map((q) => q.id);
+    const ids = questions.map((question) => question.id);
     const { data: voteRows, error: voteError } = await supabase
       .from("votes")
       .select("target_id, value")
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const result = questions.map((question) => ({
     ...question,
-    current_user_vote: viewerVotes.find((vote) => vote.target_id === question.id)?.value ?? null,
+    viewer_vote_value: viewerVotes.find((vote) => vote.target_id === question.id)?.value ?? null,
   }));
 
   return NextResponse.json(result);

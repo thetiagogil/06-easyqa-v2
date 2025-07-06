@@ -29,10 +29,28 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  if (!questions?.length) return NextResponse.json([]);
+
+  const questionIds = questions.map((question) => question.id);
+
+  const { data: answers, error: answerError } = await supabase
+    .from("answers")
+    .select("question_id")
+    .in("question_id", questionIds);
+
+  if (answerError) {
+    return NextResponse.json({ error: answerError.message }, { status: 500 });
+  }
+
+  const answerCountMap = new Map<number, number>();
+  answers?.forEach((answer) => {
+    answerCountMap.set(answer.question_id, (answerCountMap.get(answer.question_id) || 0) + 1);
+  });
+
   let votes: Vote[] = [];
 
-  if (viewerId && questions?.length) {
-    const ids = questions.map((q) => q.id);
+  if (viewerId) {
+    const ids = questions.map((question) => question.id);
     const { data: voteRows, error: voteError } = await supabase
       .from("votes")
       .select("target_id, value")
@@ -49,7 +67,8 @@ export async function GET(req: NextRequest) {
 
   const response = questions.map((question) => ({
     ...question,
-    current_user_vote: votes.find((vote) => vote.target_id === question.id)?.value ?? null,
+    viewer_vote_value: votes.find((vote) => vote.target_id === question.id)?.value ?? null,
+    answer_count: answerCountMap.get(question.id) ?? 0,
   }));
 
   return NextResponse.json(response);
