@@ -72,16 +72,6 @@ export default function ProfileEditPage() {
       navbarProps={{
         title: "edit profile",
         hasBackButton: true,
-        endItem: (
-          <Button
-            type="submit"
-            form="edit-profile-form"
-            size="sm"
-            loading={isSubmitting || isPending}
-          >
-            Save
-          </Button>
-        ),
       }}
       noPad
     >
@@ -93,6 +83,7 @@ export default function ProfileEditPage() {
               {...register("name", { required: "Name is required" })}
               placeholder="Your name"
               disabled={isSubmitting}
+              sx={{ bgcolor: "background.body" }}
             />
             {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
           </FormControl>
@@ -114,12 +105,22 @@ export default function ProfileEditPage() {
                   maxLength: BIO_MAX_LENGTH,
                 },
               }}
+              sx={{ bgcolor: "background.body" }}
             />
             <Typography level="body-xs" textAlign="right">
               {bio.length} / {BIO_MAX_LENGTH}
             </Typography>
             {errors.bio && <FormHelperText>{errors.bio.message}</FormHelperText>}
           </FormControl>
+
+          <Button
+            type="submit"
+            form="edit-profile-form"
+            size="sm"
+            loading={isSubmitting || isPending}
+          >
+            Save
+          </Button>
         </Stack>
       </form>
     </MainContainer>

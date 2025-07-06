@@ -33,81 +33,77 @@ export const TargetEntry = ({ targetType, target, isLastTarget, canAccept }: Tar
     }
   };
 
-  console.log(answer);
-
   return (
-    <Stack borderBottom={isLastTarget ? "" : mainBorders} p={2}>
-      <Stack direction="row" gap={1}>
-        <Stack>
-          <Avatar
-            src={userAvatar(target.user)}
-            alt={userName(target.user)}
-            sx={{ height: sharedHeight, width: sharedHeight, fontSize: 12 }}
-          />
-        </Stack>
+    <Stack direction="row" borderBottom={isLastTarget ? "" : mainBorders} p={2} gap={1}>
+      <Stack>
+        <Avatar
+          src={userAvatar(target.user)}
+          alt={userName(target.user)}
+          sx={{ height: sharedHeight, width: sharedHeight, fontSize: 12 }}
+        />
+      </Stack>
 
-        <Stack flexBasis="100%" gap={1}>
-          <Stack direction="row" height={sharedHeight} alignItems="center" gap={1}>
-            <Typography level="body-sm">
-              <Link
-                component={NextLink}
-                href={!isUserReady ? "#" : `/profile/${target.user?.id}`}
-                color="primary"
-                fontWeight="bold"
-                onClick={handleVoteClick}
-                underline="none"
-                marginRight={1}
-              >
-                {userName(target.user)}
-              </Link>
-              {question ? "asked" : "answered"}
-            </Typography>
-            <Typography level="body-sm" fontSize={10}>
-              •
-            </Typography>
-            <Typography level="body-sm">{askedAt}</Typography>
-          </Stack>
-
-          {question ? (
+      <Stack flexBasis="100%" gap={1}>
+        <Stack direction="row" height={sharedHeight} alignItems="center" gap={1}>
+          <Typography level="body-sm">
             <Link
               component={NextLink}
-              href={`/question/${question.id}`}
+              href={!isUserReady ? "#" : `/profile/${target.user?.id}`}
+              color="primary"
+              fontWeight="bold"
+              onClick={handleVoteClick}
               underline="none"
-              onClick={(e) => handleVoteClick(e)}
+              marginRight={1}
             >
-              <Typography level="body-md">{question.title}</Typography>
+              {userName(target.user)}
             </Link>
-          ) : (
-            <Typography level="body-sm" textAlign="justify" whiteSpace="pre-line">
-              {target.content}
-            </Typography>
+            {question ? "asked" : "answered"}
+          </Typography>
+          <Typography level="body-sm" fontSize={10}>
+            •
+          </Typography>
+          <Typography level="body-sm">{askedAt}</Typography>
+        </Stack>
+
+        {question ? (
+          <Link
+            component={NextLink}
+            href={`/question/${question.id}`}
+            underline="none"
+            onClick={(e) => handleVoteClick(e)}
+          >
+            <Typography level="body-md">{question.title}</Typography>
+          </Link>
+        ) : (
+          <Typography level="body-sm" textAlign="justify" whiteSpace="pre-line">
+            {target.content}
+          </Typography>
+        )}
+
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <VoteEntry targetType={targetType} target={target} />
+
+          {question && (
+            <Chip
+              variant="outlined"
+              color={question.status === "open" ? "primary" : "neutral"}
+              disabled={question.status === "closed"}
+            >
+              {question.status}
+            </Chip>
           )}
 
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <VoteEntry targetType={targetType} target={target} />
+          {answer && answer.accepted && (
+            <Chip variant="outlined" color="success">
+              {answer.accepted}
+            </Chip>
+          )}
 
-            {question && (
-              <Chip
-                variant="outlined"
-                color={question.status === "open" ? "primary" : "neutral"}
-                disabled={question.status === "closed"}
-              >
-                {question.status}
-              </Chip>
-            )}
-
-            {answer && answer.accepted && (
-              <Chip variant="outlined" color="success">
-                {answer.accepted}
-              </Chip>
-            )}
-
-            {answer && canAccept && question?.status !== "closed" && (
-              <Button variant="outlined" color="neutral" size="sm">
-                Accept answer
-              </Button>
-            )}
-          </Stack>
+          {answer && canAccept && question?.status !== "closed" && (
+            <Button variant="outlined" color="neutral" size="sm">
+              Accept answer
+            </Button>
+          )}
         </Stack>
       </Stack>
     </Stack>

@@ -129,7 +129,7 @@ export default function ProfilePage() {
                 key={question.id}
                 targetType="question"
                 target={question}
-                isLastTarget={questionIndex === (answeredQuestions && answeredQuestions.length - 1)}
+                isLastTarget={questionIndex === (questions && questions.length - 1)}
               />
             ))
           ) : (
@@ -148,7 +148,7 @@ export default function ProfilePage() {
                 key={question.id}
                 targetType="question"
                 target={question}
-                isLastTarget={questionIndex === answeredQuestions.length - 1}
+                isLastTarget={questionIndex === (answeredQuestions && answeredQuestions.length - 1)}
               />
             ))
           ) : (
