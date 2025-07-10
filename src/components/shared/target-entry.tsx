@@ -1,40 +1,60 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
-import { mainBorders } from "@/lib/constants";
-import { getTime, userAvatar, userName } from "@/lib/utils";
+import { useAcceptAnswer } from "@/hooks/useAnswerApi";
+import { MAIN_BORDERS } from "@/lib/constants";
+import { userAvatar, userName } from "@/lib/utils";
 import { Answer, Question } from "@/types";
 import { Avatar, Button, Chip, Link, Stack, Typography } from "@mui/joy";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import NextLink from "next/link";
 import { useMemo } from "react";
 import { VoteEntry } from "./vote-entry";
+
+dayjs.extend(relativeTime);
 
 type TargetEntryProps = {
   targetType: "question" | "answer";
   target: Question | Answer;
   isLastTarget: boolean;
-  canAccept?: boolean;
+  answeredQuestion?: Question;
 };
 
-export const TargetEntry = ({ targetType, target, isLastTarget, canAccept }: TargetEntryProps) => {
+export const TargetEntry = ({
+  targetType,
+  target,
+  isLastTarget,
+  answeredQuestion,
+}: TargetEntryProps) => {
   const { isUserReady } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
+  const { currentUser } = useAuthContext();
 
   const question = targetType === "question" ? (target as Question) : null;
   const answer = targetType === "answer" ? (target as Answer) : null;
 
-  const askedAt = useMemo(() => getTime(target.created_at), [target.created_at]);
+  const canAccept = currentUser?.id === answeredQuestion?.user_id;
+  const acceptAnswer =
+    targetType === "answer" && answeredQuestion ? useAcceptAnswer(answeredQuestion.id) : null;
+  const askedAt = useMemo(() => dayjs(target.created_at).fromNow(), [target.created_at]);
   const sharedHeight = 24;
 
   const handleVoteClick = (e: any) => {
     if (!isUserReady) {
       e.preventDefault();
       showSnackbar("You must be logged in to perform this action", "warning");
-      return;
     }
   };
 
+  const handleAccept = () => {
+    console.log(answer?.id);
+    console.log(acceptAnswer);
+    if (!answer?.id || !acceptAnswer) return;
+    acceptAnswer.mutate(answer.id);
+  };
+
   return (
-    <Stack direction="row" borderBottom={isLastTarget ? "" : mainBorders} p={2} gap={1}>
+    <Stack direction="row" borderBottom={isLastTarget ? "" : MAIN_BORDERS} p={2} gap={1}>
       <Stack>
         <Avatar
           src={userAvatar(target.user)}
@@ -59,10 +79,12 @@ export const TargetEntry = ({ targetType, target, isLastTarget, canAccept }: Tar
             </Link>
             {question ? "asked" : "answered"}
           </Typography>
-          <Typography level="body-sm" fontSize={10}>
+          <Typography level="body-sm" textColor="neutral.600" fontSize={10}>
             •
           </Typography>
-          <Typography level="body-sm">{askedAt}</Typography>
+          <Typography level="body-sm" textColor="neutral.600">
+            {askedAt}
+          </Typography>
         </Stack>
 
         {question ? (
@@ -95,12 +117,18 @@ export const TargetEntry = ({ targetType, target, isLastTarget, canAccept }: Tar
 
           {answer && answer.accepted && (
             <Chip variant="outlined" color="success">
-              {answer.accepted}
+              Accepted
             </Chip>
           )}
 
-          {answer && canAccept && question?.status !== "closed" && (
-            <Button variant="outlined" color="neutral" size="sm">
+          {answer && canAccept && answeredQuestion?.status !== "closed" && (
+            <Button
+              variant="outlined"
+              color="neutral"
+              size="sm"
+              loading={acceptAnswer?.isPending}
+              onClick={handleAccept}
+            >
               Accept answer
             </Button>
           )}

@@ -1,6 +1,6 @@
 "use client";
+import { MainContainer } from "@/components/layout/main-container";
 import { Loading } from "@/components/shared/loading";
-import { MainContainer } from "@/components/shared/main-container";
 import { TargetEntry } from "@/components/shared/target-entry";
 import { useAuthContext } from "@/contexts/auth.context";
 import {

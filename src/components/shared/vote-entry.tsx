@@ -1,4 +1,3 @@
-"use client";
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useSubmitVote } from "@/hooks/useVoteApi";

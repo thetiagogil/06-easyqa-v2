@@ -1,5 +1,5 @@
 "use client";
-import { MainContainer } from "@/components/shared/main-container";
+import { MainContainer } from "@/components/layout/main-container";
 import { Typography } from "@mui/joy";
 
 export default function SearchPage() {

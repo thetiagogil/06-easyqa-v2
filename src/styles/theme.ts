@@ -56,37 +56,5 @@ export const theme = extendTheme({
         color: "secondary",
       },
     },
-    JoyLink: {
-      styleOverrides: {
-        root: () => ({
-          transition: "0.3s",
-        }),
-      },
-    },
-    JoyButton: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          transition: "0.3s",
-          fontWeight: theme.fontWeight.lg,
-          borderRadius: theme.radius.md,
-        }),
-      },
-    },
-    JoySelect: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          transition: "0.3s",
-          borderRadius: theme.radius.md,
-        }),
-      },
-    },
-    JoyIconButton: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          transition: "0.3s",
-          borderRadius: theme.radius.md,
-        }),
-      },
-    },
   },
 });

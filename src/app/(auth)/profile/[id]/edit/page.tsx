@@ -1,5 +1,5 @@
 "use client";
-import { MainContainer } from "@/components/shared/main-container";
+import { MainContainer } from "@/components/layout/main-container";
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useUpdateUser } from "@/hooks/useUserApi";
