@@ -1,5 +1,5 @@
 "use client";
-import { MainContainer } from "@/components/shared/main-container";
+import { MainContainer } from "@/components/layout/main-container";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Button, List, ListDivider, ListItem, Stack, Switch, Typography } from "@mui/joy";

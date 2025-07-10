@@ -9,4 +9,10 @@ export const ENV_VARS_SERVER = {
   PRIVY_APP_SECRET: process.env.PRIVY_APP_SECRET ?? "",
 };
 
-export const mainBorders = "1px solid";
+export const CHAR_LIMIT = {
+  QUESTION_TITLE: 100,
+  QUESTION_CONTENT: 1000,
+  ANSWER_CONTENT: 500,
+};
+
+export const MAIN_BORDERS = "1px solid";

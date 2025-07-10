@@ -1,5 +1,5 @@
 import { useAuthContext } from "@/contexts/auth.context";
-import { mainBorders } from "@/lib/constants";
+import { MAIN_BORDERS } from "@/lib/constants";
 import { userAvatar, userName } from "@/lib/utils";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Avatar, IconButton, Link, Stack, Typography } from "@mui/joy";
@@ -26,8 +26,8 @@ const NavbarContainer = ({ children }: { children: ReactNode }) => (
     direction="row"
     justifyContent="space-between"
     alignItems="center"
-    borderTop={{ xs: "", sm: mainBorders }}
-    borderBottom={mainBorders}
+    borderTop={{ xs: "", sm: MAIN_BORDERS }}
+    borderBottom={MAIN_BORDERS}
     py={1}
     px={2}
     zIndex={10}

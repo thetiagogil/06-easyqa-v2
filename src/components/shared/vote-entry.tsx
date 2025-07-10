@@ -1,4 +1,3 @@
-"use client";
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useSubmitVote } from "@/hooks/useVoteApi";
@@ -12,9 +11,10 @@ import { useState } from "react";
 type VoteEntryProps = {
   targetType: "question" | "answer";
   target: Question | Answer;
+  isClosed: boolean;
 };
 
-export function VoteEntry({ targetType, target }: VoteEntryProps) {
+export function VoteEntry({ targetType, target, isClosed }: VoteEntryProps) {
   const { isUserReady } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
   const { mutate: submit } = useSubmitVote();
@@ -72,6 +72,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
         variant="plain"
         color={localUserVote === "upvote" ? "success" : "neutral"}
         onClick={() => handleVoteClick("upvote")}
+        sx={isClosed ? { pointerEvents: "none", opacity: 0.5 } : undefined}
       >
         <ArrowUpwardIcon />
       </IconButton>
@@ -95,6 +96,7 @@ export function VoteEntry({ targetType, target }: VoteEntryProps) {
         variant="plain"
         color={localUserVote === "downvote" ? "danger" : "neutral"}
         onClick={() => handleVoteClick("downvote")}
+        sx={isClosed ? { pointerEvents: "none", opacity: 0.5 } : undefined}
       >
         <ArrowDownwardIcon />
       </IconButton>
