@@ -4,7 +4,7 @@ import { SortType } from "@/types";
 import { Answer } from "@/types/answer";
 import { Question } from "@/types/question";
 import { usePrivy } from "@privy-io/react-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetQuestions = (
   sort: SortType = "new",
@@ -94,6 +94,33 @@ export const useGetQuestionAnswers = (id: number, enabled = true) => {
       }
 
       return await res.json();
+    },
+  });
+};
+
+export const useCreateQuestion = () => {
+  const { showSnackbar } = useSnackbarContext();
+  const { currentUser } = useAuthContext();
+
+  return useMutation({
+    mutationFn: async (data: Partial<Question>) => {
+      const res = await fetch("/api/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, user_id: currentUser?.id }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        const message = error.message || "Failed to create question";
+        showSnackbar(message, "danger");
+        throw new Error(message);
+      }
+
+      return await res.json();
+    },
+    onSuccess: () => {
+      showSnackbar("Question created successfully", "success");
     },
   });
 };

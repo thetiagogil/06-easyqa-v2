@@ -3,16 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  const { user_id, question_id, content } = body;
 
-  const { content, question_id, user_id } = body;
-
-  if (!content || !question_id || !user_id) {
+  if (!user_id || !question_id || !content) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   const { data, error } = await supabase
     .from("answers")
-    .insert({ content, question_id, user_id })
+    .insert({ user_id, question_id, content })
     .select("*")
     .single();
 

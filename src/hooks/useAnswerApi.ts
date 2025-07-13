@@ -26,7 +26,7 @@ export const useCreateAnswer = (questionId: number) => {
       return await res.json();
     },
     onSuccess: () => {
-      showSnackbar("Answer created", "success");
+      showSnackbar("Answer created successfully", "success");
       queryClient.invalidateQueries({ queryKey: ["question", questionId] });
     },
   });

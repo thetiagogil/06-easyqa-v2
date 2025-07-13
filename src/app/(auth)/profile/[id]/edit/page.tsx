@@ -1,18 +1,10 @@
 "use client";
 import { MainContainer } from "@/components/layout/main-container";
+import { ControlledField } from "@/components/ui/controlled-input";
 import { useAuthContext } from "@/contexts/auth.context";
-import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useUpdateUser } from "@/hooks/useUserApi";
-import {
-  Button,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Input,
-  Stack,
-  Textarea,
-  Typography,
-} from "@mui/joy";
+import { CHAR_LIMIT } from "@/lib/constants";
+import { Button, Stack } from "@mui/joy";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -22,14 +14,11 @@ type FormData = {
   bio: string;
 };
 
-const BIO_MAX_LENGTH = 160;
-
 export default function ProfileEditPage() {
   const { id } = useParams();
   const userId = Number(id);
   const { currentUser } = useAuthContext();
   const { mutateAsync: updateUser, isPending } = useUpdateUser();
-  const { showSnackbar } = useSnackbarContext();
   const router = useRouter();
   const isCurrentUser = currentUser?.id === userId;
 
@@ -44,19 +33,25 @@ export default function ProfileEditPage() {
       bio: currentUser?.bio || "",
     },
   });
+  const name = watch("name") || "";
   const bio = watch("bio") || "";
 
+  const isValidLength =
+    name.length > 0 &&
+    name.length <= CHAR_LIMIT.PROFILE_NAME &&
+    bio.length <= CHAR_LIMIT.PROFILE_BIO;
+
   const onSubmit = async (data: FormData) => {
+    if (!isValidLength) return;
     try {
       await updateUser({
         userId: currentUser!.id,
         data,
       });
     } catch (error: any) {
-      console.error("Update failed:", error.message);
+      console.error("Failed to update user:", error.message);
     } finally {
       router.replace(`/profile/${currentUser!.id}`);
-      showSnackbar("Profile updated successfully", "success");
     }
   };
 
@@ -77,47 +72,34 @@ export default function ProfileEditPage() {
     >
       <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)}>
         <Stack p={2} gap={3}>
-          <FormControl error={!!errors.name}>
-            <FormLabel>Name</FormLabel>
-            <Input
-              {...register("name", { required: "Name is required" })}
-              placeholder="Your name"
-              disabled={isSubmitting}
-              sx={{ bgcolor: "background.body" }}
-            />
-            {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
-          </FormControl>
+          <ControlledField
+            type="input"
+            name="name"
+            label="Name"
+            value={name}
+            maxLength={100}
+            register={register}
+            error={errors.name}
+            disabled={isSubmitting}
+          />
 
-          <FormControl error={!!errors.bio}>
-            <FormLabel>Bio</FormLabel>
-            <Textarea
-              {...register("bio", {
-                maxLength: {
-                  value: BIO_MAX_LENGTH,
-                  message: `Bio must be at most ${BIO_MAX_LENGTH} characters`,
-                },
-              })}
-              placeholder="Write something about yourself..."
-              minRows={3}
-              disabled={isSubmitting}
-              slotProps={{
-                textarea: {
-                  maxLength: BIO_MAX_LENGTH,
-                },
-              }}
-              sx={{ bgcolor: "background.body" }}
-            />
-            <Typography level="body-xs" textAlign="right">
-              {bio.length} / {BIO_MAX_LENGTH}
-            </Typography>
-            {errors.bio && <FormHelperText>{errors.bio.message}</FormHelperText>}
-          </FormControl>
+          <ControlledField
+            type="textarea"
+            name="bio"
+            label="Bio"
+            value={bio}
+            maxLength={160}
+            register={register}
+            error={errors.bio}
+            disabled={isSubmitting}
+          />
 
           <Button
             type="submit"
             form="edit-profile-form"
             size="sm"
             loading={isSubmitting || isPending}
+            disabled={!isValidLength}
           >
             Save
           </Button>

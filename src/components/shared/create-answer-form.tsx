@@ -9,18 +9,29 @@ type FormData = { content: string };
 
 export function CreateAnswerForm({ questionId }: { questionId: number }) {
   const { currentUser } = useAuthContext();
-  const createAnswer = useCreateAnswer(questionId);
+  const { mutateAsync: createAnswer, isPending } = useCreateAnswer(questionId);
 
-  const { register, handleSubmit, reset, watch } = useForm<FormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+    watch,
+  } = useForm<FormData>();
   const contentValue = watch("content") ?? "";
 
-  const isMaxed = contentValue.length >= CHAR_LIMIT.ANSWER_CONTENT;
-  const isAlmostMaxed = contentValue.length >= CHAR_LIMIT.ANSWER_CONTENT * 0.8;
+  const isContentMaxed = contentValue.length >= CHAR_LIMIT.ANSWER_CONTENT;
+  const isContentAlmostMaxed = contentValue.length >= CHAR_LIMIT.ANSWER_CONTENT * 0.8;
+
   const isValidLength = contentValue.length > 0 && contentValue.length <= CHAR_LIMIT.ANSWER_CONTENT;
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     if (!isValidLength) return;
-    createAnswer.mutate({ content: data.content }, { onSuccess: () => reset() });
+    try {
+      await createAnswer({ content: data.content }, { onSuccess: () => reset() });
+    } catch (error: any) {
+      console.error("Failed to create answer:", error.message);
+    }
   };
 
   return (
@@ -38,6 +49,7 @@ export function CreateAnswerForm({ questionId }: { questionId: number }) {
             variant="plain"
             placeholder="Write your answer here..."
             minRows={contentValue ? 2 : 1}
+            disabled={isSubmitting}
             sx={{
               flexGrow: 1,
               fontSize: 14,
@@ -59,7 +71,7 @@ export function CreateAnswerForm({ questionId }: { questionId: number }) {
           <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={1}>
             <Typography
               level="body-sm"
-              color={isMaxed ? "danger" : isAlmostMaxed ? "warning" : "neutral"}
+              color={isContentMaxed ? "danger" : isContentAlmostMaxed ? "warning" : "neutral"}
             >
               {contentValue.length} / {CHAR_LIMIT.ANSWER_CONTENT}
             </Typography>
@@ -67,7 +79,7 @@ export function CreateAnswerForm({ questionId }: { questionId: number }) {
             <Button
               type="submit"
               size="sm"
-              loading={createAnswer.isPending}
+              loading={isSubmitting || isPending}
               disabled={!isValidLength}
             >
               Submit
