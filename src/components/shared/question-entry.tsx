@@ -1,20 +1,25 @@
-import { mainBorders } from "@/lib/constants";
-import { getTime, userAvatar, userName } from "@/lib/utils";
+import { MAIN_BORDERS } from "@/lib/constants";
+import { userAvatar, userName } from "@/lib/utils";
 import { Question } from "@/types";
 import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import NextLink from "next/link";
 import { useMemo } from "react";
 import { VoteEntry } from "./vote-entry";
+
+dayjs.extend(relativeTime);
 
 type QuestionEntryProps = {
   question: Question;
 };
 
 export const QuestionEntry = ({ question }: QuestionEntryProps) => {
-  const askedAt = useMemo(() => getTime(question.created_at), [question.created_at]);
+  const askedAt = useMemo(() => dayjs(question.created_at).fromNow(), [question.created_at]);
+  const isClosed = question?.status === "closed";
 
   return (
-    <Stack borderBottom={mainBorders} p={2} gap={1}>
+    <Stack borderBottom={MAIN_BORDERS} p={2} gap={1}>
       <Stack direction="row" flexBasis="100%" alignItems="center" gap={1}>
         <Avatar
           src={userAvatar(question.user)}
@@ -33,10 +38,12 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
           </Link>
           {question ? "asked a question" : "answered"}
         </Typography>
-        <Typography level="body-sm" fontSize={10}>
+        <Typography level="body-sm" textColor="neutral.600" fontSize={10}>
           •
         </Typography>
-        <Typography level="body-sm">{askedAt}</Typography>
+        <Typography level="body-sm" textColor="neutral.600">
+          {askedAt}
+        </Typography>
       </Stack>
 
       <Stack gap={1}>
@@ -47,7 +54,7 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
       </Stack>
 
       <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <VoteEntry target={question} targetType="question" />
+        <VoteEntry target={question} targetType="question" isClosed={isClosed} />
 
         <Chip
           variant="outlined"

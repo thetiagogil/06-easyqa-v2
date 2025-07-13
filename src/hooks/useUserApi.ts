@@ -32,6 +32,7 @@ export const useUpdateUser = () => {
       return res.json();
     },
     onSuccess: () => {
+      showSnackbar("Profile updated successfully", "success");
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });

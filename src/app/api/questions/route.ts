@@ -73,3 +73,24 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(response);
 }
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const { user_id, title, content } = body;
+
+  if (!user_id || !title || !content) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  }
+
+  const { data, error } = await supabase
+    .from("questions")
+    .insert([{ user_id, title, content }])
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data, { status: 201 });
+}
