@@ -10,7 +10,7 @@ export interface Question {
   vote_score: number;
   created_at: string;
   updated_at: string;
-  user?: User;
+  user: User;
   viewer_vote_value?: 1 | -1;
   answer_count?: number;
   answers?: Answer[];

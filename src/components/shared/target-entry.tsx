@@ -2,13 +2,14 @@ import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useAcceptAnswer } from "@/hooks/useAnswerApi";
 import { MAIN_BORDERS } from "@/lib/constants";
-import { userAvatar, userName } from "@/lib/utils";
+import { userName } from "@/lib/utils";
 import { Answer, Question } from "@/types";
-import { Avatar, Button, Chip, Link, Stack, Typography } from "@mui/joy";
+import { Button, Chip, Link, Stack, Typography } from "@mui/joy";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import NextLink from "next/link";
 import { useMemo } from "react";
+import { CustomAvatar } from "./custom-avatar";
 import { VoteEntry } from "./vote-entry";
 
 dayjs.extend(relativeTime);
@@ -16,16 +17,10 @@ dayjs.extend(relativeTime);
 type TargetEntryProps = {
   targetType: "question" | "answer";
   target: Question | Answer;
-  isLastTarget: boolean;
   answeredQuestion?: Question;
 };
 
-export const TargetEntry = ({
-  targetType,
-  target,
-  isLastTarget,
-  answeredQuestion,
-}: TargetEntryProps) => {
+export const TargetEntry = ({ targetType, target, answeredQuestion }: TargetEntryProps) => {
   const { isUserReady } = useAuthContext();
   const { showSnackbar } = useSnackbarContext();
   const { currentUser } = useAuthContext();
@@ -43,7 +38,7 @@ export const TargetEntry = ({
   const notAcceptedAnswer =
     targetType === "answer" && answeredQuestion?.status === "closed" && !answer?.accepted;
 
-  const sharedHeight = 24;
+  const sharedSize = 24;
 
   const handleVoteClick = (e: any) => {
     if (!isUserReady) {
@@ -62,21 +57,17 @@ export const TargetEntry = ({
   return (
     <Stack
       direction="row"
-      borderBottom={isLastTarget ? "" : MAIN_BORDERS}
+      borderBottom={MAIN_BORDERS}
       p={2}
       gap={1}
       sx={notAcceptedAnswer ? { opacity: 0.5 } : undefined}
     >
       <Stack>
-        <Avatar
-          src={userAvatar(target.user)}
-          alt={userName(target.user)}
-          sx={{ height: sharedHeight, width: sharedHeight, fontSize: 12 }}
-        />
+        <CustomAvatar user={target.user} size={sharedSize} fontSize={12} />
       </Stack>
 
       <Stack flexBasis="100%" gap={1}>
-        <Stack direction="row" height={sharedHeight} alignItems="center" gap={1}>
+        <Stack direction="row" height={sharedSize} alignItems="center" gap={1}>
           <Typography level="body-sm">
             <Link
               component={NextLink}

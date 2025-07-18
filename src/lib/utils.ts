@@ -6,7 +6,3 @@ export const shortAddress = (address?: string) => {
 export const userName = (user?: any) => {
   return user?.name ? user?.name : shortAddress(user?.wallet);
 };
-
-export const userAvatar = (user?: any) => {
-  return user?.avatar ? user?.avatar : "";
-};

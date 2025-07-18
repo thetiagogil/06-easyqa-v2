@@ -1,0 +1,110 @@
+"use client";
+import { MainContainer } from "@/components/layout/main-container";
+import { CustomAvatar } from "@/components/shared/custom-avatar";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useGetUsers } from "@/hooks/useUserApi";
+import SearchIcon from "@mui/icons-material/Search";
+import {
+  Box,
+  CircularProgress,
+  Input,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemContent,
+  ListItemDecorator,
+  Typography,
+} from "@mui/joy";
+import NextLink from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+export default function ExplorePage() {
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebouncedValue(search, 1000);
+  const { data, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage } =
+    useGetUsers(debouncedSearch);
+
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setIsSearching(true);
+  };
+
+  const users = data?.pages.flat() || [];
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isFetching && debouncedSearch === search) {
+      setIsSearching(false);
+    }
+  }, [isFetching, debouncedSearch, search]);
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextPage();
+      },
+      { threshold: 1 },
+    );
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  return (
+    <MainContainer
+      navbarProps={{
+        title: "explore",
+        hasBackButton: true,
+        fullItem: (
+          <Input
+            placeholder="search for a user..."
+            fullWidth
+            startDecorator={<SearchIcon />}
+            value={search}
+            onChange={handleSearchChange}
+            endDecorator={isSearching ? <CircularProgress size="sm" thickness={1} /> : null}
+            aria-label="search users"
+          />
+        ),
+      }}
+      noPad
+    >
+      <List sx={{ p: 0 }}>
+        {users.map((user) => (
+          <ListItem key={user.id}>
+            <ListItemButton
+              component={NextLink}
+              href={`/profile/${user.id}`}
+              sx={{
+                display: "flex",
+                direction: "row",
+                alignItems: "center",
+                p: 2,
+                gap: 2,
+                textDecoration: "none",
+              }}
+            >
+              <ListItemDecorator>
+                <CustomAvatar user={user} size={36} fontSize={12} />
+              </ListItemDecorator>
+              <ListItemContent>
+                <Typography level="title-sm" color="primary" fontWeight={700}>
+                  {user.name}
+                </Typography>
+                <Typography level="body-sm" noWrap>
+                  {user.bio}
+                </Typography>
+              </ListItemContent>
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+
+      {hasNextPage && <Box ref={loadMoreRef} />}
+    </MainContainer>
+  );
+}

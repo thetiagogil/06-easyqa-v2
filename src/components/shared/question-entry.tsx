@@ -1,11 +1,12 @@
 import { MAIN_BORDERS } from "@/lib/constants";
-import { userAvatar, userName } from "@/lib/utils";
+import { userName } from "@/lib/utils";
 import { Question } from "@/types";
-import { Avatar, Chip, Link, Stack, Typography } from "@mui/joy";
+import { Chip, Link, Stack, Typography } from "@mui/joy";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import NextLink from "next/link";
 import { useMemo } from "react";
+import { CustomAvatar } from "./custom-avatar";
 import { VoteEntry } from "./vote-entry";
 
 dayjs.extend(relativeTime);
@@ -21,11 +22,8 @@ export const QuestionEntry = ({ question }: QuestionEntryProps) => {
   return (
     <Stack borderBottom={MAIN_BORDERS} p={2} gap={1}>
       <Stack direction="row" flexBasis="100%" alignItems="center" gap={1}>
-        <Avatar
-          src={userAvatar(question.user)}
-          alt={userName(question.user)}
-          sx={{ width: 32, height: 32, fontSize: 12 }}
-        />
+        <CustomAvatar user={question.user} size={32} fontSize={12} />
+
         <Typography level="body-sm">
           <Link
             component={NextLink}

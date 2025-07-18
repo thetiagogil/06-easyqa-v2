@@ -71,13 +71,8 @@ export default function HomePage() {
             {tab.isPending ? (
               <Loading minHeight={160} />
             ) : tab.data && tab.data.length > 0 ? (
-              tab.data.map((question: Question, questionIndex) => (
-                <TargetEntry
-                  key={question.id}
-                  targetType="question"
-                  target={question}
-                  isLastTarget={questionIndex === (tab.data && tab.data.length - 1)}
-                />
+              tab.data.map((question: Question) => (
+                <TargetEntry key={question.id} targetType="question" target={question} />
               ))
             ) : (
               <Typography level="body-sm" textAlign="center" p={2}>
