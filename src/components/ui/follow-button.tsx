@@ -9,10 +9,12 @@ type FollowButtonProps = {
   isFollowing: boolean;
 };
 
-export function FollowButton({ targetUserId, isFollowing }: FollowButtonProps) {
+export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) => {
   const { currentUser } = useAuthContext();
   const { follow, unfollow } = useFollow(targetUserId);
   const [hover, setHover] = useState(false);
+
+  const commonStyles = { width: 80, fontSize: 12, transition: "0.3s" };
 
   if (!currentUser || currentUser.id === targetUserId) return null;
 
@@ -27,7 +29,7 @@ export function FollowButton({ targetUserId, isFollowing }: FollowButtonProps) {
         onClick={() => unfollow.mutate()}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        sx={{ width: 96, transition: "0.3s" }}
+        sx={commonStyles}
       >
         {hover ? "Unfollow" : "Following"}
       </Button>
@@ -36,15 +38,15 @@ export function FollowButton({ targetUserId, isFollowing }: FollowButtonProps) {
 
   return (
     <Button
-      variant="solid"
+      variant="outlined"
       color="primary"
       size="sm"
       disabled={follow.isPending}
       loading={follow.isPending}
       onClick={() => follow.mutate()}
-      sx={{ width: 96, transition: "0.3s" }}
+      sx={commonStyles}
     >
       Follow
     </Button>
   );
-}
+};
