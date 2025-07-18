@@ -99,7 +99,7 @@ export const TargetEntry = ({ targetType, target, answeredQuestion }: TargetEntr
             <Typography level="body-md">{question.title}</Typography>
           </Link>
         ) : (
-          <Typography level="body-sm" textAlign="justify" whiteSpace="pre-line">
+          <Typography level="body-sm" textAlign="justify">
             {target.content}
           </Typography>
         )}

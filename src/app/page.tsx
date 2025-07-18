@@ -69,7 +69,7 @@ export default function HomePage() {
         {tabs.map((tab, index) => (
           <TabPanel key={index} value={index} sx={{ p: 0 }}>
             {tab.isPending ? (
-              <Loading minHeight={160} />
+              <Loading />
             ) : tab.data && tab.data.length > 0 ? (
               tab.data.map((question: Question) => (
                 <TargetEntry key={question.id} targetType="question" target={question} />

@@ -1,6 +1,7 @@
 "use client";
 import { MainContainer } from "@/components/layout/main-container";
 import { CustomAvatar } from "@/components/shared/custom-avatar";
+import { Loading } from "@/components/shared/loading";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useGetUsers } from "@/hooks/useUserApi";
 import SearchIcon from "@mui/icons-material/Search";
@@ -21,7 +22,7 @@ import { useEffect, useRef, useState } from "react";
 export default function ExplorePage() {
   const [search, setSearch] = useState<string>("");
   const debouncedSearch = useDebouncedValue(search, 1000);
-  const { data, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isPending, isFetching, isFetchingNextPage } =
     useGetUsers(debouncedSearch);
 
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -73,38 +74,44 @@ export default function ExplorePage() {
       }}
       noPad
     >
-      <List sx={{ p: 0 }}>
-        {users.map((user) => (
-          <ListItem key={user.id}>
-            <ListItemButton
-              component={NextLink}
-              href={`/profile/${user.id}`}
-              sx={{
-                display: "flex",
-                direction: "row",
-                alignItems: "center",
-                p: 2,
-                gap: 2,
-                textDecoration: "none",
-              }}
-            >
-              <ListItemDecorator>
-                <CustomAvatar user={user} size={36} fontSize={12} />
-              </ListItemDecorator>
-              <ListItemContent>
-                <Typography level="title-sm" color="primary" fontWeight={700}>
-                  {user.name}
-                </Typography>
-                <Typography level="body-sm" noWrap>
-                  {user.bio}
-                </Typography>
-              </ListItemContent>
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      {isPending ? (
+        <Loading />
+      ) : (
+        <>
+          <List sx={{ p: 0 }}>
+            {users.map((user) => (
+              <ListItem key={user.id}>
+                <ListItemButton
+                  component={NextLink}
+                  href={`/profile/${user.id}`}
+                  sx={{
+                    display: "flex",
+                    direction: "row",
+                    alignItems: "center",
+                    p: 2,
+                    gap: 2,
+                    textDecoration: "none",
+                  }}
+                >
+                  <ListItemDecorator>
+                    <CustomAvatar user={user} size={36} fontSize={12} />
+                  </ListItemDecorator>
+                  <ListItemContent>
+                    <Typography level="title-sm" color="primary" fontWeight={700}>
+                      {user.name}
+                    </Typography>
+                    <Typography level="body-sm" noWrap>
+                      {user.bio}
+                    </Typography>
+                  </ListItemContent>
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
 
-      {hasNextPage && <Box ref={loadMoreRef} />}
+          {hasNextPage && <Box ref={loadMoreRef} />}
+        </>
+      )}
     </MainContainer>
   );
 }
