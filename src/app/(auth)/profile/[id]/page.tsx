@@ -1,5 +1,6 @@
 "use client";
 import { MainContainer } from "@/components/layout/main-container";
+import { CustomAvatar } from "@/components/shared/custom-avatar";
 import { Loading } from "@/components/shared/loading";
 import { TargetEntry } from "@/components/shared/target-entry";
 import { useAuthContext } from "@/contexts/auth.context";
@@ -8,66 +9,19 @@ import {
   useGetUserById,
   useGetUserQuestions,
 } from "@/hooks/useUserApi";
-import { userAvatar, userName } from "@/lib/utils";
+import { userName } from "@/lib/utils";
 import { Question } from "@/types/question";
-import { User } from "@/types/user";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Avatar,
-  IconButton,
-  Stack,
-  Tab,
-  tabClasses,
-  TabList,
-  TabPanel,
-  Tabs,
-  Typography,
-} from "@mui/joy";
+import { IconButton, Stack, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-
-const ProfileOverview = ({ user }: { user?: User }) => {
-  const { currentUser } = useAuthContext();
-  const router = useRouter();
-
-  return (
-    <Stack p={2} gap={2}>
-      <Stack direction="row" justifyContent="space-between">
-        <Avatar
-          variant="outlined"
-          color="primary"
-          src={userAvatar(user)}
-          alt={userName(user)}
-          sx={{ height: 80, width: 80, fontSize: 32 }}
-        />
-
-        {user?.id === currentUser?.id && (
-          <Stack>
-            <IconButton
-              variant="outlined"
-              size="sm"
-              onClick={() => {
-                if (user?.id) {
-                  router.push(`/profile/${user.id}/edit`);
-                }
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-          </Stack>
-        )}
-      </Stack>
-
-      <Typography level="h2">{userName(user)}</Typography>
-
-      <Typography level="body-sm">{user?.bio}</Typography>
-    </Stack>
-  );
-};
 
 export default function ProfilePage() {
   const { id } = useParams();
   const userId = Number(id);
+  const { currentUser } = useAuthContext();
+  const router = useRouter();
+
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
   const isQuestionsTab = currentTabIndex === 0;
@@ -90,7 +44,31 @@ export default function ProfilePage() {
       }}
       noPad
     >
-      <ProfileOverview user={user} />
+      <Stack p={2} gap={2}>
+        <Stack direction="row" justifyContent="space-between">
+          <CustomAvatar user={user!} size={80} fontSize={32} />
+
+          {user?.id === currentUser?.id && (
+            <Stack>
+              <IconButton
+                variant="outlined"
+                size="sm"
+                onClick={() => {
+                  if (user?.id) {
+                    router.push(`/profile/${user.id}/edit`);
+                  }
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            </Stack>
+          )}
+        </Stack>
+
+        <Typography level="h2">{userName(user)}</Typography>
+
+        <Typography level="body-sm">{user?.bio}</Typography>
+      </Stack>
 
       <Tabs
         value={currentTabIndex}
@@ -124,13 +102,8 @@ export default function ProfilePage() {
           {isQuestionsLoading ? (
             <Loading />
           ) : questions?.length ? (
-            questions.map((question: Question, questionIndex) => (
-              <TargetEntry
-                key={question.id}
-                targetType="question"
-                target={question}
-                isLastTarget={questionIndex === (questions && questions.length - 1)}
-              />
+            questions.map((question: Question) => (
+              <TargetEntry key={question.id} targetType="question" target={question} />
             ))
           ) : (
             <Typography level="body-sm" textAlign="center" p={2}>
@@ -143,13 +116,8 @@ export default function ProfilePage() {
           {isAnsweredQuestionsLoading ? (
             <Loading />
           ) : answeredQuestions?.length ? (
-            answeredQuestions.map((question: Question, questionIndex) => (
-              <TargetEntry
-                key={question.id}
-                targetType="question"
-                target={question}
-                isLastTarget={questionIndex === (answeredQuestions && answeredQuestions.length - 1)}
-              />
+            answeredQuestions.map((question: Question) => (
+              <TargetEntry key={question.id} targetType="question" target={question} />
             ))
           ) : (
             <Typography level="body-sm" textAlign="center" p={2}>

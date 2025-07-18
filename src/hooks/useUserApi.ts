@@ -1,9 +1,40 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { EXPLORE_PAGE_SEARCH_SIZE } from "@/lib/constants";
 import { Question } from "@/types/question";
 import { User } from "@/types/user";
 import { usePrivy } from "@privy-io/react-auth";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryFunctionContext,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+export const useGetUsers = (search?: string) =>
+  useInfiniteQuery<User[], Error>({
+    queryKey: ["users", search || ""],
+    initialPageParam: 0,
+    queryFn: async (context: QueryFunctionContext) => {
+      const pageParam = (context.pageParam as number) ?? 0;
+      const params = new URLSearchParams();
+      params.set("limit", EXPLORE_PAGE_SEARCH_SIZE.toString());
+      params.set("offset", (pageParam * EXPLORE_PAGE_SEARCH_SIZE).toString());
+      if (search) params.set("search", search);
+
+      const res = await fetch(`/api/users?${params.toString()}`);
+
+      if (!res.ok) {
+        const error = await res.json();
+        const message = error.message || "Failed to fetch users";
+        throw new Error(message);
+      }
+      return (await res.json()) as Promise<User[]>;
+    },
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === EXPLORE_PAGE_SEARCH_SIZE ? allPages.length : undefined,
+  });
 
 export const useUpdateUser = () => {
   type MutationProps = {
@@ -29,7 +60,7 @@ export const useUpdateUser = () => {
         throw new Error(message);
       }
 
-      return res.json();
+      return await res.json();
     },
     onSuccess: () => {
       showSnackbar("Profile updated successfully", "success");
@@ -51,7 +82,7 @@ export const useGetUserById = (userId: number) => {
         throw new Error(message);
       }
 
-      return res.json();
+      return await res.json();
     },
   });
 };
@@ -78,7 +109,7 @@ export const useGetUserQuestions = (userId: number, enabled: boolean = true) => 
         throw new Error(message);
       }
 
-      return res.json();
+      return await res.json();
     },
   });
 };
@@ -105,7 +136,7 @@ export const useGetUserAnsweredQuestions = (userId: number, enabled: boolean = t
         throw new Error(message);
       }
 
-      return res.json();
+      return await res.json();
     },
   });
 };

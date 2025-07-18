@@ -1,11 +1,12 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { MAIN_BORDERS } from "@/lib/constants";
-import { userAvatar, userName } from "@/lib/utils";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Avatar, IconButton, Link, Stack, Typography } from "@mui/joy";
+import { IconButton, Link, Stack, Typography } from "@mui/joy";
+import { SxProps } from "@mui/joy/styles/types";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
+import { CustomAvatar } from "../shared/custom-avatar";
 
 interface NavbarProps {
   title?: string;
@@ -36,6 +37,27 @@ const NavbarContainer = ({ children }: { children: ReactNode }) => (
   </Stack>
 );
 
+const BackButton = ({ sx }: { sx?: SxProps }) => {
+  const router = useRouter();
+  return (
+    <IconButton
+      color="neutral"
+      size="sm"
+      onClick={() => {
+        const internalReferrer = document.referrer.startsWith(window.location.origin);
+        if (internalReferrer) {
+          router.back();
+        } else {
+          router.push("/");
+        }
+      }}
+      sx={{ ...sx, alignSelf: "center" }}
+    >
+      <ArrowBackIcon />
+    </IconButton>
+  );
+};
+
 export const Navbar = ({
   title,
   startItem,
@@ -46,41 +68,25 @@ export const Navbar = ({
 }: NavbarProps) => {
   const { authenticated } = usePrivy();
   const { currentUser } = useAuthContext();
-  const router = useRouter();
 
-  if (fullItem) return <NavbarContainer>{fullItem}</NavbarContainer>;
+  if (fullItem)
+    return (
+      <NavbarContainer>
+        {hasBackButton ? <BackButton sx={{ mr: 2 }} /> : null} {fullItem}
+      </NavbarContainer>
+    );
   return (
     <NavbarContainer>
       <Stack flexDirection="row" justifyContent="start" alignItems="center" flexBasis="100%">
         {startItem ? (
           startItem
         ) : hasBackButton ? (
-          <IconButton
-            color="neutral"
-            size="sm"
-            onClick={() => {
-              const internalReferrer = document.referrer.startsWith(window.location.origin);
-              if (internalReferrer) {
-                router.back();
-              } else {
-                router.push("/");
-              }
-            }}
-            sx={{ alignSelf: "center" }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
+          <BackButton />
         ) : (
           authenticated && (
-            <Avatar
-              variant="outlined"
-              color="primary"
-              src={userAvatar(currentUser)}
-              alt={userName(currentUser)}
-              component={Link}
-              href={`/profile/${currentUser?.id}`}
-              underline="none"
-            />
+            <Link href={`/profile/${currentUser?.id}`} underline="none">
+              <CustomAvatar user={currentUser!} />
+            </Link>
           )
         )}
       </Stack>

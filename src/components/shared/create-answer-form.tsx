@@ -1,9 +1,9 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { useCreateAnswer } from "@/hooks/useAnswerApi";
 import { CHAR_LIMIT, MAIN_BORDERS } from "@/lib/constants";
-import { userAvatar, userName } from "@/lib/utils";
-import { Avatar, Button, Stack, Textarea, Typography } from "@mui/joy";
+import { Button, Stack, Textarea, Typography } from "@mui/joy";
 import { useForm } from "react-hook-form";
+import { CustomAvatar } from "./custom-avatar";
 
 type FormData = { content: string };
 
@@ -38,11 +38,7 @@ export function CreateAnswerForm({ questionId }: { questionId: number }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack borderBottom={MAIN_BORDERS} p={2} gap={3}>
         <Stack direction="row" alignItems="flex-start" gap={1}>
-          <Avatar
-            src={userAvatar(currentUser)}
-            alt={userName(currentUser)}
-            sx={{ width: 32, height: 32, fontSize: 12 }}
-          />
+          <CustomAvatar user={currentUser!} size={32} fontSize={12} />
 
           <Textarea
             {...register("content", { required: true })}

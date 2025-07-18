@@ -56,5 +56,12 @@ export const theme = extendTheme({
         color: "secondary",
       },
     },
+    JoyInput: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          backgroundColor: theme.palette.background.body,
+        }),
+      },
+    },
   },
 });

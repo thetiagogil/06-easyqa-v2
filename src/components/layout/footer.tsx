@@ -1,8 +1,8 @@
 import { MAIN_BORDERS } from "@/lib/constants";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import ExploreIcon from "@mui/icons-material/Explore";
 import HomeIcon from "@mui/icons-material/Home";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Box, Button, Link, Stack } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
@@ -18,9 +18,9 @@ const footerItems = [
     icon: <HomeIcon sx={{ fontSize: size }} />,
   },
   {
-    label: "search",
-    path: "/search",
-    icon: <SearchIcon sx={{ fontSize: size }} />,
+    label: "explore",
+    path: "/explore",
+    icon: <ExploreIcon sx={{ fontSize: size }} />,
   },
   {
     label: "question",

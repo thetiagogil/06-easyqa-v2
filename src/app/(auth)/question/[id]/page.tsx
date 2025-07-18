@@ -26,13 +26,12 @@ export default function QuestionPage() {
       {!hasAlreadyAnswered && currentUser?.id !== question.user_id && (
         <CreateAnswerForm questionId={question.id} />
       )}
-      {question.answers?.map((answer, index) => {
+      {question.answers?.map((answer) => {
         return (
           <TargetEntry
             key={answer.id}
             targetType="answer"
             target={answer}
-            isLastTarget={index === (question.answers && question.answers.length - 1)}
             answeredQuestion={question}
           />
         );
