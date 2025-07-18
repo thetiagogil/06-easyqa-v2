@@ -44,7 +44,6 @@ export function CreateAnswerForm({ questionId }: { questionId: number }) {
             {...register("content", { required: true })}
             variant="plain"
             placeholder="Write your answer here..."
-            minRows={contentValue ? 2 : 1}
             disabled={isSubmitting}
             sx={{
               flexGrow: 1,

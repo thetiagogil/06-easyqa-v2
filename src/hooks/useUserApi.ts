@@ -30,11 +30,37 @@ export const useGetUsers = (search?: string) =>
         const message = error.message || "Failed to fetch users";
         throw new Error(message);
       }
-      return (await res.json()) as Promise<User[]>;
+      return await res.json();
     },
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === EXPLORE_PAGE_SEARCH_SIZE ? allPages.length : undefined,
   });
+
+export const useGetUserById = (userId: number) => {
+  const { currentUser } = useAuthContext();
+  const viewerId = currentUser?.id;
+
+  return useQuery<User & { isViewerFollowing?: boolean }>({
+    queryKey: ["user", userId, viewerId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (viewerId) {
+        params.set("viewer_id", String(viewerId));
+      }
+
+      const res = await fetch(`/api/users/${userId}?${params.toString()}`);
+
+      if (!res.ok) {
+        const error = await res.json();
+        const message = error.message || "Failed to fetch user";
+        throw new Error(message);
+      }
+
+      return await res.json();
+    },
+  });
+};
 
 export const useUpdateUser = () => {
   type MutationProps = {
@@ -65,24 +91,6 @@ export const useUpdateUser = () => {
     onSuccess: () => {
       showSnackbar("Profile updated successfully", "success");
       queryClient.invalidateQueries({ queryKey: ["user"] });
-    },
-  });
-};
-
-export const useGetUserById = (userId: number) => {
-  return useQuery<User>({
-    queryKey: ["user", userId],
-    enabled: !!userId,
-    queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}`);
-
-      if (!res.ok) {
-        const error = await res.json();
-        const message = error.message || "Failed to fetch user";
-        throw new Error(message);
-      }
-
-      return await res.json();
     },
   });
 };

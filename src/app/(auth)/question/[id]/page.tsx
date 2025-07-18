@@ -13,29 +13,28 @@ export default function QuestionPage() {
   const { currentUser } = useAuthContext();
   const { data: question, isPending: isPendingQuestion } = useGetQuestionById(Number(id));
 
-  if (isPendingQuestion) return <Loading variant="overlay" />;
-  if (!question) return null;
-
-  const hasAlreadyAnswered = question.answers?.find((answer) => {
-    return answer.user_id === currentUser?.id;
-  });
+  const hasAlreadyAnswered =
+    !question?.answers?.find((answer) => answer.user_id === currentUser?.id) &&
+    currentUser?.id !== question?.user_id;
 
   return (
     <MainContainer navbarProps={{ title: "question", hasBackButton: true }} noPad>
-      {<QuestionEntry question={question} />}
-      {!hasAlreadyAnswered && currentUser?.id !== question.user_id && (
-        <CreateAnswerForm questionId={question.id} />
+      {isPendingQuestion ? (
+        <Loading />
+      ) : !question ? null : (
+        <>
+          <QuestionEntry question={question} />
+          {hasAlreadyAnswered && <CreateAnswerForm questionId={question.id} />}
+          {question.answers?.map((answer) => (
+            <TargetEntry
+              key={answer.id}
+              targetType="answer"
+              target={answer}
+              answeredQuestion={question}
+            />
+          ))}
+        </>
       )}
-      {question.answers?.map((answer) => {
-        return (
-          <TargetEntry
-            key={answer.id}
-            targetType="answer"
-            target={answer}
-            answeredQuestion={question}
-          />
-        );
-      })}
     </MainContainer>
   );
 }

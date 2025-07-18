@@ -6,4 +6,5 @@ export interface User {
   avatar_url?: string;
   email?: string;
   wallet?: string;
+  isViewerFollowing?: boolean;
 }
