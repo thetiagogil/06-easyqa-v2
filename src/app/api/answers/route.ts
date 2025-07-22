@@ -19,5 +19,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Get the question owner to notify them
+  const { data: question } = await supabase
+    .from("questions")
+    .select("user_id")
+    .eq("id", question_id)
+    .single();
+
+  if (question?.user_id && question.user_id !== user_id) {
+    await supabase.from("notifications").insert({
+      user_id: question.user_id,
+      type: "answer_received",
+      related_id: data.id,
+    });
+  }
+
   return NextResponse.json(data, { status: 201 });
 }

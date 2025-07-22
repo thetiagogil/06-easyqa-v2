@@ -4,6 +4,7 @@ import { CustomAvatar } from "@/components/shared/custom-avatar";
 import { Loading } from "@/components/shared/loading";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useGetUsers } from "@/hooks/useUserApi";
+import { MAIN_BORDERS } from "@/lib/constants";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
@@ -11,9 +12,7 @@ import {
   Input,
   List,
   ListItem,
-  ListItemButton,
   ListItemContent,
-  ListItemDecorator,
   Typography,
 } from "@mui/joy";
 import NextLink from "next/link";
@@ -80,31 +79,32 @@ export default function ExplorePage() {
         <>
           <List sx={{ p: 0 }}>
             {users.map((user) => (
-              <ListItem key={user.id}>
-                <ListItemButton
+              <ListItem key={user.id} sx={{ borderBottom: MAIN_BORDERS, p: 0 }}>
+                <ListItemContent
                   component={NextLink}
                   href={`/profile/${user.id}`}
                   sx={{
                     display: "flex",
-                    direction: "row",
                     alignItems: "center",
                     p: 2,
                     gap: 2,
                     textDecoration: "none",
+                    backgroundColor: "transparent",
+                    transition: "0.3s",
+                    "&:hover": {
+                      backgroundColor: "neutral.700",
+                    },
                   }}
                 >
-                  <ListItemDecorator>
-                    <CustomAvatar user={user} size={36} fontSize={12} />
-                  </ListItemDecorator>
-                  <ListItemContent>
-                    <Typography level="title-sm" color="primary" fontWeight={700}>
-                      {user.name}
-                    </Typography>
-                    <Typography level="body-sm" noWrap>
-                      {user.bio}
-                    </Typography>
-                  </ListItemContent>
-                </ListItemButton>
+                  <CustomAvatar user={user} size={32} fontSize={12} />
+
+                  <Typography level="title-sm" color="primary" fontWeight={700}>
+                    {user.name}
+                  </Typography>
+                  <Typography level="body-sm" noWrap>
+                    {user.bio}
+                  </Typography>
+                </ListItemContent>
               </ListItem>
             ))}
           </List>

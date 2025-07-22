@@ -38,6 +38,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  await supabase.from("notifications").insert({
+    user_id: following_id,
+    type: "followed",
+    related_id: follower_id,
+  });
+
   return NextResponse.json({ message: "Followed successfully." });
 }
 
@@ -59,6 +65,12 @@ export async function DELETE(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  await supabase.from("notifications").delete().match({
+    user_id: following_id,
+    type: "followed",
+    related_id: follower_id,
+  });
 
   return NextResponse.json({ message: "Unfollowed successfully." });
 }

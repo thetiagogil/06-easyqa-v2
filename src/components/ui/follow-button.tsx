@@ -22,7 +22,7 @@ export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) =
     return (
       <Button
         variant="outlined"
-        color={hover ? "danger" : "neutral"}
+        color={hover ? "danger" : "primary"}
         size="sm"
         disabled={unfollow.isPending}
         loading={unfollow.isPending}
@@ -39,11 +39,13 @@ export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) =
   return (
     <Button
       variant="outlined"
-      color="primary"
+      color={hover ? "primary" : "neutral"}
       size="sm"
       disabled={follow.isPending}
       loading={follow.isPending}
       onClick={() => follow.mutate()}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       sx={commonStyles}
     >
       Follow
