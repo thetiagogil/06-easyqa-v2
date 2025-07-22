@@ -3,3 +3,11 @@
   padding: 0;
   margin: 0;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--joy-palette-primary-700);
+}
