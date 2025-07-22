@@ -2,17 +2,13 @@ import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useAcceptAnswer } from "@/hooks/useAnswerApi";
 import { MAIN_BORDERS } from "@/lib/constants";
-import { userName } from "@/lib/utils";
+import { dateFromNow, userName } from "@/lib/utils";
 import { Answer, Question } from "@/types";
 import { Button, Chip, Link, Stack, Typography } from "@mui/joy";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import NextLink from "next/link";
 import { useMemo } from "react";
 import { CustomAvatar } from "./custom-avatar";
 import { VoteEntry } from "./vote-entry";
-
-dayjs.extend(relativeTime);
 
 type TargetEntryProps = {
   targetType: "question" | "answer";
@@ -31,7 +27,7 @@ export const TargetEntry = ({ targetType, target, answeredQuestion }: TargetEntr
   const canAccept = currentUser?.id === answeredQuestion?.user_id;
   const acceptAnswer =
     targetType === "answer" && answeredQuestion ? useAcceptAnswer(answeredQuestion.id) : null;
-  const askedAt = useMemo(() => dayjs(target.created_at).fromNow(), [target.created_at]);
+  const askedAt = useMemo(() => dateFromNow(target.created_at), [target.created_at]);
   const isClosed =
     (targetType === "question" && question?.status === "closed") ||
     (targetType === "answer" && answeredQuestion?.status === "closed");
@@ -48,8 +44,6 @@ export const TargetEntry = ({ targetType, target, answeredQuestion }: TargetEntr
   };
 
   const handleAccept = () => {
-    console.log(answer?.id);
-    console.log(acceptAnswer);
     if (!answer?.id || !acceptAnswer) return;
     acceptAnswer.mutate(answer.id);
   };

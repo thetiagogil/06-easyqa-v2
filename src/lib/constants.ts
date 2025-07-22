@@ -19,3 +19,4 @@ export const CHAR_LIMIT = {
 
 export const MAIN_BORDERS = "1px solid";
 export const EXPLORE_PAGE_SEARCH_SIZE = 20;
+export const NOTIFICATIONS_PAGE_SIZE = 20;

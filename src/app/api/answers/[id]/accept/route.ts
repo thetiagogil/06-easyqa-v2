@@ -50,9 +50,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: updateAnswerError.message }, { status: 500 });
   }
 
-  console.log("Attempting to update question:", answer.question_id);
-
-  const { data: updatedQuestion, error: updateQuestionError } = await supabase
+  const { error: updateQuestionError } = await supabase
     .from("questions")
     .update({ status: "closed" })
     .eq("id", answer.question_id)
@@ -64,7 +62,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: updateQuestionError.message }, { status: 500 });
   }
 
-  console.log("Updated question:", updatedQuestion);
+  // Find the author of the accepted answer
+  const { data: acceptedAnswer } = await supabase
+    .from("answers")
+    .select("user_id")
+    .eq("id", answerId)
+    .single();
+
+  if (acceptedAnswer?.user_id && acceptedAnswer.user_id !== userId) {
+    await supabase.from("notifications").insert({
+      user_id: acceptedAnswer.user_id,
+      type: "answer_accepted",
+      related_id: answer.question_id,
+    });
+  }
 
   return NextResponse.json({ success: true }, { status: 200 });
 }

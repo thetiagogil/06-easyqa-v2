@@ -1,22 +1,18 @@
 import { MAIN_BORDERS } from "@/lib/constants";
-import { userName } from "@/lib/utils";
+import { dateFromNow, userName } from "@/lib/utils";
 import { Question } from "@/types";
 import { Chip, Link, Stack, Typography } from "@mui/joy";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import NextLink from "next/link";
 import { useMemo } from "react";
 import { CustomAvatar } from "./custom-avatar";
 import { VoteEntry } from "./vote-entry";
-
-dayjs.extend(relativeTime);
 
 type QuestionEntryProps = {
   question: Question;
 };
 
 export const QuestionEntry = ({ question }: QuestionEntryProps) => {
-  const askedAt = useMemo(() => dayjs(question.created_at).fromNow(), [question.created_at]);
+  const askedAt = useMemo(() => dateFromNow(question.created_at), [question.created_at]);
   const isClosed = question?.status === "closed";
 
   return (

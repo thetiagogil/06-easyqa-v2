@@ -56,6 +56,13 @@ export const theme = extendTheme({
         color: "secondary",
       },
     },
+    JoyListItem: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          color: theme.palette.neutral[700],
+        }),
+      },
+    },
     JoyInput: {
       styleOverrides: {
         root: ({ theme }) => ({
