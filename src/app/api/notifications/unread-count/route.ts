@@ -1,23 +1,28 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user_id");
+  const searchedParams = Object.fromEntries(searchParams.entries());
+  const userId = Number(searchedParams.userId);
 
+  // Validate required fields
   if (!userId) {
-    return NextResponse.json({ error: "Missing user_id" }, { status: 400 });
+    return apiError("Missing required fields", 400);
   }
 
-  const { count, error } = await supabase
+  // Get unread notifications count by userId
+  const { count: unreadNotificationsCount, error: getUnreadNotificationsCount } = await supabase
     .from("notifications")
     .select("*", { count: "exact", head: true })
     .eq("user_id", Number(userId))
     .eq("is_read", false);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (getUnreadNotificationsCount) {
+    return apiError(getUnreadNotificationsCount);
   }
 
-  return NextResponse.json({ count });
+  // Return
+  return NextResponse.json(unreadNotificationsCount);
 }

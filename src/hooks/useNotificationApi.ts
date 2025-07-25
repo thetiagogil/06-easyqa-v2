@@ -38,7 +38,7 @@ export const useGetUnreadNotificationsCount = () => {
       const res = await fetch(`/api/notifications/unread-count?user_id=${currentUser.id}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to fetch count");
-      return data.count;
+      return data;
     },
     enabled: !!currentUser?.id,
   });

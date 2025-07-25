@@ -1,43 +1,43 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const answerId = Number(id);
-  const body = await req.json();
-  const userId = body?.user_id;
 
+  const body = await req.json();
+  const { userId } = body;
+
+  // Validate required fields
   if (!answerId || !userId) {
-    return NextResponse.json({ error: "Missing answer ID or user ID" }, { status: 400 });
+    return apiError("Missing required fields", 400);
   }
 
-  // Fetch the answer with its associated question
-  const { data: answer, error: fetchError } = await supabase
+  // Get answer with associated question
+  const { data: answer, error: getAnswerError } = await supabase
     .from("answers")
     .select("id, question_id")
     .eq("id", answerId)
     .single();
 
-  if (fetchError || !answer) {
-    return NextResponse.json({ error: fetchError?.message || "Answer not found" }, { status: 404 });
+  if (getAnswerError) {
+    return apiError(getAnswerError);
   }
 
-  const { data: question, error: questionError } = await supabase
+  const { data: question, error: getQuestionError } = await supabase
     .from("questions")
     .select("id, user_id")
     .eq("id", answer.question_id)
     .single();
 
-  if (questionError || !question) {
-    return NextResponse.json(
-      { error: questionError?.message || "Question not found" },
-      { status: 404 },
-    );
+  if (getQuestionError) {
+    return apiError(getQuestionError);
   }
 
-  // Validate that current user is the question owner
+  // Validate if the viewer is the question owner
   if (question.user_id !== userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    return apiError("Unauthorized", 401);
   }
 
   // Accept the answer and close the question
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .eq("id", answerId);
 
   if (updateAnswerError) {
-    return NextResponse.json({ error: updateAnswerError.message }, { status: 500 });
+    return apiError(updateAnswerError);
   }
 
   const { error: updateQuestionError } = await supabase
@@ -58,17 +58,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .single();
 
   if (updateQuestionError) {
-    console.error("Question update error:", updateQuestionError.message);
-    return NextResponse.json({ error: updateQuestionError.message }, { status: 500 });
+    return apiError(updateQuestionError);
   }
 
-  // Find the author of the accepted answer
+  // Get question owner
   const { data: acceptedAnswer } = await supabase
     .from("answers")
     .select("user_id")
     .eq("id", answerId)
     .single();
 
+  // Create notification to question owner
   if (acceptedAnswer?.user_id && acceptedAnswer.user_id !== userId) {
     await supabase.from("notifications").insert({
       user_id: acceptedAnswer.user_id,
@@ -77,5 +77,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     });
   }
 
+  // Return
   return NextResponse.json({ success: true }, { status: 200 });
 }

@@ -1,4 +1,3 @@
-"use client";
 import { MAIN_BORDERS } from "@/lib/constants";
 import { Stack } from "@mui/joy";
 import { SxProps } from "@mui/joy/styles/types";

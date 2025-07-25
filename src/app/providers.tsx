@@ -83,6 +83,7 @@ const AuthWrapper = () => {
 
 export const Providers = ({ children }: WithChildren) => {
   const [hydrated, setHydrated] = useState(false);
+  const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
     setHydrated(true);

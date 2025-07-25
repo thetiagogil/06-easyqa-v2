@@ -1,15 +1,16 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
-import { Vote } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
+  const searchedParams = Object.fromEntries(searchParams.entries());
+  const viewerId = Number(searchedParams.viewerId);
+  const sort = searchedParams.sort || "new";
+  const pageSize = Number(searchedParams.pageSize || 10);
+  const page = Number(searchedParams.page || 1);
 
-  const sort = searchParams.get("sort") ?? "new";
-  const page = Number(searchParams.get("page") ?? "1");
-  const pageSize = Number(searchParams.get("pageSize") ?? "10");
-  const viewerId = searchParams.get("viewer_id") ?? undefined;
-
+  // Get questions with pagination
   const sortMap: Record<string, string> = {
     new: "created_at",
     top: "vote_score",
@@ -19,55 +20,60 @@ export async function GET(req: NextRequest) {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data: questions, error } = await supabase
+  const { data: questions, error: getQuestionsError } = await supabase
     .from("questions")
     .select("*, user:user_id(*)")
     .order(orderBy, { ascending: false })
     .range(from, to);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (getQuestionsError) {
+    return apiError(getQuestionsError);
   }
 
   if (!questions?.length) return NextResponse.json([]);
 
+  // Get answers by question_id
   const questionIds = questions.map((question) => question.id);
 
-  const { data: answers, error: answerError } = await supabase
+  const { data: answers, error: getAnswersError } = await supabase
     .from("answers")
     .select("question_id")
     .in("question_id", questionIds);
 
-  if (answerError) {
-    return NextResponse.json({ error: answerError.message }, { status: 500 });
+  if (getAnswersError) {
+    return apiError(getAnswersError);
   }
 
+  // Get answers count
   const answerCountMap = new Map<number, number>();
   answers?.forEach((answer) => {
     answerCountMap.set(answer.question_id, (answerCountMap.get(answer.question_id) || 0) + 1);
   });
 
-  let votes: Vote[] = [];
+  // Get viwerId vote on questions
+  let viewerVotes: { target_id: number; value: number }[] = [];
 
   if (viewerId) {
-    const ids = questions.map((question) => question.id);
-    const { data: voteRows, error: voteError } = await supabase
-      .from("votes")
-      .select("target_id, value")
-      .eq("user_id", viewerId)
-      .eq("target_type", "question")
-      .in("target_id", ids);
+    const questionIds = questions.map((q) => q.id);
+    if (questionIds.length) {
+      const { data: voteRows, error: getVotesError } = await supabase
+        .from("votes")
+        .select("target_id, value")
+        .eq("user_id", viewerId)
+        .eq("target_type", "question")
+        .in("target_id", questionIds);
 
-    if (voteError) {
-      return NextResponse.json({ error: voteError.message }, { status: 500 });
+      if (getVotesError) {
+        return apiError(getVotesError);
+      }
+      viewerVotes = voteRows ?? [];
     }
-
-    votes = voteRows as unknown as Vote[];
   }
 
+  // Return
   const response = questions.map((question) => ({
     ...question,
-    viewer_vote_value: votes.find((vote) => vote.target_id === question.id)?.value ?? null,
+    viewer_vote_value: viewerVotes.find((vote) => vote.target_id === question.id)?.value ?? null,
     answer_count: answerCountMap.get(question.id) ?? 0,
   }));
 
@@ -78,19 +84,22 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { user_id, title, content } = body;
 
+  // Validate required fields
   if (!user_id || !title || !content) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    return apiError("Missing required fields", 400);
   }
 
-  const { data, error } = await supabase
+  // Create question
+  const { data: question, error: createQuestionError } = await supabase
     .from("questions")
     .insert([{ user_id, title, content }])
     .select()
     .single();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (createQuestionError) {
+    return apiError(createQuestionError);
   }
 
-  return NextResponse.json(data, { status: 201 });
+  // Return
+  return NextResponse.json(question, { status: 201 });
 }

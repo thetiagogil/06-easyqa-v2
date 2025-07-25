@@ -1,22 +1,27 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { user_id } = await req.json();
+  const body = await req.json();
+  const { userId } = body;
 
-  if (!user_id) {
-    return NextResponse.json({ error: "Missing user_id" }, { status: 400 });
+  // Validate required fields
+  if (!userId) {
+    return apiError("Missing required fields", 400);
   }
 
-  const { error } = await supabase
+  // Update is_read status on notifications by userId
+  const { error: updateNotificationsError } = await supabase
     .from("notifications")
     .update({ is_read: true })
-    .eq("user_id", user_id)
+    .eq("user_id", userId)
     .eq("is_read", false);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (updateNotificationsError) {
+    return apiError(updateNotificationsError);
   }
 
+  // Return
   return NextResponse.json({ success: true });
 }

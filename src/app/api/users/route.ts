@@ -1,22 +1,28 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
-  const offset = parseInt(searchParams.get("offset") || "0", 10);
-  const search = searchParams.get("search");
+  const searchedParams = Object.fromEntries(searchParams.entries());
+  const limit = Number(searchedParams.limit || 10);
+  const offset = Number(searchedParams.offset || 0);
+  const search = searchedParams.search;
 
+  // Get users with pagination and search
   let query = supabase.from("users").select("id, name, bio, avatar_url", { count: "exact" });
+
   if (search) {
     query = query.ilike("name", `%${search}%`);
   }
+
   query = query.range(offset, offset + limit - 1);
 
-  const { data, error } = await query;
+  const { data: users, error: getUsersError } = await query;
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (getUsersError) {
+    return apiError(getUsersError);
   }
-  return NextResponse.json(data);
+
+  return NextResponse.json(users);
 }

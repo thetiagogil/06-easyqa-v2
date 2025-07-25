@@ -1,26 +1,31 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user_id");
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
-  const offset = parseInt(searchParams.get("offset") || "0", 10);
+  const searchedParams = Object.fromEntries(searchParams.entries());
+  const userId = Number(searchedParams.userId);
+  const limit = Number(searchedParams.limit || 10);
+  const offset = Number(searchedParams.offset || 0);
 
+  // Validate required fields
   if (!userId) {
-    return NextResponse.json({ error: "Missing user_id" }, { status: 400 });
+    return apiError("Missing required fields", 400);
   }
 
-  const { data, error } = await supabase
+  // Get notifications by userId
+  const { data: notifications, error: getNotificationsError } = await supabase
     .from("notifications")
     .select("*")
     .eq("user_id", Number(userId))
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (getNotificationsError) {
+    return apiError(getNotificationsError);
   }
 
-  return NextResponse.json(data);
+  // Return
+  return NextResponse.json(notifications);
 }

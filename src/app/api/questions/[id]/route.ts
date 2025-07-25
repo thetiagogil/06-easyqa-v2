@@ -1,32 +1,36 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const questionId = Number(id);
-  const { searchParams } = req.nextUrl;
-  const viewerId = searchParams.get("viewer_id") ?? undefined;
 
+  const { searchParams } = req.nextUrl;
+  const searchedParams = Object.fromEntries(searchParams.entries());
+  const viewerId = Number(searchedParams.viewerId);
+
+  // Validate required fields
   if (!questionId) {
-    return NextResponse.json({ error: "Missing question ID." }, { status: 400 });
+    return apiError("Missing required fields", 400);
   }
 
-  // Get question and author
-  const { data: question, error } = await supabase
+  // Get question by id
+  const { data: question, error: getQuestionError } = await supabase
     .from("questions")
     .select("*, user:user_id(*)")
     .eq("id", questionId)
     .single();
 
-  if (error || !question) {
-    return NextResponse.json({ error: error?.message || "Question not found." }, { status: 404 });
+  if (getQuestionError) {
+    return apiError(getQuestionError);
   }
 
-  // Get vote for the question
+  // Get viewerId vote on question
   let viewer_vote_value: 1 | -1 | null = null;
 
   if (viewerId) {
-    const { data: vote, error: voteError } = await supabase
+    const { data: vote, error: getVoteError } = await supabase
       .from("votes")
       .select("value")
       .eq("user_id", viewerId)
@@ -34,37 +38,37 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       .eq("target_id", questionId)
       .maybeSingle();
 
-    if (voteError) {
-      return NextResponse.json({ error: voteError.message }, { status: 500 });
+    if (getVoteError) {
+      return apiError(getVoteError);
     }
 
     viewer_vote_value = vote?.value ?? null;
   }
 
-  // Get answers with authors
-  const { data: answers, error: answersError } = await supabase
+  // Get answers with users destructured
+  const { data: answers, error: getAnswersError } = await supabase
     .from("answers")
     .select("*, user:user_id(*)")
     .eq("question_id", questionId)
     .order("created_at", { ascending: true });
 
-  if (answersError) {
-    return NextResponse.json({ error: answersError.message }, { status: 500 });
+  if (getAnswersError) {
+    return apiError(getAnswersError);
   }
 
-  // Get viewer votes for answers (if viewerId is provided)
+  // Get viewer votes for answers
   if (viewerId && answers.length > 0) {
     const answerIds = answers.map((a) => a.id);
 
-    const { data: answerVotes, error: answerVotesError } = await supabase
+    const { data: answerVotes, error: getAnswerVotesError } = await supabase
       .from("votes")
       .select("target_id, value")
       .eq("user_id", viewerId)
       .eq("target_type", "answer")
       .in("target_id", answerIds);
 
-    if (answerVotesError) {
-      return NextResponse.json({ error: answerVotesError.message }, { status: 500 });
+    if (getAnswerVotesError) {
+      return apiError(getAnswerVotesError);
     }
 
     const voteMap = new Map<number, 1 | -1>();
@@ -77,6 +81,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     });
   }
 
+  // Return
   const response = {
     ...question,
     viewer_vote_value,

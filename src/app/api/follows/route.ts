@@ -1,76 +1,88 @@
+import { apiError } from "@/lib/api-helpers";
 import { supabase } from "@/lib/supabase";
+import dayjs from "dayjs";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { follower_id, following_id } = await req.json();
+  const body = await req.json();
+  const { followerId, followingId } = await body;
 
-  if (!follower_id) {
-    return NextResponse.json({ error: "Missing follower_id." }, { status: 400 });
+  // Validate required fields
+  if (!followerId || !followingId) {
+    return apiError("Missing required fields", 400);
   }
 
-  if (!following_id) {
-    return NextResponse.json({ error: "Missing following_id." }, { status: 400 });
+  if (followerId === followingId) {
+    return apiError("You cannot follow yourself", 400);
   }
 
-  if (follower_id === following_id) {
-    return NextResponse.json({ error: "You cannot follow yourself." }, { status: 400 });
-  }
-
-  const { count, error: countError } = await supabase
+  // Check if viewer is already following the target user
+  const { count: isFollowingCount, error: isFollowingCountError } = await supabase
     .from("follows")
     .select("*", { count: "exact", head: true })
-    .eq("follower_id", follower_id)
-    .eq("following_id", following_id);
+    .eq("follower_id", followerId)
+    .eq("following_id", followingId);
 
-  if (countError) {
-    return NextResponse.json({ error: countError.message }, { status: 500 });
+  if (isFollowingCountError) {
+    return apiError(isFollowingCountError);
   }
 
-  if (count && count > 0) {
-    return NextResponse.json({ error: "Already following." }, { status: 409 });
+  if (isFollowingCount && isFollowingCount > 0) {
+    return apiError("Already following", 409);
   }
 
-  const { error } = await supabase
-    .from("follows")
-    .insert([{ follower_id, following_id, followed_at: new Date().toISOString() }]);
+  // Create follow (if not already following)
+  const { error: createFollowError } = await supabase.from("follows").insert([
+    {
+      followerId,
+      followingId,
+      followed_at: dayjs().toISOString(),
+    },
+  ]);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (createFollowError) {
+    return apiError(createFollowError);
   }
 
+  // Create notification to target user
   await supabase.from("notifications").insert({
-    user_id: following_id,
+    user_id: followingId,
     type: "followed",
-    related_id: follower_id,
+    related_id: followerId,
   });
 
+  // Return
   return NextResponse.json({ message: "Followed successfully." });
 }
 
 export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const follower_id = searchParams.get("follower_id");
-  const following_id = searchParams.get("following_id");
+  const searchedParams = Object.fromEntries(searchParams.entries());
+  const followerId = Number(searchedParams.followerId);
+  const followingId = Number(searchedParams.followingId);
 
-  if (!follower_id) {
-    return NextResponse.json({ error: "Missing follower_id." }, { status: 400 });
+  // Validate required fields
+  if (!followerId || !followingId) {
+    return apiError("Missing required fields", 400);
   }
 
-  if (!following_id) {
-    return NextResponse.json({ error: "Missing following_id." }, { status: 400 });
+  // Delete follow
+  const { error: deleteFollowError } = await supabase
+    .from("follows")
+    .delete()
+    .match({ followerId, followingId });
+
+  if (deleteFollowError) {
+    return apiError(deleteFollowError);
   }
 
-  const { error } = await supabase.from("follows").delete().match({ follower_id, following_id });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
+  // Delete notification created by follow on target user
   await supabase.from("notifications").delete().match({
-    user_id: following_id,
+    user_id: followingId,
     type: "followed",
-    related_id: follower_id,
+    related_id: followerId,
   });
 
-  return NextResponse.json({ message: "Unfollowed successfully." });
+  // Return
+  return NextResponse.json({ message: "Unfollowed successfully." }, { status: 200 });
 }
