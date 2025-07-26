@@ -1,7 +1,8 @@
-import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { Question } from "@/types/question";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCurrentUserId } from "./useCurrentUserId";
 
 export const useSubmitVote = () => {
   type MutationProps = {
@@ -9,19 +10,21 @@ export const useSubmitVote = () => {
     targetType: "question" | "answer";
     type: "upvote" | "downvote";
   };
-  const { currentUser } = useAuthContext();
-  const { showSnackbar } = useSnackbarContext();
+  const currentUserId = useCurrentUserId();
   const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarContext();
+
+  if (!currentUserId) {
+    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+  }
 
   return useMutation({
     mutationFn: async ({ targetId, targetType, type }: MutationProps) => {
-      if (!currentUser?.id) throw new Error("User not authenticated.");
-
       const res = await fetch("/api/votes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: currentUser.id,
+          user_id: currentUserId,
           target_id: targetId,
           target_type: targetType,
           type,
@@ -29,10 +32,7 @@ export const useSubmitVote = () => {
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        const message = error.message || "Failed to submit vote";
-        showSnackbar(message, "danger");
-        throw new Error(message);
+        throw new Error(ERROR_MESSAGES.VOTES.SUBMIT);
       }
 
       return { targetId, targetType, type };
@@ -74,6 +74,9 @@ export const useSubmitVote = () => {
           };
         });
       });
+    },
+    onError: () => {
+      showSnackbar(ERROR_MESSAGES.VOTES.SUBMIT, "danger");
     },
   });
 };

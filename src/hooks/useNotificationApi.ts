@@ -1,24 +1,30 @@
-import { useAuthContext } from "@/contexts/auth.context";
+import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { NOTIFICATIONS_PAGE_SIZE } from "@/lib/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/lib/messages";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCurrentUserId } from "./useCurrentUserId";
 
 export const useGetNotifications = () => {
-  const { currentUser } = useAuthContext();
+  const currentUserId = useCurrentUserId();
+
+  if (!currentUserId) {
+    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+  }
 
   return useInfiniteQuery({
-    queryKey: ["notifications", "infinite", currentUser?.id],
-    enabled: !!currentUser?.id,
+    queryKey: ["notifications", "infinite", currentUserId],
+    enabled: !!currentUserId,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }) => {
       const params = new URLSearchParams();
-      params.set("user_id", String(currentUser!.id));
+      params.set("userId", String(currentUserId));
       params.set("limit", String(NOTIFICATIONS_PAGE_SIZE));
       params.set("offset", String(pageParam * NOTIFICATIONS_PAGE_SIZE));
 
       const res = await fetch(`/api/notifications?${params}`);
+
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to fetch notifications");
+        throw new Error(ERROR_MESSAGES.NOTIFICATIONS.FETCH);
       }
 
       return await res.json();
@@ -29,41 +35,60 @@ export const useGetNotifications = () => {
 };
 
 export const useGetUnreadNotificationsCount = () => {
-  const { currentUser } = useAuthContext();
+  const currentUserId = useCurrentUserId();
+
+  if (!currentUserId) {
+    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+  }
 
   return useQuery({
-    queryKey: ["notifications", "unreadCount", currentUser?.id],
+    queryKey: ["notifications", "unreadCount", currentUserId],
     queryFn: async () => {
-      if (!currentUser?.id) return 0;
-      const res = await fetch(`/api/notifications/unread-count?user_id=${currentUser.id}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to fetch count");
-      return data;
+      const params = new URLSearchParams();
+      params.set("userId", String(currentUserId));
+
+      const res = await fetch(`/api/notifications/unread-count?${params}`);
+
+      if (!res.ok) {
+        throw new Error(ERROR_MESSAGES.NOTIFICATIONS.FETCH_COUNT);
+      }
+
+      return await res.json();
     },
-    enabled: !!currentUser?.id,
+    enabled: !!currentUserId,
   });
 };
 
 export const useReadAllNotifications = () => {
-  const { currentUser } = useAuthContext();
+  const currentUserId = useCurrentUserId();
   const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarContext();
+
+  if (!currentUserId) {
+    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+  }
 
   return useMutation({
     mutationFn: async () => {
-      if (!currentUser?.id) return;
       const res = await fetch("/api/notifications/read-all", {
         method: "POST",
-        body: JSON.stringify({ user_id: currentUser.id }),
+        body: JSON.stringify({ userId: currentUserId }),
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to mark as read");
-      return data;
+      if (!res.ok) {
+        throw new Error(ERROR_MESSAGES.NOTIFICATIONS.MARK_READ);
+      }
+
+      return await res.json();
     },
     onSuccess: () => {
+      showSnackbar(SUCCESS_MESSAGES.NOTIFICATIONS.MARK_READ, "success");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "unreadCount"] });
+    },
+    onError: () => {
+      showSnackbar(ERROR_MESSAGES.NOTIFICATIONS.MARK_READ, "danger");
     },
   });
 };

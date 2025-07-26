@@ -1,4 +1,4 @@
-import { apiError } from "@/lib/api-helpers";
+import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 

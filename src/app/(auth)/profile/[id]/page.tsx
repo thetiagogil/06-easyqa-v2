@@ -2,6 +2,7 @@
 import { MainContainer } from "@/components/layout/main-container";
 import { CustomAvatar } from "@/components/shared/custom-avatar";
 import { Loading } from "@/components/shared/loading";
+import { NoData } from "@/components/shared/no-data";
 import { TargetEntry } from "@/components/shared/target-entry";
 import { FollowButton } from "@/components/ui/follow-button";
 import { useAuthContext } from "@/contexts/auth.context";
@@ -110,9 +111,7 @@ export default function ProfilePage() {
                   <TargetEntry key={question.id} targetType="question" target={question} />
                 ))
               ) : (
-                <Typography level="body-sm" textAlign="center" p={2}>
-                  No questions yet.
-                </Typography>
+                <NoData />
               )}
             </TabPanel>
 
@@ -124,9 +123,7 @@ export default function ProfilePage() {
                   <TargetEntry key={question.id} targetType="question" target={question} />
                 ))
               ) : (
-                <Typography level="body-sm" textAlign="center" p={2}>
-                  No answers yet.
-                </Typography>
+                <NoData />
               )}
             </TabPanel>
           </Tabs>

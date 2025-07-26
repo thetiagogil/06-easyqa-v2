@@ -1,10 +1,11 @@
 "use client";
 import { MainContainer } from "@/components/layout/main-container";
 import { Loading } from "@/components/shared/loading";
+import { NoData } from "@/components/shared/no-data";
 import { TargetEntry } from "@/components/shared/target-entry";
 import { useGetQuestions } from "@/hooks/useQuestionApi";
 import { Question } from "@/types/question";
-import { Button, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
+import { Button, Tab, tabClasses, TabList, TabPanel, Tabs } from "@mui/joy";
 import { usePrivy } from "@privy-io/react-auth";
 import { useMemo, useState } from "react";
 
@@ -75,9 +76,7 @@ export default function HomePage() {
                 <TargetEntry key={question.id} targetType="question" target={question} />
               ))
             ) : (
-              <Typography level="body-sm" textAlign="center" p={2}>
-                No {tab.label} questions yet.
-              </Typography>
+              <NoData />
             )}
           </TabPanel>
         ))}

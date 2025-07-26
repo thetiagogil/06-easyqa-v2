@@ -1,4 +1,4 @@
-import { apiError } from "@/lib/api-helpers";
+import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   // Validate required fields
   if (!answerId || !userId) {
-    return apiError("Missing required fields", 400);
+    return apiError("Missing required fields.", 400);
   }
 
   // Get answer with associated question

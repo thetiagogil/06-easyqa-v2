@@ -1,47 +1,69 @@
-import { useAuthContext } from "@/contexts/auth.context";
+import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCurrentUserId } from "./useCurrentUserId";
 
 export const useFollow = (targetUserId: number) => {
-  const { currentUser } = useAuthContext();
+  const currentUserId = useCurrentUserId();
   const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarContext();
 
-  const follow = useMutation({
+  if (!currentUserId) {
+    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+  }
+
+  return useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/follows", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          follower_id: currentUser!.id,
-          following_id: targetUserId,
+          followerId: currentUserId,
+          followingId: targetUserId,
         }),
       });
+
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to follow user");
+        throw new Error(ERROR_MESSAGES.FOLLOWS.FOLLOW);
       }
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["user", targetUserId, currentUser?.id] });
+      await queryClient.invalidateQueries({ queryKey: ["user", targetUserId, currentUserId] });
+    },
+    onError: () => {
+      showSnackbar(ERROR_MESSAGES.FOLLOWS.FOLLOW, "danger");
     },
   });
+};
 
-  const unfollow = useMutation({
+export const useUnfollow = (targetUserId: number) => {
+  const currentUserId = useCurrentUserId();
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbarContext();
+
+  if (!currentUserId) {
+    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+  }
+
+  return useMutation({
     mutationFn: async () => {
-      const res = await fetch(
-        `/api/follows?follower_id=${currentUser!.id}&following_id=${targetUserId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const params = new URLSearchParams();
+      params.set("followerId", String(currentUserId));
+      params.set("followingId", String(targetUserId));
+
+      const res = await fetch(`/api/follows?${params}`, {
+        method: "DELETE",
+      });
+
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to unfollow user");
+        throw new Error(ERROR_MESSAGES.FOLLOWS.UNFOLLOW);
       }
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["user", targetUserId, currentUser?.id] });
+      await queryClient.invalidateQueries({ queryKey: ["user", targetUserId, currentUserId] });
+    },
+    onError: () => {
+      showSnackbar(ERROR_MESSAGES.FOLLOWS.UNFOLLOW, "danger");
     },
   });
-
-  return { follow, unfollow };
 };

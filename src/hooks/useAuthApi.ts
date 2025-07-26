@@ -1,13 +1,15 @@
 import { useSnackbarContext } from "@/contexts/snackbar.context";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { User } from "@/types/user";
 import { getAccessToken, usePrivy } from "@privy-io/react-auth";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export const useAuthUser = (enabled = true) => {
-  const { logout } = usePrivy();
   const { showSnackbar } = useSnackbarContext();
+  const { logout } = usePrivy();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["user"],
     enabled,
     queryFn: async (): Promise<User> => {
@@ -20,15 +22,20 @@ export const useAuthUser = (enabled = true) => {
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        const message = error.message || "Failed to authenticate user";
-        showSnackbar(message, "danger");
-        await logout();
-        throw new Error(message);
+        throw new Error(ERROR_MESSAGES.AUTH.AUTHENTICATION);
       }
 
       return await res.json();
     },
     retry: false,
   });
+
+  useEffect(() => {
+    if (query.isError) {
+      showSnackbar(ERROR_MESSAGES.AUTH.AUTHENTICATION, "danger");
+      logout();
+    }
+  }, [query.isError, showSnackbar, logout]);
+
+  return query;
 };

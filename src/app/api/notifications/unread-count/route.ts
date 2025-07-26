@@ -1,4 +1,4 @@
-import { apiError } from "@/lib/api-helpers";
+import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields", 400);
+    return apiError("Missing required fields.", 400);
   }
 
   // Get unread notifications count by userId

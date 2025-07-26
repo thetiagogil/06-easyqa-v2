@@ -1,4 +1,4 @@
-import { apiError } from "@/lib/api-helpers";
+import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields", 400);
+    return apiError("Missing required fields.", 400);
   }
 
   // Get vote

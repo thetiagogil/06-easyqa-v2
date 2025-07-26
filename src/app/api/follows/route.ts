@@ -1,4 +1,4 @@
-import { apiError } from "@/lib/api-helpers";
+import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import dayjs from "dayjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
   // Validate required fields
   if (!followerId || !followingId) {
-    return apiError("Missing required fields", 400);
+    return apiError("Missing required fields.", 400);
   }
 
   if (followerId === followingId) {
@@ -63,7 +63,7 @@ export async function DELETE(req: NextRequest) {
 
   // Validate required fields
   if (!followerId || !followingId) {
-    return apiError("Missing required fields", 400);
+    return apiError("Missing required fields.", 400);
   }
 
   // Delete follow

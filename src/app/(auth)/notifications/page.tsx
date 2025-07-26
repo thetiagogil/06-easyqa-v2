@@ -1,6 +1,7 @@
 "use client";
 import { MainContainer } from "@/components/layout/main-container";
 import { Loading } from "@/components/shared/loading";
+import { NoData } from "@/components/shared/no-data";
 import {
   useGetNotifications,
   useGetUnreadNotificationsCount,
@@ -93,9 +94,7 @@ export default function NotificationsPage() {
     >
       {isPending ? (
         <Loading />
-      ) : notifications?.length === 0 ? (
-        <Typography>No notifications yet.</Typography>
-      ) : (
+      ) : notifications?.length > 0 ? (
         <List sx={{ p: 0 }}>
           {notifications.map((n: Noticiation) => {
             return (
@@ -132,6 +131,8 @@ export default function NotificationsPage() {
 
           {hasNextPage && <Box ref={loadMoreRef} />}
         </List>
+      ) : (
+        <NoData />
       )}
     </MainContainer>
   );

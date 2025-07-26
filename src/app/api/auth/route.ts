@@ -1,5 +1,5 @@
-import { apiError } from "@/lib/api-helpers";
 import { ENV_VARS, ENV_VARS_SERVER } from "@/lib/constants";
+import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import { PrivyClient } from "@privy-io/server-auth";
 import { NextRequest, NextResponse } from "next/server";
