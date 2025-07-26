@@ -9,10 +9,6 @@ export const useCreateAnswer = (questionId: number) => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   return useMutation({
     mutationFn: async (data: Partial<Answer>) => {
       const res = await fetch("/api/answers", {

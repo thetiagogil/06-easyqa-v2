@@ -1,10 +1,12 @@
 import { NotificationType } from "./common";
 
-export interface Noticiation {
+export interface NotificationDb {
   id: number;
-  user_id: number;
+  userId: number;
   type: NotificationType;
   related_id: number;
-  created_at: string;
-  is_read: boolean;
+  isRead: boolean;
+  createdAt?: string;
 }
+
+export interface Notification extends NotificationDb {}

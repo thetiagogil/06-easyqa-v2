@@ -74,10 +74,6 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   return useMutation({
     mutationFn: async (data: Partial<User>) => {
       const res = await fetch(`/api/users/${currentUserId}`, {

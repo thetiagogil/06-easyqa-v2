@@ -7,10 +7,6 @@ import { useCurrentUserId } from "./useCurrentUserId";
 export const useGetNotifications = () => {
   const currentUserId = useCurrentUserId();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   return useInfiniteQuery({
     queryKey: ["notifications", "infinite", currentUserId],
     enabled: !!currentUserId,
@@ -37,10 +33,6 @@ export const useGetNotifications = () => {
 export const useGetUnreadNotificationsCount = () => {
   const currentUserId = useCurrentUserId();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   return useQuery({
     queryKey: ["notifications", "unreadCount", currentUserId],
     queryFn: async () => {
@@ -63,10 +55,6 @@ export const useReadAllNotifications = () => {
   const currentUserId = useCurrentUserId();
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
-
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
 
   return useMutation({
     mutationFn: async () => {

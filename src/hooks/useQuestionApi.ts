@@ -18,10 +18,6 @@ export const useGetQuestions = (
   const { showSnackbar } = useSnackbarContext();
   const { ready } = usePrivy();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   const query = useQuery({
     queryKey: ["questions", sort, page, currentUserId],
     enabled: enabled && ready,
@@ -56,10 +52,6 @@ export const useGetQuestionById = (id: number, enabled = true) => {
   const { showSnackbar } = useSnackbarContext();
   const { ready } = usePrivy();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   const query = useQuery({
     queryKey: ["question", id, currentUserId],
     enabled: enabled && ready && !!id,
@@ -91,10 +83,6 @@ export const useGetQuestionAnswers = (id: number, enabled = true) => {
   const { showSnackbar } = useSnackbarContext();
   const { ready } = usePrivy();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   const query = useQuery({
     queryKey: ["questionAnswers", id, currentUserId],
     enabled: enabled && ready && !!id,
@@ -124,10 +112,6 @@ export const useGetQuestionAnswers = (id: number, enabled = true) => {
 export const useCreateQuestion = () => {
   const currentUserId = useCurrentUserId();
   const { showSnackbar } = useSnackbarContext();
-
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
 
   return useMutation({
     mutationFn: async (data: Partial<Question>) => {

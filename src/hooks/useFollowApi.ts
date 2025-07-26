@@ -8,10 +8,6 @@ export const useFollow = (targetUserId: number) => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   return useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/follows", {
@@ -40,10 +36,6 @@ export const useUnfollow = (targetUserId: number) => {
   const currentUserId = useCurrentUserId();
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
-
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
 
   return useMutation({
     mutationFn: async () => {

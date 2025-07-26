@@ -9,11 +9,10 @@ import {
 } from "@/hooks/useNotificationApi";
 import { MAIN_BORDERS } from "@/lib/constants";
 import { dateFormat } from "@/lib/utils";
-import { Noticiation } from "@/types";
+import { Notification } from "@/types";
 import CheckIcon from "@mui/icons-material/Check";
 import { Box, Button, Link, List, ListItem, ListItemContent, Stack, Typography } from "@mui/joy";
 import NextLink from "next/link";
-
 import { useEffect, useRef } from "react";
 
 export default function NotificationsPage() {
@@ -26,6 +25,7 @@ export default function NotificationsPage() {
   } = useGetNotifications();
   const { data: unreadCount, isPending: isPendingUnreadCount } = useGetUnreadNotificationsCount();
   const { mutate: markAllAsRead } = useReadAllNotifications();
+
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const notifications = notificationsData?.pages.flat() || [];
   const isPending = isPendingNotifications || isPendingUnreadCount;
@@ -84,7 +84,7 @@ export default function NotificationsPage() {
             onClick={() => markAllAsRead()}
             variant="soft"
             color="neutral"
-            disabled={isPending || unreadCount === 0}
+            disabled={isPending || unreadCount == 0}
           >
             read all
           </Button>
@@ -96,13 +96,13 @@ export default function NotificationsPage() {
         <Loading />
       ) : notifications?.length > 0 ? (
         <List sx={{ p: 0 }}>
-          {notifications.map((n: Noticiation) => {
+          {notifications.map((n: Notification) => {
             return (
               <ListItem
                 key={n.id}
                 sx={{
                   borderBottom: MAIN_BORDERS,
-                  opacity: n.is_read ? 0.5 : undefined,
+                  opacity: n.isRead ? 0.5 : undefined,
                   p: 0,
                 }}
               >
@@ -119,11 +119,11 @@ export default function NotificationsPage() {
                     </Typography>
 
                     <Typography level="body-xs" color="neutral">
-                      {dateFormat(n.created_at)}
+                      {dateFormat(n.createdAt!)}
                     </Typography>
                   </Stack>
 
-                  <Stack>{n.is_read ? <CheckIcon /> : null}</Stack>
+                  <Stack>{n.isRead ? <CheckIcon /> : null}</Stack>
                 </ListItemContent>
               </ListItem>
             );

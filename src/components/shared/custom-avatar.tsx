@@ -11,7 +11,7 @@ type AvatarProps = {
 export const CustomAvatar = ({ user, size, fontSize }: AvatarProps) => {
   return (
     <JoyAvatar
-      src={user.avatar_url ? user.avatar_url : ""}
+      src={user.avatarUrl ? user.avatarUrl : ""}
       alt={userName(user)}
       sx={{ height: size, width: size, fontSize: fontSize, fontWeight: 700, color: "primary.500" }}
     />

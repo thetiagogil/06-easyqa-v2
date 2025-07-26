@@ -82,17 +82,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { user_id, title, content } = body;
+  const { userId, title, content } = body;
 
   // Validate required fields
-  if (!user_id || !title || !content) {
+  if (!userId || !title || !content) {
     return apiError("Missing required fields.", 400);
   }
 
   // Create question
   const { data: question, error: createQuestionError } = await supabase
     .from("questions")
-    .insert([{ user_id, title, content }])
+    .insert([{ user_id: userId, title, content }])
     .select()
     .single();
 

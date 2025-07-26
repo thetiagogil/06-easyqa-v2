@@ -1,8 +1,10 @@
-export interface Vote {
+export interface VoteDb {
   id: number;
-  user_id: number;
-  target_id: number;
-  target_type: "question" | "answer";
+  userId: number;
+  targetId: number;
+  targetType: "question" | "answer";
   value: 1 | -1;
-  created_at: string;
+  createdAt?: string;
 }
+
+export interface Vote extends VoteDb {}

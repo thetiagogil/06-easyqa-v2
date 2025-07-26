@@ -18,7 +18,7 @@ export default function ProfileEditPage() {
   const { id } = useParams();
   const userId = Number(id);
   const { currentUser } = useAuthContext();
-  const { mutateAsync: updateUser, isPending } = useUpdateUser();
+  const { mutateAsync: updateUser, isPending, isSuccess } = useUpdateUser();
   const router = useRouter();
   const isCurrentUser = currentUser?.id === userId;
 
@@ -43,25 +43,22 @@ export default function ProfileEditPage() {
 
   const onSubmit = async (data: FormData) => {
     if (!isValidLength) return;
-    try {
-      await updateUser({
-        userId: currentUser!.id,
-        data,
-      });
-    } catch (error: any) {
-      console.error("Failed to update user:", error.message);
-    } finally {
-      router.replace(`/profile/${currentUser!.id}`);
-    }
+    await updateUser(data);
   };
 
   useEffect(() => {
-    if (!currentUser || !isCurrentUser) {
+    if (!isCurrentUser) {
       router.replace(`/profile/${userId}`);
     }
   }, [currentUser, isCurrentUser, userId, router]);
 
-  if (!currentUser || !isCurrentUser) return null;
+  useEffect(() => {
+    if (isSuccess && currentUser?.id) {
+      router.replace(`/profile/${currentUser!.id}`);
+    }
+  }, [currentUser, isSuccess, router]);
+
+  if (!isCurrentUser) return null;
   return (
     <MainContainer
       navbarProps={{

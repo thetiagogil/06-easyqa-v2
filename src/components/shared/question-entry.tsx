@@ -12,7 +12,7 @@ type QuestionEntryProps = {
 };
 
 export const QuestionEntry = ({ question }: QuestionEntryProps) => {
-  const askedAt = useMemo(() => dateFromNow(question.created_at), [question.created_at]);
+  const askedAt = useMemo(() => dateFromNow(question.createdAt!), [question.createdAt]);
   const isClosed = question?.status === "closed";
 
   return (

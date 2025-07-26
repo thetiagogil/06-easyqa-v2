@@ -1,15 +1,17 @@
 import { Answer } from "./answer";
 import { User } from "./user";
 
-export interface Question {
+export interface QuestionDb {
   id: number;
-  user_id: number;
+  userId: number;
   title: string;
   content?: string;
   status: "open" | "closed" | "answered";
   vote_score: number;
-  created_at: string;
-  updated_at: string;
+  createdAt?: string;
+}
+
+export interface Question extends QuestionDb {
   user: User;
   viewer_vote_value?: 1 | -1;
   answer_count?: number;

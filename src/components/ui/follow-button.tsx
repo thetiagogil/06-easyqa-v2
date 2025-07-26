@@ -1,6 +1,6 @@
 "use client";
 import { useAuthContext } from "@/contexts/auth.context";
-import { useFollow } from "@/hooks/useFollowApi";
+import { useFollow, useUnfollow } from "@/hooks/useFollowApi";
 import { Button } from "@mui/joy";
 import { useState } from "react";
 
@@ -11,7 +11,8 @@ type FollowButtonProps = {
 
 export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) => {
   const { currentUser } = useAuthContext();
-  const { follow, unfollow } = useFollow(targetUserId);
+  const { mutateAsync: follow, isPending: isPendingFollow } = useFollow(targetUserId);
+  const { mutateAsync: unfollow, isPending: isPendingUnfollow } = useUnfollow(targetUserId);
   const [hover, setHover] = useState(false);
 
   const commonStyles = { width: 80, fontSize: 12, transition: "0.3s" };
@@ -24,9 +25,9 @@ export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) =
         variant="outlined"
         color={hover ? "danger" : "primary"}
         size="sm"
-        disabled={unfollow.isPending}
-        loading={unfollow.isPending}
-        onClick={() => unfollow.mutate()}
+        disabled={isPendingUnfollow}
+        loading={isPendingUnfollow}
+        onClick={() => unfollow}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         sx={commonStyles}
@@ -41,9 +42,9 @@ export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) =
       variant="outlined"
       color={hover ? "primary" : "neutral"}
       size="sm"
-      disabled={follow.isPending}
-      loading={follow.isPending}
-      onClick={() => follow.mutate()}
+      disabled={isPendingFollow}
+      loading={isPendingFollow}
+      onClick={() => follow}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       sx={commonStyles}

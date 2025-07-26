@@ -14,8 +14,8 @@ export default function QuestionPage() {
   const { data: question, isPending: isPendingQuestion } = useGetQuestionById(Number(id));
 
   const hasAlreadyAnswered =
-    !question?.answers?.find((answer) => answer.user_id === currentUser?.id) &&
-    currentUser?.id !== question?.user_id;
+    !question?.answers?.find((answer) => answer.userId === currentUser?.id) &&
+    currentUser?.id !== question?.userId;
 
   return (
     <MainContainer navbarProps={{ title: "question", hasBackButton: true }} noPad>

@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const offset = Number(searchedParams.offset || 0);
   const search = searchedParams.search;
 
-  // Get users with pagination and search
+  // Build query
   let query = supabase.from("users").select("id, name, bio, avatar_url", { count: "exact" });
 
   if (search) {
@@ -18,11 +18,13 @@ export async function GET(req: NextRequest) {
 
   query = query.range(offset, offset + limit - 1);
 
+  // Get users with pagination and search
   const { data: users, error: getUsersError } = await query;
 
   if (getUsersError) {
     return apiError(getUsersError);
   }
 
+  // Return
   return NextResponse.json(users);
 }

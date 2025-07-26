@@ -14,19 +14,15 @@ export const useSubmitVote = () => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbarContext();
 
-  if (!currentUserId) {
-    throw new Error(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-  }
-
   return useMutation({
     mutationFn: async ({ targetId, targetType, type }: MutationProps) => {
       const res = await fetch("/api/votes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: currentUserId,
-          target_id: targetId,
-          target_type: targetType,
+          userId: currentUserId,
+          targetId: targetId,
+          targetType: targetType,
           type,
         }),
       });

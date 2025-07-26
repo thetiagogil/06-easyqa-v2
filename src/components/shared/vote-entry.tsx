@@ -1,6 +1,7 @@
 import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useSubmitVote } from "@/hooks/useVoteApi";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { Answer } from "@/types/answer";
 import { Question } from "@/types/question";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -26,7 +27,7 @@ export function VoteEntry({ targetType, target, isClosed }: VoteEntryProps) {
 
   const handleVoteClick = (selectedType: "upvote" | "downvote") => {
     if (!isUserReady) {
-      showSnackbar("You must be logged in to perform this action", "warning");
+      showSnackbar(ERROR_MESSAGES.AUTH.UNAUTHORIZED, "warning");
       return;
     }
 
@@ -59,7 +60,7 @@ export function VoteEntry({ targetType, target, isClosed }: VoteEntryProps) {
                 ? "downvote"
                 : null,
           );
-          showSnackbar("Something went wrong. Please try again.", "danger");
+          showSnackbar(ERROR_MESSAGES.GENERAL.UNEXPECTED, "danger");
         },
       },
     );

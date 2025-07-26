@@ -1,9 +1,14 @@
-export interface User {
+export interface UserDb {
   id: number;
-  privy_id: string;
+  privyId: string;
   name?: string;
   bio?: string;
-  avatar_url?: string;
+  avatarUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface User extends UserDb {
   email?: string;
   wallet?: string;
   isViewerFollowing?: boolean;

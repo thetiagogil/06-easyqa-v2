@@ -2,6 +2,7 @@ import { useAuthContext } from "@/contexts/auth.context";
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useAcceptAnswer } from "@/hooks/useAnswerApi";
 import { MAIN_BORDERS } from "@/lib/constants";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { dateFromNow, userName } from "@/lib/utils";
 import { Answer, Question } from "@/types";
 import { Button, Chip, Link, Stack, Typography } from "@mui/joy";
@@ -24,10 +25,10 @@ export const TargetEntry = ({ targetType, target, answeredQuestion }: TargetEntr
   const question = targetType === "question" ? (target as Question) : null;
   const answer = targetType === "answer" ? (target as Answer) : null;
 
-  const canAccept = currentUser?.id === answeredQuestion?.user_id;
+  const canAccept = currentUser?.id === answeredQuestion?.userId;
   const acceptAnswer =
     targetType === "answer" && answeredQuestion ? useAcceptAnswer(answeredQuestion.id) : null;
-  const askedAt = useMemo(() => dateFromNow(target.created_at), [target.created_at]);
+  const askedAt = useMemo(() => dateFromNow(target.createdAt!), [target.createdAt]);
   const isClosed =
     (targetType === "question" && question?.status === "closed") ||
     (targetType === "answer" && answeredQuestion?.status === "closed");
@@ -39,7 +40,7 @@ export const TargetEntry = ({ targetType, target, answeredQuestion }: TargetEntr
   const handleVoteClick = (e: any) => {
     if (!isUserReady) {
       e.preventDefault();
-      showSnackbar("You must be logged in to perform this action", "warning");
+      showSnackbar(ERROR_MESSAGES.AUTH.UNAUTHORIZED, "warning");
     }
   };
 

@@ -13,8 +13,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loading } from "../components/shared/loading";
 
-const queryClient = new QueryClient();
-
 const validateEnvVars = () => {
   const missing = Object.entries(ENV_VARS)
     .filter(([_, value]) => !value)
