@@ -4,7 +4,7 @@ export interface NotificationDb {
   id: number;
   userId: number;
   type: NotificationType;
-  related_id: number;
+  relatedId: number;
   isRead: boolean;
   createdAt?: string;
 }

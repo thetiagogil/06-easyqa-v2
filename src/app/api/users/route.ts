@@ -1,5 +1,6 @@
 import { apiError } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
+import camelcaseKeys from "camelcase-keys";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -26,5 +27,5 @@ export async function GET(req: NextRequest) {
   }
 
   // Return
-  return NextResponse.json(users);
+  return NextResponse.json(camelcaseKeys(users, { deep: true }));
 }

@@ -1,4 +1,5 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -8,7 +9,7 @@ export async function POST(request: NextRequest) {
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Get vote
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
         return apiError(deleteVoteError);
       }
 
-      return NextResponse.json({ message: "Vote removed." });
+      return NextResponse.json({ message: SUCCESS_MESSAGES.VOTES.DELETE });
     } else {
       // Update vote
       const { error: updateVoteError } = await supabase
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
         return apiError(updateVoteError);
       }
 
-      return NextResponse.json({ message: "Vote updated." });
+      return NextResponse.json({ message: SUCCESS_MESSAGES.VOTES.UPDATE });
     }
   } else {
     // Create vote
@@ -64,6 +65,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Return
-    return NextResponse.json({ message: "Vote submitted." });
+    return NextResponse.json({ message: SUCCESS_MESSAGES.VOTES.SUBMIT });
   }
 }

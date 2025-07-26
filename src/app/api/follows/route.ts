@@ -1,4 +1,5 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
 import dayjs from "dayjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   // Validate required fields
   if (!followerId || !followingId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   if (followerId === followingId) {
@@ -34,8 +35,8 @@ export async function POST(req: NextRequest) {
   // Create follow (if not already following)
   const { error: createFollowError } = await supabase.from("follows").insert([
     {
-      followerId,
-      followingId,
+      follower_id: followerId,
+      following_id: followingId,
       followed_at: dayjs().toISOString(),
     },
   ]);
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Return
-  return NextResponse.json({ message: "Followed successfully." });
+  return NextResponse.json({ message: SUCCESS_MESSAGES.FOLLOWS.FOLLOW }, { status: 200 });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -63,14 +64,14 @@ export async function DELETE(req: NextRequest) {
 
   // Validate required fields
   if (!followerId || !followingId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Delete follow
   const { error: deleteFollowError } = await supabase
     .from("follows")
     .delete()
-    .match({ followerId, followingId });
+    .match({ follower_id: followerId, following_id: followingId });
 
   if (deleteFollowError) {
     return apiError(deleteFollowError);
@@ -84,5 +85,5 @@ export async function DELETE(req: NextRequest) {
   });
 
   // Return
-  return NextResponse.json({ message: "Unfollowed successfully." }, { status: 200 });
+  return NextResponse.json({ message: SUCCESS_MESSAGES.FOLLOWS.UNFOLLOW }, { status: 200 });
 }

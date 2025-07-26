@@ -60,6 +60,11 @@ export const SUCCESS_MESSAGES = {
     CREATE: "Answer created successfully.",
     ACCEPT: "Answer accepted successfully.",
   },
+  VOTES: {
+    SUBMIT: "Vote submitted successfully.",
+    UPDATE: "Vote updated successfully.",
+    DELETE: "Vote delete successfully.",
+  },
   FOLLOWS: {
     FOLLOW: "Followed successfully.",
     UNFOLLOW: "Unfollowed successfully.",

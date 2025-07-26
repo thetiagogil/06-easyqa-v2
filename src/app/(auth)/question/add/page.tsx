@@ -5,13 +5,14 @@ import { useCreateQuestion } from "@/hooks/useQuestionApi";
 import { CHAR_LIMIT } from "@/lib/constants";
 import { Button, Stack } from "@mui/joy";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type FormData = { title: string; content: string };
 
 export default function QuestionAddPage() {
   const router = useRouter();
-  const { mutateAsync: createQuestion, isPending } = useCreateQuestion();
+  const { mutateAsync: createQuestion, isPending, isSuccess } = useCreateQuestion();
 
   const {
     register,
@@ -31,13 +32,13 @@ export default function QuestionAddPage() {
   const onSubmit = async (data: FormData) => {
     if (!isValidLength) return;
     await createQuestion({ title: data.title, content: data.content });
-    try {
-    } catch (error: any) {
-      console.error("Failed to create question:", error.message);
-    } finally {
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
       router.replace("/");
     }
-  };
+  }, [isSuccess, router]);
 
   return (
     <MainContainer

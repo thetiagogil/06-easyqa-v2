@@ -1,5 +1,7 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
+import camelcaseKeys from "camelcase-keys";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Get notifications by userId
@@ -27,5 +29,5 @@ export async function GET(req: NextRequest) {
   }
 
   // Return
-  return NextResponse.json(notifications);
+  return NextResponse.json(camelcaseKeys(notifications, { deep: true }));
 }

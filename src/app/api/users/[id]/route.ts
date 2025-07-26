@@ -1,5 +1,7 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
+import camelcaseKeys from "camelcase-keys";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -12,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Get user by id
@@ -45,11 +47,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
   }
 
-  // Return
-  return NextResponse.json({
+  const response = {
     ...user,
     isViewerFollowing,
-  });
+  };
+
+  // Return
+  return NextResponse.json(camelcaseKeys(response, { deep: true }));
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -59,7 +63,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Update user
@@ -70,5 +74,5 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   // Return
-  return NextResponse.json({ message: "User updated successfully." });
+  return NextResponse.json({ message: SUCCESS_MESSAGES.USERS.UPDATE });
 }

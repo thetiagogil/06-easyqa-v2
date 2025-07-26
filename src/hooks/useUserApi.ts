@@ -1,6 +1,6 @@
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { EXPLORE_PAGE_SEARCH_SIZE } from "@/lib/constants";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/lib/messages";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { Question } from "@/types/question";
 import { User } from "@/types/user";
 import { usePrivy } from "@privy-io/react-auth";
@@ -89,7 +89,6 @@ export const useUpdateUser = () => {
       return await res.json();
     },
     onSuccess: () => {
-      showSnackbar(SUCCESS_MESSAGES.USERS.UPDATE, "success");
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },
     onError: () => {

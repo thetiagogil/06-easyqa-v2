@@ -1,6 +1,6 @@
 import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { NOTIFICATIONS_PAGE_SIZE } from "@/lib/constants";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/lib/messages";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCurrentUserId } from "./useCurrentUserId";
 
@@ -71,7 +71,6 @@ export const useReadAllNotifications = () => {
       return await res.json();
     },
     onSuccess: () => {
-      showSnackbar(SUCCESS_MESSAGES.NOTIFICATIONS.MARK_READ, "success");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications", "unreadCount"] });
     },

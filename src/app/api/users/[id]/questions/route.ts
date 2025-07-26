@@ -1,5 +1,7 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
+import camelcaseKeys from "camelcase-keys";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -12,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   // Validate required fields
   if (!userId) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Get user questions
@@ -51,10 +53,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 
   // Return
-  const result = questions.map((question) => ({
+  const response = questions.map((question) => ({
     ...question,
     viewer_vote_value: viewerVotes.find((vote) => vote.target_id === question.id)?.value ?? null,
   }));
 
-  return NextResponse.json(result);
+  return NextResponse.json(camelcaseKeys(response, { deep: true }));
 }

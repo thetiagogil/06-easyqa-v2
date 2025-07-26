@@ -1,5 +1,7 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
+import camelcaseKeys from "camelcase-keys";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -77,7 +79,7 @@ export async function GET(req: NextRequest) {
     answer_count: answerCountMap.get(question.id) ?? 0,
   }));
 
-  return NextResponse.json(response);
+  return NextResponse.json(camelcaseKeys(response, { deep: true }));
 }
 
 export async function POST(req: NextRequest) {
@@ -86,7 +88,7 @@ export async function POST(req: NextRequest) {
 
   // Validate required fields
   if (!userId || !title || !content) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Create question

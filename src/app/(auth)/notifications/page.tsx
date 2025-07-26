@@ -34,7 +34,7 @@ export default function NotificationsPage() {
     answer_received: (n) => (
       <>
         Your question received a new{" "}
-        <Link component={NextLink} href={`/question/${n.related_id}`} color="primary">
+        <Link component={NextLink} href={`/question/${n.relatedId}`} color="primary">
           answer
         </Link>
         .
@@ -43,7 +43,7 @@ export default function NotificationsPage() {
     answer_accepted: (n) => (
       <>
         Your{" "}
-        <Link component={NextLink} href={`/question/${n.related_id}`} color="primary">
+        <Link component={NextLink} href={`/question/${n.relatedId}`} color="primary">
           answer
         </Link>{" "}
         was accepted!
@@ -51,7 +51,7 @@ export default function NotificationsPage() {
     ),
     followed: (n) => (
       <>
-        <Link component={NextLink} href={`/profile/${n.related_id}`} color="primary">
+        <Link component={NextLink} href={`/profile/${n.relatedId}`} color="primary">
           Someone
         </Link>{" "}
         started following you.

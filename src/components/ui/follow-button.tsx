@@ -27,7 +27,7 @@ export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) =
         size="sm"
         disabled={isPendingUnfollow}
         loading={isPendingUnfollow}
-        onClick={() => unfollow}
+        onClick={() => unfollow()}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         sx={commonStyles}
@@ -44,7 +44,7 @@ export const FollowButton = ({ targetUserId, isFollowing }: FollowButtonProps) =
       size="sm"
       disabled={isPendingFollow}
       loading={isPendingFollow}
-      onClick={() => follow}
+      onClick={() => follow()}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       sx={commonStyles}

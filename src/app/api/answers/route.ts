@@ -1,4 +1,5 @@
 import { apiError } from "@/lib/helpers";
+import { ERROR_MESSAGES } from "@/lib/messages";
 import { supabase } from "@/lib/supabase";
 import { NotificationType } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   // Validate required fields
   if (!questionId || !userId || !content) {
-    return apiError("Missing required fields.", 400);
+    return apiError(ERROR_MESSAGES.GENERAL.MISSING_FIELDS, 400);
   }
 
   // Create answer

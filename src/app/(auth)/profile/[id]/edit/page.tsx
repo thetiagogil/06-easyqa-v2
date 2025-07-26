@@ -2,8 +2,10 @@
 import { MainContainer } from "@/components/layout/main-container";
 import { ControlledField } from "@/components/ui/controlled-input";
 import { useAuthContext } from "@/contexts/auth.context";
+import { useSnackbarContext } from "@/contexts/snackbar.context";
 import { useUpdateUser } from "@/hooks/useUserApi";
 import { CHAR_LIMIT } from "@/lib/constants";
+import { SUCCESS_MESSAGES } from "@/lib/messages";
 import { Button, Stack } from "@mui/joy";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -16,10 +18,11 @@ type FormData = {
 
 export default function ProfileEditPage() {
   const { id } = useParams();
-  const userId = Number(id);
   const { currentUser } = useAuthContext();
   const { mutateAsync: updateUser, isPending, isSuccess } = useUpdateUser();
+  const { showSnackbar } = useSnackbarContext();
   const router = useRouter();
+  const userId = Number(id);
   const isCurrentUser = currentUser?.id === userId;
 
   const {
@@ -55,6 +58,7 @@ export default function ProfileEditPage() {
   useEffect(() => {
     if (isSuccess && currentUser?.id) {
       router.replace(`/profile/${currentUser!.id}`);
+      showSnackbar(SUCCESS_MESSAGES.USERS.UPDATE, "success");
     }
   }, [currentUser, isSuccess, router]);
 
